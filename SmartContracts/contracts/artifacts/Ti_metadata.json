@@ -336,7 +336,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"SmartContracts/contracts/Token.sol": "MyToken"
+			"SmartContracts/contracts/Token.sol": "Ti"
 		},
 		"evmVersion": "paris",
 		"libraries": {},
@@ -383,11 +383,11 @@
 			]
 		},
 		"SmartContracts/contracts/Token.sol": {
-			"keccak256": "0x1b38f8453d94d293e36fd37bbac5563bed992f40fbd0e405e012aa40f549fcd5",
+			"keccak256": "0xccf041b1e35cb2379a84f4782e3df772d6faec3847addc64588b25ea7c831644",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://78aae15cde52ea8043ac85758acbfe88959e7250a2f556695086d039569a3198",
-				"dweb:/ipfs/QmTUEU93ZWgFbMmYnzZE6SKcmPKpRiAZhj3sYm76SpZDRW"
+				"bzz-raw://52210203703d60524c6242fcc69313084860a24991f1f01258c6398cc3ed1ba5",
+				"dweb:/ipfs/QmZfrGmni1xdEx9NrxfpkoBKi2DJhnK9CcV4oqVFpnjQif"
 			]
 		}
 	},
