@@ -2,7 +2,8 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Router is ERC20 {
-    constructor() ERC20("StarCi Token", "STARCI") {}
+contract Factory is Ownable {
+    
 }

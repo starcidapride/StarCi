@@ -336,7 +336,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"SmartContracts/contracts/Factory.sol": "Router"
+			"SmartContracts/contracts/Factory.sol": "Facto"
 		},
 		"evmVersion": "paris",
 		"libraries": {},
@@ -383,11 +383,11 @@
 			]
 		},
 		"SmartContracts/contracts/Factory.sol": {
-			"keccak256": "0x413d8a83b6a928604fff3f7c0f798e6efa71a319c14810490da76a4801cea3ec",
+			"keccak256": "0xa3e82c1431249458bc9a65ae57cfb816ba0fb4cbcb7bbbcb4e6b0532d5381b9e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://fb047ae852ad26c522c811077cdd3acf3fe475538d1214b8b20fe47e4fc71e90",
-				"dweb:/ipfs/QmS22nHVoEkVekVRuy8qnTsv1BXLHtM8fPEHg32iho6v2Y"
+				"bzz-raw://4c6b91a630f019b220f2f961653e03b5774d1c98c3c3d6829d6bfff4ea97fcdd",
+				"dweb:/ipfs/QmNbemmt9vonw1gC8E3yxYTVmFWx5LLjqu4ESa2pYboCSa"
 			]
 		}
 	},

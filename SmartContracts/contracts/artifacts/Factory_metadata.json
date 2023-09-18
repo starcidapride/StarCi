@@ -6,32 +6,6 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_token0",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "_token1",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_exchangeRatio",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_maxAmountToken1",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "nonpayable",
-				"type": "constructor"
-			},
-			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -52,45 +26,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "exchangeRatio",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "factory",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "maxAmountToken1",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "owner",
 				"outputs": [
 					{
@@ -107,76 +42,6 @@
 				"name": "renounceOwnership",
 				"outputs": [],
 				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_exchangeRatio",
-						"type": "uint256"
-					}
-				],
-				"name": "setExchangeRatio",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_maxAmountToken1",
-						"type": "uint256"
-					}
-				],
-				"name": "setMaxAmountToken1",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "amountToken0In",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "minAmountToken1Out",
-						"type": "uint256"
-					}
-				],
-				"name": "swap",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "token0",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "token1",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -216,7 +81,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"SmartContracts/contracts/LiquidityPool.sol": "LiquidityPool"
+			"SmartContracts/contracts/Factory.sol": "Factory"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -276,22 +141,6 @@
 			"urls": [
 				"bzz-raw://0c128c242fb7c2388fc151210633810740ea466748867e01474f37fe2ca92881",
 				"dweb:/ipfs/QmR8vsUB3Fyk3QisAhgYxwefsibbckeKNaBT1fzZsynmKQ"
-			]
-		},
-		"SmartContracts/contracts/ILiquidityPool.sol": {
-			"keccak256": "0xca40eb962425012c32629cbb83ec7039ce7177b48c56d82965c9e7bdd355babc",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://fd40298679dd653ee4368476b4882a63c7b2f620577ad3c53245f073ab5f9cef",
-				"dweb:/ipfs/QmUrQAbTYpMTPfhC5hg51NrVLS5v51LkugtNPhkKatqFKR"
-			]
-		},
-		"SmartContracts/contracts/LiquidityPool.sol": {
-			"keccak256": "0xf14875cdeca5af260159fa004a5ed6d59babafd0cc88ce68e0a8733bd308d653",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://a2150bf544910247e949f806b246636d701135854378605fa1cecc95b608771b",
-				"dweb:/ipfs/QmZArSSECQseyDmg4PTKEhrfRP1gEMQM48MBXwrCJtCEVV"
 			]
 		}
 	},
