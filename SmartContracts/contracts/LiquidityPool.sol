@@ -78,9 +78,17 @@ contract LiquidityPool is ILiquidityPool, Ownable {
         return amountToken0 - afterAmountToken0;
     }
 
+    event RecordSwap (
+        address indexed pool,
+        uint updatedAmountToken0,
+        uint updatedAmountToken1,
+        uint updatedToken1Price,
+        uint timestamp
+    );
+
     function buy(uint amountToken1In, uint minAmountToken0Out) external {
         require(IERC20(token1).allowance(msg.sender, address(this)) >= amountToken1In, "Allowance not set for the contract.");
-       
+
         uint amountToken0Out = calculateAmountToken0Out(amountToken1In);
         require(amountToken0Out >= minAmountToken0Out, "Received amount of token 0 is below the expected minimum.");
 
@@ -89,5 +97,16 @@ contract LiquidityPool is ILiquidityPool, Ownable {
         IERC20(token1).transferFrom(msg.sender, address(this), amountToken1In - tokenFee);
 
         IERC20(token0).transfer(msg.sender, amountToken0Out);
+
+        uint amountToken0 = ERC20(token0).balanceOf(address(this));
+        uint amountToken1 = ERC20(token1).balanceOf(address(this));
+
+        emit RecordSwap(
+            address(this),
+            amountToken0,
+            amountToken1,
+            amountToken0Out / amountToken1In,
+            block.timestamp
+        );
     }
 }
