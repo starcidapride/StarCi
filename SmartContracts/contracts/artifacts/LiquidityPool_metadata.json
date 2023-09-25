@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.21+commit.d9974bed"
+		"version": "0.8.18+commit.87f61d96"
 	},
 	"language": "Solidity",
 	"output": {
@@ -19,12 +19,27 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "_exchangeRatio",
+						"name": "_token0MaxAmount",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_maxAmountToken1",
+						"name": "_token1MaxAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_token1MinPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_token1MaxPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_protocolFee",
 						"type": "uint256"
 					}
 				],
@@ -52,19 +67,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "exchangeRatio",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "factory",
 				"outputs": [
 					{
@@ -78,7 +80,20 @@
 			},
 			{
 				"inputs": [],
-				"name": "maxAmountToken1",
+				"name": "factoryOwner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "liquidity",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -104,51 +119,20 @@
 			},
 			{
 				"inputs": [],
+				"name": "protocolFee",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "renounceOwnership",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_exchangeRatio",
-						"type": "uint256"
-					}
-				],
-				"name": "setExchangeRatio",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_maxAmountToken1",
-						"type": "uint256"
-					}
-				],
-				"name": "setMaxAmountToken1",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "amountToken0In",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "minAmountToken1Out",
-						"type": "uint256"
-					}
-				],
-				"name": "swap",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -168,12 +152,64 @@
 			},
 			{
 				"inputs": [],
+				"name": "token0MaxAmount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "token1",
 				"outputs": [
 					{
 						"internalType": "address",
 						"name": "",
 						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token1MaxAmount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token1MaxPrice",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token1MinPrice",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -218,7 +254,7 @@
 		"compilationTarget": {
 			"SmartContracts/contracts/LiquidityPool.sol": "LiquidityPool"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "paris",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -278,20 +314,12 @@
 				"dweb:/ipfs/QmR8vsUB3Fyk3QisAhgYxwefsibbckeKNaBT1fzZsynmKQ"
 			]
 		},
-		"SmartContracts/contracts/ILiquidityPool.sol": {
-			"keccak256": "0xca40eb962425012c32629cbb83ec7039ce7177b48c56d82965c9e7bdd355babc",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://fd40298679dd653ee4368476b4882a63c7b2f620577ad3c53245f073ab5f9cef",
-				"dweb:/ipfs/QmUrQAbTYpMTPfhC5hg51NrVLS5v51LkugtNPhkKatqFKR"
-			]
-		},
 		"SmartContracts/contracts/LiquidityPool.sol": {
-			"keccak256": "0xf14875cdeca5af260159fa004a5ed6d59babafd0cc88ce68e0a8733bd308d653",
+			"keccak256": "0x7ccc20a54be93a25aea1795d7cd9f54bcf935e829f403a3b0a49803dc1f5c8ab",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a2150bf544910247e949f806b246636d701135854378605fa1cecc95b608771b",
-				"dweb:/ipfs/QmZArSSECQseyDmg4PTKEhrfRP1gEMQM48MBXwrCJtCEVV"
+				"bzz-raw://3d5e12dac2f237c3314e5293d8e9789921bbb8debd7a8b660f3c89ac4a3d8848",
+				"dweb:/ipfs/Qme6w4GiLVPodm5qT8cDhUbtsihG3f2zxSc7Ay7cdUK4S4"
 			]
 		}
 	},
