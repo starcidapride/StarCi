@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@redux/store'
 import { setAccount } from '@redux/slices/account.slice'
 import { ConnectedButton } from './Buttons'
-import { ChainInfo, ChainName } from './ChainInfo'
+import { ChainInfo } from './ChainInfo'
+import { ChainName } from '@utils/constant.utils'
 
 export const NavigationBar = () => {
     const web3Slice = useSelector((state: RootState) => state.web3)
@@ -79,7 +80,7 @@ export const NavigationBar = () => {
                         ? <ConnectWalletButton />
                         : 
                         <div className='flex items-center gap-5'>
-                            <ChainInfo chainName={ChainName.Klaytn}/> 
+                            <ChainInfo chainName={ChainName.KalytnTestnet}/> 
                             <ConnectedButton hex={accountSlice.account}/>
                         </div>
                 }
