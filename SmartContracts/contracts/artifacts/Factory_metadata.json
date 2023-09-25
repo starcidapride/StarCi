@@ -1,10 +1,29 @@
 {
 	"compiler": {
-		"version": "0.8.21+commit.d9974bed"
+		"version": "0.8.18+commit.87f61d96"
 	},
 	"language": "Solidity",
 	"output": {
 		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "liquidityPool",
+						"type": "address"
+					}
+				],
+				"name": "LiquidityPoolCreated",
+				"type": "event"
+			},
 			{
 				"anonymous": false,
 				"inputs": [
@@ -23,6 +42,68 @@
 				],
 				"name": "OwnershipTransferred",
 				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_token0",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_token1",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_token0MaxAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_token1MaxAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_token1MinPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_token1MaxPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_protocolFee",
+						"type": "uint256"
+					}
+				],
+				"name": "createLiquidityPool",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "liquidityPools",
+				"outputs": [
+					{
+						"internalType": "contract LiquidityPool",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			},
 			{
 				"inputs": [],
@@ -83,7 +164,7 @@
 		"compilationTarget": {
 			"SmartContracts/contracts/Factory.sol": "Factory"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "paris",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -136,11 +217,19 @@
 			]
 		},
 		"SmartContracts/contracts/Factory.sol": {
-			"keccak256": "0x203187e5e84f349d726cc381b8167f0a3016870e0130b467ecf10af8a257487a",
+			"keccak256": "0xd4a0010ee7986d940a29f3731d46d67520aed835238dd7886b4d52d38244f86e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0c128c242fb7c2388fc151210633810740ea466748867e01474f37fe2ca92881",
-				"dweb:/ipfs/QmR8vsUB3Fyk3QisAhgYxwefsibbckeKNaBT1fzZsynmKQ"
+				"bzz-raw://70872705eb4c9db9927d4d94edd0de1314e5a4c08da66ea2d23cd54294bb3296",
+				"dweb:/ipfs/QmSFFhMBFNF1KTG6LbM4GzTccpFXriahhp4sWEyqNkJmCT"
+			]
+		},
+		"SmartContracts/contracts/LiquidityPool.sol": {
+			"keccak256": "0x7ccc20a54be93a25aea1795d7cd9f54bcf935e829f403a3b0a49803dc1f5c8ab",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://3d5e12dac2f237c3314e5293d8e9789921bbb8debd7a8b660f3c89ac4a3d8848",
+				"dweb:/ipfs/Qme6w4GiLVPodm5qT8cDhUbtsihG3f2zxSc7Ay7cdUK4S4"
 			]
 		}
 	},
