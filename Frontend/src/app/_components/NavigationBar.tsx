@@ -11,12 +11,11 @@ import { ChainInfo } from './ChainInfo'
 import { ChainName } from '@utils/constant.utils'
 
 export const NavigationBar = () => {
-    const web3Slice = useSelector((state: RootState) => state.web3)
-    const accountSlice = useSelector((state: RootState) => state.account)
+    const web3 = useSelector((state: RootState) => state.web3.web3)
+    const account = useSelector((state: RootState) => state.account.account)
     const dispatch : AppDispatch = useDispatch()
 
     useEffect(() => {
-        const web3 = web3Slice.web3
         if (web3 != null){
             const handleEffect = async () => {
                 const account = (await web3.eth.getAccounts())[0]
@@ -24,7 +23,7 @@ export const NavigationBar = () => {
             }
             handleEffect()
         }
-    }, [dispatch, web3Slice])
+    }, [dispatch, web3])
 
     const menuItems = [ 
         'Profile',
@@ -76,12 +75,12 @@ export const NavigationBar = () => {
                 
             <NavbarContent justify="end">
                 {
-                    accountSlice.account == null 
+                    account == null 
                         ? <ConnectWalletButton />
                         : 
                         <div className='flex items-center gap-5'>
                             <ChainInfo chainName={ChainName.KalytnTestnet}/> 
-                            <ConnectedButton hex={accountSlice.account}/>
+                            <ConnectedButton hex={account}/>
                         </div>
                 }
                 

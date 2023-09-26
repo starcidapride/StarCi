@@ -34,3 +34,13 @@ export const getTotalSupply = async (chainName: ChainName, erc20Contract: Addres
     const _erc20Contract = getErc20Contract(web3, erc20Contract)
     return await _erc20Contract.methods.totalSupply().call()
 } 
+
+export const isErc20 = async (chainName: ChainName, erc20Contract: Address | undefined) => {
+    try {
+        await getName(chainName, erc20Contract!)
+        await getSymbol(chainName, erc20Contract!)
+        return true
+    } catch(ex){
+        return false
+    }
+}

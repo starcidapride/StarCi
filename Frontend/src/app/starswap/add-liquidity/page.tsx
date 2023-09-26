@@ -1,9 +1,9 @@
 'use client'
-import { AddLiquidity } from '../_components/sections/add-liquidity/AddLiquidity'
+import { MainForm } from './_components/MainForm'
 
 const Page = () => {
     return (
-        <AddLiquidity />
+        <MainForm />
     )
 }
 export default Page

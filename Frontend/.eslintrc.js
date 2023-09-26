@@ -22,7 +22,7 @@ module.exports = {
         '@typescript-eslint'
     ],
     'rules': {
-        
+        'react-hooks/exhaustive-deps': 0,
         'indent': [
             'error',
             4
