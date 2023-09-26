@@ -29,7 +29,8 @@ contract Factory is Ownable {
             _token1MaxAmount,
             _token1MinPrice,
             _token1MaxPrice,
-            _protocolFee
+            _protocolFee,
+            address(this)
         );
 
         liquidityPool.transferOwnership(msg.sender);

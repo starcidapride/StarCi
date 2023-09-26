@@ -307,11 +307,11 @@
 			]
 		},
 		"SmartContracts/contracts/Factory.sol": {
-			"keccak256": "0x203187e5e84f349d726cc381b8167f0a3016870e0130b467ecf10af8a257487a",
+			"keccak256": "0xd6f7cb231e1616db32a302c9005f4e60f9b59e63f4ee92d1c99f0c7c95b4a030",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0c128c242fb7c2388fc151210633810740ea466748867e01474f37fe2ca92881",
-				"dweb:/ipfs/QmR8vsUB3Fyk3QisAhgYxwefsibbckeKNaBT1fzZsynmKQ"
+				"bzz-raw://883ef98db2e906011f5f15b659b660780d0760e86010a4c44c9aee56266c0894",
+				"dweb:/ipfs/QmaKjruJHEbupj7c4cucFPkxauNsQ9aD5bPGyXNLXH9KTL"
 			]
 		},
 		"SmartContracts/contracts/LiquidityPool.sol": {

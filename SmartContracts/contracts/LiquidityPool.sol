@@ -29,7 +29,8 @@ contract LiquidityPool is Ownable {
         uint _token1MaxAmount,
         uint _token1MinPrice,
         uint _token1MaxPrice,
-        uint _protocolFee
+        uint _protocolFee,
+        address _factory
     ) {
         token0 = _token0;
         token1 = _token1;
@@ -42,7 +43,7 @@ contract LiquidityPool is Ownable {
 
         protocolFee = _protocolFee;
 
-        Factory factoryContract = Factory(factory);
+        Factory factoryContract = Factory(_factory);
         factoryOwner = factoryContract.owner();
 
        // setLiquidityConstant();
