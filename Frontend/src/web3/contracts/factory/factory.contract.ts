@@ -4,6 +4,7 @@ import { ChainName, chainInfos, gasLimit, gasPrice } from '@utils/constant.utils
 
 export const getFactoryContract = (web3: Web3, chainName: ChainName) => {
     const factoryContract = chainInfos[chainName].factoryContract
+    console.log(factoryContract)
     return new web3.eth.Contract(abi, factoryContract, web3)
 }
 
@@ -13,26 +14,29 @@ export const createLiquidityPool = async (
     fromAddress: Address,
     _token0: Address,
     _token1: Address,
-    _token0MaxAmount: bigint,
-    _token1MaxAmount: bigint,
-    _token1MinPrice: bigint,
-    _token1MaxPrice: bigint,
-    _protocolFee: bigint) => {
+    _token0MaxAmount: string,
+    _token1MaxAmount: string,
+    _token1MinPrice: string,
+    _token1MaxPrice: string,
+    _protocolFee: string) => {
     const contract = getFactoryContract(web3, chainName)
     const data = contract.methods.createLiquidityPool(
         _token0,
         _token1,
-        _token0MaxAmount.toString(),
-        _token1MaxAmount.toString(),
-        _token1MinPrice.toString(),
-        _token1MaxPrice.toString(),
-        _protocolFee.toString()   
+        _token0MaxAmount,
+        _token1MaxAmount,
+        _token1MinPrice,
+        _token1MaxPrice,
+        _protocolFee   
     ).encodeABI()
+
+    const to = chainInfos[chainName].factoryContract
 
     //const toAddress = chainInfos[chainName].factoryContract
 
-    web3.eth.sendTransaction({
+    return await web3.eth.sendTransaction({
         from: fromAddress,
+        to,
         data,
         gasLimit,
         gasPrice

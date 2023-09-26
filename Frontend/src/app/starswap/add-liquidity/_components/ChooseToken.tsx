@@ -1,13 +1,13 @@
 'use client'
 import React, { Fragment, useEffect, useState } from 'react'
 
-import {Modal, ModalContent, ModalHeader, ModalBody, Image, Button, useDisclosure, Divider, Input, Spinner, Card, CardBody, CardFooter, ModalFooter, Link} from '@nextui-org/react'
+import {Modal, ModalContent, ModalHeader, ModalBody, Image, Button, useDisclosure, Divider, Input, Card, CardBody, CardFooter, ModalFooter, Link } from '@nextui-org/react'
 import { ChainName, chainInfos } from '@utils/constant.utils'
 import { getName, getSymbol, isErc20 } from '@web3/contracts/erc20'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Address } from 'web3'
-import { throws } from 'assert'
+import { StableCoinSkeleton } from './StableCoinSkeleton'
 
 interface ChooseTokenProps{
     chainName: ChainName
@@ -110,73 +110,75 @@ export const ChooseToken = (props: ChooseTokenProps) => {
             }}> { tokenSymbol ?? 'Select'} </Button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false}>     
                 <ModalContent>
-                    
-                    {finishLoad ? 
-                        <form onSubmit={formik.handleSubmit}>
-                            <ModalHeader className="p-5 font-bold text-base">Select A Token</ModalHeader>
-                            <Divider />
-                            <ModalBody className="p-5">
-                                <div>
-                                    <Input label="Token Address" 
-                                        id="tokenAddress"
-                                        value={formik.values.tokenAddress} 
-                                        onChange={
-                                            async (event) => {
-                                                formik.handleChange(event)
+                    <form onSubmit={formik.handleSubmit}>
+                        <ModalHeader className="p-5 font-bold text-base">Select A Token</ModalHeader>
+                        <Divider />
+                        <ModalBody className="p-5">
+                            <div>
+                                <Input label="Token Address" 
+                                    id="tokenAddress"
+                                    value={formik.values.tokenAddress} 
+                                    onChange={
+                                        async (event) => {
+                                            formik.handleChange(event)
 
-                                                trySetTokenSymbol(event.target.value)
-                                            }}
-                                        onBlur={formik.handleBlur}
-                                        isInvalid={formik.touched.tokenAddress && formik.errors.tokenAddress ? true : false}
-                                        errorMessage={formik.errors.tokenAddress}
-                                    />
-                                </div>  
+                                            trySetTokenSymbol(event.target.value)
+                                        }}
+                                    onBlur={formik.handleBlur}
+                                    isInvalid={formik.errors.tokenAddress ? true : false}
+                                    errorMessage={formik.errors.tokenAddress}
+                                />
+                            </div>  
                                     
-                                <div className="mt-3">
-                                    <div className="text-sm font-bold text-teal-500">
+                            <div className="mt-3">
+                                <div className="text-sm font-bold text-teal-500">
                                         Stable Coins
-                                    </div>
-                                    <div className="grid grid-cols-4 gap-4 mt-3">
-                                        {stableCoinProps?.map((coinProps, index) => 
-                                            <Card isPressable key={index} className="col-span-1"
-                                                onClick={
-                                                    () => {
-                                                        formik.setFieldValue('tokenAddress', coinProps.address)
-                                                        trySetTokenSymbol(coinProps.address)
+                                </div>
+                                <div className="grid grid-cols-4 gap-4 mt-3">
+                                    {
+                                        finishLoad ? 
+                                    
+                                            stableCoinProps?.map((coinProps, index) => 
+                                                <Card isPressable key={index} className="col-span-1"
+                                                    onClick= {
+                                                        () => {
+                                                            formik.setFieldValue('tokenAddress', coinProps.address)
+                                                            trySetTokenSymbol(coinProps.address)
+                                                        }
                                                     }
-                                                }
-                                            > 
-                                                <CardBody>
-                                                    <Image src="/icons/stable-coins/USDT.svg" width={120} height={120} radius="full" alt="ss"/>
-                                                </CardBody>
-                                                <CardFooter>
-                                                    <div className="text-small w-full font-bold text-center"> {coinProps.symbol}</div>
-                                                </CardFooter>
-                                            </Card>
-                                        )}
-                                    </div>
-                                </div> 
-                            </ModalBody>
+                                                > 
+                                                    <CardBody>
+                                                        <Image src="/icons/stable-coins/USDT.svg" className="w-12 h-12" radius="full" alt="ss"/>
+                                                    </CardBody>
+                                                    <CardFooter>
+                                                        <div className="text-small w-full font-bold text-center"> {coinProps.symbol}</div>
+                                                    </CardFooter>
+                                                </Card>
+                                            ) : 
+                                            [1,2].map(key => <StableCoinSkeleton key={key}/> )
+                                            
+                                    }
+                                </div>
+                            </div> 
+                        </ModalBody>
                                 
-                            {(
-                                tempTokenSymbol != null
-                            ) ?
-                                <ModalFooter  className="p-5">
-                                    <div className="grid grid-cols-4 gap-10 items-center"> 
+                        {(
+                            tempTokenSymbol != null
+                        ) ?
+                            <ModalFooter  className="p-5">
+                                <div className="grid grid-cols-4 gap-10 items-center"> 
                                             
-                                        <div className="col-span-1 col-start-2">
-                                            <Link isBlock showAnchorIcon href="#" color="foreground" size="lg" className="text-center font-bold">
-                                                {tempTokenSymbol}
-                                            </Link>  
-                                        </div>
-                                            
-                                        <Button type="submit" size="lg" variant="flat" className="col-span-1 font-bold text-teal-500"> Import </Button>
+                                    <div className="col-span-1 col-start-2">
+                                        <Link isBlock showAnchorIcon href="#" color="foreground" size="lg" className="text-center font-bold">
+                                            {tempTokenSymbol}
+                                        </Link>  
                                     </div>
-                                </ModalFooter>
-                                : null }                      
-                        </form>
-                        : 
-                        <Spinner className="py-12" color="default" /> }
+                                            
+                                    <Button type="submit" size="lg" variant="flat" className="col-span-1 font-bold text-teal-500"> Import </Button>
+                                </div>
+                            </ModalFooter>
+                            : null }                      
+                    </form>
                 </ModalContent>
             </Modal>
         </Fragment>

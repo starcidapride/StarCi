@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import NextUIProviders from './nextui.provider'
 import { NavigationBar } from '@app/_components'
 import ReduxProviders from '@redux/redux.provider'
+import { ConfirmTransaction } from './_components/ConfirmTransaction'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,6 +23,7 @@ const RootLayout = ({
             <NextUIProviders>
                 <ReduxProviders>
                     <NavigationBar />
+                    <ConfirmTransaction />
                     {children}
                 </ReduxProviders>
             </NextUIProviders>

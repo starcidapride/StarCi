@@ -15,4 +15,4 @@ export const calcReverse = (y: number, round: number) =>
     return Number.parseFloat((1/y).toFixed(round))
 }
 
-export const calRound = (y: number, round: number) => Number.parseFloat(y.toFixed(round))
+export const calcRound = (y: number, round: number) => Number.parseFloat(y.toFixed(round))
