@@ -1,3 +1,4 @@
+'use client'
 import { Card, CardHeader, Image, CardBody, Divider, ButtonGroup, Button } from '@nextui-org/react'
 import { Address } from 'web3'
 import {
