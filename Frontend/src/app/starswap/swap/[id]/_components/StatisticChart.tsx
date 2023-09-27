@@ -1,11 +1,13 @@
 import { Card, CardHeader, Image, CardBody, Divider } from '@nextui-org/react'
+import { Address } from 'web3'
 
-interface TradeSectionProps {
-    className? : string
+interface StatisticChartProps {
+    liquidityPool: Address 
+    className? : string,
 }
 
-export const SwapSection = (props: TradeSectionProps) => {
-    return (  <Card className={` max-w-[400px] ${props.className}`}>
+export const StatisticChart = (props: StatisticChartProps) => {
+    return ( <Card className={`w-full ${props.className}`}>
         <CardHeader className="flex gap-3">
             <Image
                 alt="nextui logo"
