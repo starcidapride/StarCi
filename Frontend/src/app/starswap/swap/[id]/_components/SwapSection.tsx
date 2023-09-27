@@ -1,12 +1,12 @@
 import { ScopeReference } from '@app/_components/Commons'
 import { TokenShow } from '@app/_components/Commons/TokenShow'
-import { TokenShowSkeleton } from '@app/_components/Commons/TokenShowSkeleton'
 import { Card, CardHeader, CardBody, Divider, Textarea } from '@nextui-org/react'
 import { RootState } from '@redux/store'
-import { getSymbol } from '@web3/contracts/erc20'
+import { calcBalance } from '@utils/calc.utils'
+import { getBalance, getDecimals, getSymbol } from '@web3/contracts/erc20'
 import { getToken0, getToken1 } from '@web3/contracts/liquidity-pool/liquidity-pool.contract'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Address } from 'web3'
 
 interface TradeSectionProps {
@@ -15,13 +15,24 @@ interface TradeSectionProps {
 }
 
 export const SwapSection = (props: TradeSectionProps) => {
-    
     const chainName = useSelector((state: RootState) => state.chainName.chainName)
-
-    const [token0Symbol, setTokenSymbol0] = useState<string|null>(null)
-    const [token1Symbol, setTokenSymbol1] = useState<string|null>(null)
+    const web3 = useSelector((state: RootState) => state.web3.web3)
+    const account = useSelector((state: RootState) => state.account.account)
+    const dispatch : AppDispatch = useDispatch()
     
+
+
+    const [token0Symbol, setToken0Symbol] = useState<string|null>(null)
+    const [token1Symbol, setToken1Symbol] = useState<string|null>(null)
+
+    const [token0Balance, setToken0Balance] = useState<number>(0)
+    const [token1Balance, setToken1Balance] = useState<number>(0)
+
+    const [token0Decimals, setToken0Decimals] = useState<number|null>(null)
+    const [token1Decimals, setToken1Decimals] = useState<number|null>(null)
+
     const [finishLoad, setFinishLoad] = useState(false)
+
     useEffect(
         () => {
             const handleEffect = async () => {
@@ -31,8 +42,26 @@ export const SwapSection = (props: TradeSectionProps) => {
                 const _token0Symbol = await getSymbol(chainName, _token0!)
                 const _token1Symbol = await getSymbol(chainName, _token1!)
 
-                setTokenSymbol0(_token0Symbol)
-                setTokenSymbol1(_token1Symbol)
+                setToken0Symbol(_token0Symbol)
+                setToken1Symbol(_token1Symbol)
+                
+                const _token0Decimals = await getDecimals(chainName, _token0!)
+                const _token1Decimals = await getDecimals(chainName, _token1!)
+                
+                setToken0Decimals(Number.parseInt(_token0Decimals.toString()))
+                setToken1Decimals(Number.parseInt(_token1Decimals.toString()))
+                
+                if (web3 && account) {
+                    const _token0Balance = await getBalance(chainName, _token0!, account)
+                    const _token1Balance = await getBalance(chainName, _token1!, account)
+                    
+                    setToken0Balance(calcBalance(_token0Balance, _token0Decimals, 5))
+                    setToken1Balance(calcBalance(_token1Balance, _token1Decimals, 5))
+                }
+                
+                setToken0Symbol(_token0Symbol)
+                setToken1Symbol(_token1Symbol)
+
 
                 setFinishLoad(true)
             }
@@ -49,20 +78,18 @@ export const SwapSection = (props: TradeSectionProps) => {
 
             <div className="mt-12">
                 <div>
-                    { finishLoad ? 
-                        <TokenShow image="/icons/stable-coins/USDT.svg" symbol={token1Symbol!}/>
-                        : <TokenShowSkeleton />
-                    }
-                    <Textarea className="max-w-xs" /> 
+
+                    <TokenShow finishLoad={false} image="/icons/stable-coins/USDT.svg" symbol={token1Symbol!}/>
+                    <Textarea 
+                        className="max-w-xs" 
+                        maxRows={2}/> 
                 </div>
 
                 <div>
-                    { finishLoad ? 
-                        <TokenShow symbol={token0Symbol!}/>
-                        : <TokenShowSkeleton />
-                    }
+                    <TokenShow finishLoad={false} symbol={token0Symbol!}/>
                     <Textarea
                         className="max-w-xs"
+                        maxRows={2}
                     />
                 </div>
             </div>
