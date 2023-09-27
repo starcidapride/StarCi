@@ -39,8 +39,8 @@ export const SwapSection = (props: TradeSectionProps) => {
                 const _token0 = await getToken0(chainName, props.poolAddress)
                 const _token1 = await getToken1(chainName, props.poolAddress)
 
-                const _token0Symbol = await getSymbol(chainName, _token0 ?? '')
-                const _token1Symbol = await getSymbol(chainName, _token1 ?? '')
+                const _token0Symbol = await getSymbol(chainName, _token0!)
+                const _token1Symbol = await getSymbol(chainName, _token1!)
 
                 setToken0Symbol(_token0Symbol)
                 setToken1Symbol(_token1Symbol)
@@ -52,8 +52,8 @@ export const SwapSection = (props: TradeSectionProps) => {
                 setToken1Decimals(Number.parseInt(_token1Decimals.toString()))
                 
                 if (web3 && account) {
-                    const _token0Balance = await getBalance(chainName, _token0 ?? '', account)
-                    const _token1Balance = await getBalance(chainName, _token1 ?? '', account)
+                    const _token0Balance = await getBalance(chainName, _token0!, account)
+                    const _token1Balance = await getBalance(chainName, _token1!, account)
                     
                     setToken0Balance(calcBalance(_token0Balance, _token0Decimals, 5))
                     setToken1Balance(calcBalance(_token1Balance, _token1Decimals, 5))

@@ -69,18 +69,18 @@ export const MainForm = () => {
             const handleSubmit = async () => {
                 dispatch(setVisible(true))
                 dispatch(setTransactionType(TransactionType.Swap))
-                // const tx = await createLiquidityPool(
-                //     web3!,
-                //     ChainName.KalytnTestnet,
-                //     account!,
-                //     values.token0,
-                //     values.token1,
-                //     (values.token0MaxAmount * calcExponent(token0Decimals!)).toString(),
-                //     (values.token1MaxAmount * calcExponent(token1Decimals!)).toString(),
-                //     (values.token1MinPrice * calcExponent(token1Decimals!)).toString(),
-                //     (values.token1MaxPrice * calcExponent(token1Decimals!)).toString(),
-                //     (values.protocolFee * calcExponent(5)).toString() 
-                // )    
+                const tx = await createLiquidityPool(
+                    web3!,
+                    ChainName.KalytnTestnet,
+                    account as '',
+                    values.token0,
+                    values.token1,
+                    (values.token0MaxAmount * calcExponent(token0Decimals!)).toString(),
+                    (values.token1MaxAmount * calcExponent(token1Decimals!)).toString(),
+                    (values.token1MinPrice * calcExponent(token1Decimals!)).toString(),
+                    (values.token1MaxPrice * calcExponent(token1Decimals!)).toString(),
+                    (values.protocolFee * calcExponent(5)).toString() 
+                )    
             }
             handleSubmit()
         }
