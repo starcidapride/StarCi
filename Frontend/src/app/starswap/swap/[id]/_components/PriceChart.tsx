@@ -1,18 +1,10 @@
 'use client'
-import { Card, CardHeader, Image, CardBody, Divider, ButtonGroup, Button } from '@nextui-org/react'
+import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button } from '@nextui-org/react'
 import { Address } from 'web3'
 import {
     Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
     ChartOptions,
-    ChartData,
-    Filler
+    registerables 
 } from 'chart.js'
 
 import { Chart } from 'react-chartjs-2'
@@ -21,16 +13,8 @@ import { useEffect, useRef, useState } from 'react'
 import { createGradient, teal300, teal50, teal500 } from '@utils/color.utils'
 
 ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    Filler
+    ...registerables
 )
-
 
 export const options: ChartOptions = {
     responsive: true,
