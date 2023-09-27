@@ -2,6 +2,7 @@
 import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button } from '@nextui-org/react'
 import { Address } from 'web3'
 import {
+    ChartData,
     Chart as ChartJS,
     ChartOptions,
     registerables 
