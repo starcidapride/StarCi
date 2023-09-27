@@ -1,5 +1,5 @@
 'use client'
-import { StatisticChart, SwapSection } from './_components'
+import { PriceChart, SwapSection } from './_components'
 
 interface PagePrams {
     params: { id: string }
@@ -8,7 +8,7 @@ const Page = ({ params }: PagePrams) => {
     return (
         <div className="grid grid-cols-3 gap-6">
             <div className="col-span-2">
-                <StatisticChart 
+                <PriceChart 
                     poolAddress={params.id}
                     className="col-span-2"/>
             </div>

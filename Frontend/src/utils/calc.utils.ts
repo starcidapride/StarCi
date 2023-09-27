@@ -9,7 +9,7 @@ export const calcBalance = (balance: MatchPrimitiveType<'uint256', unknown>, dec
     return Number.parseFloat(roundedResult)
 }
 
-export const calcReverse = (y: number, round: number) => 
+export const calInverse = (y: number, round: number) => 
 {
     if (y == 0) return 0
     return Number.parseFloat((1/y).toFixed(round))

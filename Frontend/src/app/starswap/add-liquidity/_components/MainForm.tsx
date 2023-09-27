@@ -9,9 +9,11 @@ import { Fragment, useEffect, useState } from 'react'
 import { getBalance, getDecimals, getSymbol } from '@web3/contracts/erc20'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@redux/store'
-import { calcReverse, calcBalance, calcRound, calcExponent } from '@utils/calc.utils'
+import { calInverse, calcBalance, calcRound, calcExponent } from '@utils/calc.utils'
 import { createLiquidityPool } from '@web3/contracts/factory/factory.contract'
 import { TransactionType, setTransactionType, setVisible } from '@redux/slices/confirm-transaction.slice'
+import { BalanceShow } from '@app/_components/Commons/BalanceShow'
+import { TokenShow } from '@app/_components/Commons/TokenShow'
 
 export const MainForm = () => {
     
@@ -94,7 +96,7 @@ export const MainForm = () => {
     const [token0Decimals, setToken0Decimals] = useState<number|null>(null)
     const [token1Decimals, setToken1Decimals] = useState<number|null>(null)
 
-    const [reverse, setReverse] = useState(false)
+    const [inverse, setInverse] = useState(false)
 
     useEffect(() => {
         const token0 = formik.values.token0
@@ -217,15 +219,18 @@ export const MainForm = () => {
                                             key={token.address}>{token.symbol}</SelectItem>}
                                     </Select>
                                         
-                                    <div className="grid grid-cols-2 gap-4 mt-3">
+                                    <div className="grid grid-cols-2 gap-4 mt-5 ">
                                         <div>
-                                            <div className="text-xs text-end col-span-1"> Balance : {token0Balance}</div>
+                                            <div className="flex justify-between">
+                                                <TokenShow finishLoad={finishLoad} symbol={token0Symbol!}/>
+                                                <BalanceShow balance={token0Balance} finishLoad={finishLoad}/>
+                                            </div>
                                             <Input
                                                 id="token0MaxAmount"
                                                 isDisabled={!finishLoad}
                                                 type="number"
                                                 className="mt-1"
-                                                label={token0Symbol ?? 'Token'}
+                                                label='Amount'
                                                 variant="bordered"
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
@@ -234,13 +239,16 @@ export const MainForm = () => {
                                             />
                                         </div>
                                         <div>
-                                            <div className="text-xs text-end col-span-1"> Balance : {token1Balance}</div>
+                                            <div className="flex justify-between">
+                                                <TokenShow finishLoad={finishLoad} symbol={token1Symbol!}/>
+                                                <BalanceShow balance={token1Balance} finishLoad={finishLoad}/>
+                                            </div>
                                             <Input
                                                 id="token1MaxAmount"
                                                 isDisabled={!finishLoad}
                                                 type="number"
                                                 className="mt-1"
-                                                label={token1Symbol ?? 'Token'}
+                                                label='Amount'
                                                 variant="bordered"
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
@@ -289,9 +297,9 @@ export const MainForm = () => {
                                                     </CardBody>
                                                     <CardFooter className="p-4">
                                                         <div className="text-center w-full text-sm">
-                                                            {!finishLoad ? '' : (!reverse
+                                                            {!finishLoad ? '' : (!inverse
                                                                 ? <Fragment> {calcRound(formik.values.token1MinPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> </Fragment> 
-                                                                : <Fragment> {calcReverse(formik.values.token1MinPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>) } 
+                                                                : <Fragment> {calInverse(formik.values.token1MinPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>) } 
                                                         </div>
                                                     </CardFooter>
                                                 </Card>  
@@ -334,9 +342,9 @@ export const MainForm = () => {
                                                     </CardBody>
                                                     <CardFooter className="p-4">
                                                         <div className="text-center w-full text-sm">
-                                                            {!finishLoad ? '' : (!reverse
+                                                            {!finishLoad ? '' : (!inverse
                                                                 ? <Fragment> {calcRound(formik.values.token1MaxPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> </Fragment> 
-                                                                : <Fragment> {calcReverse(formik.values.token1MaxPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>) } 
+                                                                : <Fragment> {calInverse(formik.values.token1MaxPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>) } 
                                                         </div>
                                                     </CardFooter>
                                                 </Card>
@@ -348,8 +356,11 @@ export const MainForm = () => {
                                             </div>  
                                         </div>
                                     </div>
-                                    <div className="flex justify-center mt-3">
-                                        <Button  onClick={() => setReverse(!reverse)} isIconOnly radius="full" startContent={<ArrowsRightLeftIcon height={24} width={24} />} />    
+                                    <div className="flex justify-end gap-3 items-center mt-4">
+                                        <div className="text-sm font-bold">
+                                        Inverse 
+                                        </div>
+                                        <Button variant="light" onClick={() => setInverse(!inverse)} isIconOnly radius="full" startContent={<ArrowsRightLeftIcon height={24} width={24} />} />    
                                     </div>
                                 </div>
                                 <Button 

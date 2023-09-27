@@ -25,5 +25,5 @@ export const getToken1 = async (chainName: ChainName, liquidityPool: Address) =>
         return await liquidityPoolContract.methods.token1().call()
     } catch(ex){
         return null
-    }
+    }   
 }
