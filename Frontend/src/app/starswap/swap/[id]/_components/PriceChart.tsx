@@ -1,17 +1,19 @@
 'use client'
-import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button } from '@nextui-org/react'
-import { Address } from 'web3'
+import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button, Spinner } from '@nextui-org/react'
+import Web3, { Address } from 'web3'
 import {
     ChartData,
     Chart as ChartJS,
     ChartOptions,
-    registerables 
+    registerables
 } from 'chart.js'
 
 import { Chart } from 'react-chartjs-2'
 import { faker } from '@faker-js/faker'
 import { useEffect, useRef, useState } from 'react'
 import { createGradient, teal300, teal50, teal500 } from '@utils/color.utils'
+import { ChainName } from '@utils/constant.utils'
+import { getBalance } from '@web3/contracts/erc20'
 
 ChartJS.register(
     ...registerables
@@ -45,42 +47,51 @@ export const PriceChart = (props: PriceChartProps) => {
     const chartRef = useRef<ChartJS>(null)
 
     const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
+
     const [chartData, setChartData] = useState<ChartData<'bar'>>({
         datasets: [],
     })
+    const [finishLoad, setFinishLoad] = useState(false)
 
     useEffect(() => {
         const chart = chartRef.current
 
         if (!chart) return
 
-        const chartData = {
-            labels,
-            datasets: [
-                {
-                    label: '',
-                    data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
-                    fill: true,
-                    pointBorderColor: teal500,
-                    pointBackgroundColor: teal500,
-                    borderColor: teal500,
-                    backgroundColor: createGradient(chart.ctx, 
-                        chart.chartArea, 
-                        teal50, 
-                        teal300,
-                        true,
-                    ),
-                    pointStyle: 'circle',
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }
-            ],
+        const handleEffect = async () => {
+            const chartData = {
+                labels,
+                datasets: [
+                    {
+                        label: '',
+                        data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
+                        fill: true,
+                        pointBorderColor: teal500,
+                        pointBackgroundColor: teal500,
+                        borderColor: teal500,
+                        backgroundColor: createGradient(chart.ctx,
+                            chart.chartArea,
+                            teal50,
+                            teal300,
+                            true,
+                        ),
+                        pointStyle: 'circle',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }
+                ],
+            }
+             
+            setChartData(chartData)
+            setFinishLoad(true)
+
+            console.log('proccessed')
+        
         }
+        handleEffect()
+    }, [])
 
-        setChartData(chartData)
-    }
-    , [])
-
+    console.log(finishLoad)
 
     return (<Card className={`w-full ${props.className}`}>
         <CardHeader className='font-bold p-5'> Price Chart </CardHeader>
@@ -95,7 +106,15 @@ export const PriceChart = (props: PriceChartProps) => {
                     <Button className="font-bold">1Y</Button>
                 </ButtonGroup>
             </div>
-            <Chart className="mt-6" type='line' ref={chartRef} options={options} data={chartData} />
+            <Chart className={`mt-6 ${!finishLoad ? '!hidden' : ''}`} type='line' ref={chartRef} options={options} data={chartData} />
+            {   
+                !finishLoad
+                    ? <div className="h-80 place-content-center flex">
+                        <Spinner color="default"/>
+                    </div>
+                    : <div></div>
+            }
+
         </CardBody>
     </Card>)
 }
