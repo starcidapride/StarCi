@@ -12,8 +12,6 @@ import { AppDispatch, RootState } from '@redux/store'
 import { calcReverse, calcBalance, calcRound, calcExponent } from '@utils/calc.utils'
 import { createLiquidityPool } from '@web3/contracts/factory/factory.contract'
 import { TransactionType, setTransactionType, setVisible } from '@redux/slices/confirm-transaction.slice'
-import { ConfirmTransaction } from '@app/_components/ConfirmTransaction'
-import { SwapTransactionToast } from '.'
 
 export const MainForm = () => {
     
