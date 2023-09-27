@@ -9,8 +9,8 @@ export const MetamaskIcon = (props: MetamaskIconProps) => (
         id="Layer_1"
         x={0}
         y={0}
-        width={props.size  || 24}
-        height={props.size || 24}
+        width={props.size ?? 24}
+        height={props.size ?? 24}
         viewBox="0 0 318.6 318.6"
         {...props}
     >

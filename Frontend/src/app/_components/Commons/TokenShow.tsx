@@ -1,5 +1,4 @@
-import {Image} from '@nextui-org/react'
-import { Skeleton } from '@nextui-org/react'
+import { Image, Skeleton } from '@nextui-org/react'
 
 interface TokenShowProps {
     symbol: string,

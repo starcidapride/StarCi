@@ -25,17 +25,23 @@ export const NavigationBar = () => {
         }
     }, [dispatch, web3])
 
-    const menuItems = [ 
-        'Profile',
-        'Dashboard',
-        'Activity',
-        'Analytics',
-        'System',
-        'Deployments',
-        'My Settings',
-        'Team Settings',
-        'Help & Feedback',
-        'Log Out',
+    type MenuItem = {
+        id: number,
+        title: string
+    }
+    const menuItems : MenuItem[] = [ 
+        {
+            id: 0,
+            title: 'Team Settings',
+        },
+        {
+            id: 1,
+            title: 'Help & Feedback',
+        },
+        {
+            id: 2,
+            title: 'Log Out',
+        },
     ]
 
     return (
@@ -86,17 +92,17 @@ export const NavigationBar = () => {
                 
             </NavbarContent>
             <NavbarMenu>
-                {menuItems.map((item, index) => (
-                    <NavbarMenuItem key={`${item}-${index}`}>
+                {menuItems.map((item) => (
+                    <NavbarMenuItem key={item.id}>
                         <Link
                             className="w-full"
                             color={
-                                index === 2 ? 'warning' : index === menuItems.length - 1 ? 'danger' : 'foreground'
+                                item.id === 2 ? 'warning' : (item.id === menuItems.length - 1 ? 'danger' : 'foreground')
                             }
                             href="#"
                             size="lg"
                         >
-                            {item}
+                            {item.title}
                         </Link>
                     </NavbarMenuItem>
                 ))}

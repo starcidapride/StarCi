@@ -69,18 +69,18 @@ export const MainForm = () => {
             const handleSubmit = async () => {
                 dispatch(setVisible(true))
                 dispatch(setTransactionType(TransactionType.Swap))
-                const tx = await createLiquidityPool(
-                    web3!,
-                    ChainName.KalytnTestnet,
-                    account!,
-                    values.token0,
-                    values.token1,
-                    (values.token0MaxAmount * calcExponent(token0Decimals!)).toString(),
-                    (values.token1MaxAmount * calcExponent(token1Decimals!)).toString(),
-                    (values.token1MinPrice * calcExponent(token1Decimals!)).toString(),
-                    (values.token1MaxPrice * calcExponent(token1Decimals!)).toString(),
-                    (values.protocolFee * calcExponent(5)).toString() 
-                )    
+                // const tx = await createLiquidityPool(
+                //     web3!,
+                //     ChainName.KalytnTestnet,
+                //     account!,
+                //     values.token0,
+                //     values.token1,
+                //     (values.token0MaxAmount * calcExponent(token0Decimals!)).toString(),
+                //     (values.token1MaxAmount * calcExponent(token1Decimals!)).toString(),
+                //     (values.token1MinPrice * calcExponent(token1Decimals!)).toString(),
+                //     (values.token1MaxPrice * calcExponent(token1Decimals!)).toString(),
+                //     (values.protocolFee * calcExponent(5)).toString() 
+                // )    
             }
             handleSubmit()
         }
@@ -134,15 +134,19 @@ export const MainForm = () => {
 
     const protocolFees = [
         {   
+            id: 0,
             title: '0.25%'
         },
         {
+            id: 1,
             title: '0.5%',
         },
         {
+            id: 2,
             title: '1%',
         },
         {
+            id: 3,
             title: '2.5%',
         }
     ]
@@ -177,8 +181,8 @@ export const MainForm = () => {
                                 <div className="mt-12">
                                     <div className="text-sm font-bold text-teal-500"> Pick Protocol Fee Tier </div>
                                     <div className="flex items-center gap-4 mt-6">
-                                        {protocolFees.map((fee, index) =>
-                                            (<Card key={index} className={`flex-1 ${ formik.values.protocolFee === Number.parseFloat(fee.title) / 100 ? 'bg-teal-500' : ''}`} isPressable
+                                        {protocolFees.map((fee) =>
+                                            (<Card key={fee.id} className={`flex-1 ${ formik.values.protocolFee === Number.parseFloat(fee.title) / 100 ? 'bg-teal-500' : ''}`} isPressable
                                                 onPress={() => 
                                                     formik.setFieldValue('protocolFee', Number.parseFloat(fee.title) / 100)
                                                 }>
@@ -240,7 +244,7 @@ export const MainForm = () => {
                                                 variant="bordered"
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                isInvalid={formik.errors.token1MaxAmount ? true : false}
+                                                isInvalid={formik.errors.token1MaxAmount != undefined}
                                                 errorMessage={formik.errors.token1MaxAmount}
                                             />
                                         </div>
@@ -275,7 +279,7 @@ export const MainForm = () => {
                                                                 value={formik.values.token1MinPrice.toString()}
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}
-                                                                isInvalid={formik.errors.token1MinPrice ? true : false}
+                                                                isInvalid={formik.errors.token1MinPrice != undefined}
                                                             />
                                                             <Button onClick={() => formik.setFieldValue('token1MinPrice', formik.values.token1MinPrice + 1)} isIconOnly radius="full" className="flex-none" size="sm">
                                                                 <PlusIcon height={16} width={16} />
@@ -320,7 +324,7 @@ export const MainForm = () => {
                                                                 value={formik.values.token1MaxPrice.toString()}
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}
-                                                                isInvalid={formik.errors.token1MaxPrice ? true : false}
+                                                                isInvalid={formik.errors.token1MaxPrice != undefined}
                                                             />
                                                             <Button onClick={() => formik.setFieldValue('token1MaxPrice', formik.values.token1MaxPrice + 1)} isIconOnly radius="full" className="flex-none" size="sm">
                                                                 <PlusIcon height={16} width={16} />

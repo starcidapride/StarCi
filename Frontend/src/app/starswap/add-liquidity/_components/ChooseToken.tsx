@@ -27,6 +27,7 @@ export const ChooseToken = (props: ChooseTokenProps) => {
         
         const handleEffect = async () => {
             console.log(stableCoins)
+
             for (const coin of stableCoins){
                 const _name = await getName(props.chainName, coin)
                 const _symbol = await getSymbol(props.chainName, coin)
@@ -125,7 +126,7 @@ export const ChooseToken = (props: ChooseTokenProps) => {
                                             trySetTokenSymbol(event.target.value)
                                         }}
                                     onBlur={formik.handleBlur}
-                                    isInvalid={formik.errors.tokenAddress ? true : false}
+                                    isInvalid={formik.errors.tokenAddress != undefined}
                                     errorMessage={formik.errors.tokenAddress}
                                 />
                             </div>  
@@ -138,8 +139,8 @@ export const ChooseToken = (props: ChooseTokenProps) => {
                                     {
                                         finishLoad ? 
                                     
-                                            stableCoinProps?.map((coinProps, index) => 
-                                                <Card isPressable key={index} className="col-span-1"
+                                            stableCoinProps?.map((coinProps) => 
+                                                <Card isPressable key={coinProps.address} className="col-span-1"
                                                     onClick= {
                                                         () => {
                                                             formik.setFieldValue('tokenAddress', coinProps.address)
@@ -155,7 +156,7 @@ export const ChooseToken = (props: ChooseTokenProps) => {
                                                     </CardFooter>
                                                 </Card>
                                             ) : 
-                                            [1,2].map(key => <StableCoinSkeleton key={key}/> )
+                                            [0,1].map(key => <StableCoinSkeleton key={key}/> )
                                             
                                     }
                                 </div>
