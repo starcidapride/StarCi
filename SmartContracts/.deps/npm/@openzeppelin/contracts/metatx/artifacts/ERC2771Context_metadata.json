@@ -1,0 +1,102 @@
+{
+	"compiler": {
+		"version": "0.8.21+commit.d9974bed"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "forwarder",
+						"type": "address"
+					}
+				],
+				"name": "isTrustedForwarder",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "trustedForwarder",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"details": "Context variant with ERC2771 support. WARNING: Avoid using this pattern in contracts that rely in a specific calldata length as they'll be affected by any forwarder whose `msg.data` is suffixed with the `from` address according to the ERC2771 specification adding the address size in bytes (20) to the calldata size. An example of an unexpected behavior could be an unintended fallback (or another function) invocation while trying to invoke the `receive` function only accessible if `msg.data.length == 0`.",
+			"kind": "dev",
+			"methods": {
+				"constructor": {
+					"custom:oz-upgrades-unsafe-allow": "constructor"
+				},
+				"isTrustedForwarder(address)": {
+					"details": "Indicates whether any particular address is the trusted forwarder."
+				},
+				"trustedForwarder()": {
+					"details": "Returns the address of the trusted forwarder."
+				}
+			},
+			"stateVariables": {
+				"_trustedForwarder": {
+					"custom:oz-upgrades-unsafe-allow": "state-variable-immutable"
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"SmartContracts/.deps/npm/@openzeppelin/contracts/metatx/ERC2771Context.sol": "ERC2771Context"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"SmartContracts/.deps/npm/@openzeppelin/contracts/metatx/ERC2771Context.sol": {
+			"keccak256": "0x4688f9d0aa6d9ce7e416a42e84a8283deb4001fad5772fe4d1da369160e07444",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://bcc8608681e9156d7e5d53dd2973fde430b52f4b81de47919839a77340dd69ba",
+				"dweb:/ipfs/QmPAiDqEEcuA3B2k6X2YsWJcZ9NWre3vC8UoMXwXZsThJ7"
+			]
+		},
+		"SmartContracts/.deps/npm/@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0xdbc33ea310e83250cca8ad26e935a8d50ea10e781ba64a31beb0ea2ec912c605",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://54cc15b73a5e92fd1ed78cb67504a534ab5879e11c0688ec10809128e1e00ac8",
+				"dweb:/ipfs/QmPRtXeXmMyYt8J8u57HV6GQjuSevjE8gk5tMeyqXdkAzu"
+			]
+		}
+	},
+	"version": 1
+}

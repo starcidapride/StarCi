@@ -9,6 +9,16 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "_factory",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_factoryOwner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
 						"name": "_token0",
 						"type": "address"
 					},
@@ -19,22 +29,22 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "_token0MaxAmount",
+						"name": "_token0DepositAmount",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_token1MaxAmount",
+						"name": "_token1DepositAmount",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_token1MinPrice",
+						"name": "_token0BasePrice",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_token1MaxPrice",
+						"name": "_token0MaxPrice",
 						"type": "uint256"
 					},
 					{
@@ -66,6 +76,68 @@
 				"type": "event"
 			},
 			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount0In",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount1In",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount0Out",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount1Out",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "Swap",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "reserve0",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "reserve1",
+						"type": "uint256"
+					}
+				],
+				"name": "Sync",
+				"type": "event"
+			},
+			{
 				"inputs": [],
 				"name": "factory",
 				"outputs": [
@@ -93,7 +165,42 @@
 			},
 			{
 				"inputs": [],
-				"name": "liquidity",
+				"name": "getProps",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "token0",
+								"type": "address"
+							},
+							{
+								"internalType": "address",
+								"name": "token1",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "token0Locked",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "token1Locked",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct LiquidityPool.Props",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "kConstant",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -138,6 +245,42 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_amountTokenIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_minAmountTokenOut",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "_isBuy",
+						"type": "bool"
+					}
+				],
+				"name": "swap",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "testKConstant",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "token0",
 				"outputs": [
@@ -152,7 +295,65 @@
 			},
 			{
 				"inputs": [],
-				"name": "token0MaxAmount",
+				"name": "token0BasePrice",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token0Constant",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token0DepositAmount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "token0MaxPrice",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_token1Input",
+						"type": "uint256"
+					}
+				],
+				"name": "token0Output",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -178,7 +379,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "token1MaxAmount",
+				"name": "token1Constant",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -191,7 +392,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "token1MaxPrice",
+				"name": "token1DepositAmount",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -203,8 +404,14 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "token1MinPrice",
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_token0Input",
+						"type": "uint256"
+					}
+				],
+				"name": "token1Output",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -306,20 +513,36 @@
 				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
 			]
 		},
-		"SmartContracts/contracts/Factory.sol": {
-			"keccak256": "0xd6f7cb231e1616db32a302c9005f4e60f9b59e63f4ee92d1c99f0c7c95b4a030",
+		"@openzeppelin/contracts/utils/math/Math.sol": {
+			"keccak256": "0xe4455ac1eb7fc497bb7402579e7b4d64d928b846fce7d2b6fde06d366f21c2b3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://883ef98db2e906011f5f15b659b660780d0760e86010a4c44c9aee56266c0894",
-				"dweb:/ipfs/QmaKjruJHEbupj7c4cucFPkxauNsQ9aD5bPGyXNLXH9KTL"
+				"bzz-raw://cc8841b3cd48ad125e2f46323c8bad3aa0e88e399ec62acb9e57efa7e7c8058c",
+				"dweb:/ipfs/QmSqE4mXHA2BXW58deDbXE8MTcsL5JSKNDbm23sVQxRLPS"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x58b21219689909c4f8339af00813760337f7e2e7f169a97fe49e2896dcfb3b9a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ef8e012e946dec20e59f2d4446f4b44bb098f3fa8bac103b1b5112fff777447b",
+				"dweb:/ipfs/QmVTooKWcLkJ9W68yNX4MgdrbAKiAXwuRN9A7f4NkdcdtQ"
+			]
+		},
+		"SmartContracts/contracts/Factory.sol": {
+			"keccak256": "0xe3141222817bc3cdcf6b6280d9a74085ba82bcd0b78e012b7c571709574a59e7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b21ff68bb445019244accde812131f98f10ed7d3ba44863ffec0ac91de17255f",
+				"dweb:/ipfs/QmQPHBBcvMd9Ch7hebiUzbxKAXTg2GB9jkY6zzEQu7S14X"
 			]
 		},
 		"SmartContracts/contracts/LiquidityPool.sol": {
-			"keccak256": "0x7ccc20a54be93a25aea1795d7cd9f54bcf935e829f403a3b0a49803dc1f5c8ab",
+			"keccak256": "0x84b8c7d44d309e15cd263c84693ec471509eec87a983d033af9db2e0cfe82a7c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://3d5e12dac2f237c3314e5293d8e9789921bbb8debd7a8b660f3c89ac4a3d8848",
-				"dweb:/ipfs/Qme6w4GiLVPodm5qT8cDhUbtsihG3f2zxSc7Ay7cdUK4S4"
+				"bzz-raw://cd800a6491bf05713ea5225771524f81dbc4f2e3f831dbdb9458e6083e2ab801",
+				"dweb:/ipfs/QmdhNwBfrBPu14C67h8srRKZEnnTKAurcvdS8R7bJxBRnH"
 			]
 		}
 	},
