@@ -44,6 +44,19 @@
 				"type": "event"
 			},
 			{
+				"inputs": [],
+				"name": "allLiquidityPools",
+				"outputs": [
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -57,22 +70,22 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "_token0MaxAmount",
+						"name": "_token0DepositAmount",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_token1MaxAmount",
+						"name": "_token1DepositAmount",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_token1MinPrice",
+						"name": "_token0BasePrice",
 						"type": "uint256"
 					},
 					{
 						"internalType": "uint256",
-						"name": "_token1MaxPrice",
+						"name": "_token0MaxPrice",
 						"type": "uint256"
 					},
 					{
@@ -216,20 +229,36 @@
 				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
 			]
 		},
-		"SmartContracts/contracts/Factory.sol": {
-			"keccak256": "0xdeab1e0131a16695b82cb7b237990588b0d93382dcb69ac24b773494f5bc2b49",
+		"@openzeppelin/contracts/utils/math/Math.sol": {
+			"keccak256": "0xe4455ac1eb7fc497bb7402579e7b4d64d928b846fce7d2b6fde06d366f21c2b3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://84b37dd1a2f5ec86274728ecb97a826801978bc937805b167df46bc5ee9faff4",
-				"dweb:/ipfs/QmaqWdqNjm98eGB3c2s2CQJS56SNMGWUVBYwib4bWv5QcH"
+				"bzz-raw://cc8841b3cd48ad125e2f46323c8bad3aa0e88e399ec62acb9e57efa7e7c8058c",
+				"dweb:/ipfs/QmSqE4mXHA2BXW58deDbXE8MTcsL5JSKNDbm23sVQxRLPS"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x58b21219689909c4f8339af00813760337f7e2e7f169a97fe49e2896dcfb3b9a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ef8e012e946dec20e59f2d4446f4b44bb098f3fa8bac103b1b5112fff777447b",
+				"dweb:/ipfs/QmVTooKWcLkJ9W68yNX4MgdrbAKiAXwuRN9A7f4NkdcdtQ"
+			]
+		},
+		"SmartContracts/contracts/Factory.sol": {
+			"keccak256": "0xe3141222817bc3cdcf6b6280d9a74085ba82bcd0b78e012b7c571709574a59e7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b21ff68bb445019244accde812131f98f10ed7d3ba44863ffec0ac91de17255f",
+				"dweb:/ipfs/QmQPHBBcvMd9Ch7hebiUzbxKAXTg2GB9jkY6zzEQu7S14X"
 			]
 		},
 		"SmartContracts/contracts/LiquidityPool.sol": {
-			"keccak256": "0x37154d24c657287291686b369878af98597ffd6d0a852f6ed797eacc43bd6a1e",
+			"keccak256": "0xe5689d1d32c5ac02e27698772a5a25cd05decfc34ee1f69ef69eddc2bf4e13fe",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2862c73ca50e4959b2e391374ab6e65ec834f232afa5d2a4f13105b98dc6d195",
-				"dweb:/ipfs/QmXnaD7ivaNFo8WA2mYNRBGLWqKTUaXvFU6jALMSobQjZS"
+				"bzz-raw://57cf837172c4db50ec42ca0d8f0a8ca15982783fb55702276b2b88c8dc875059",
+				"dweb:/ipfs/QmaQdLJfEgMXB6TgoDKXhJLkjQ72Zf4NXv1GyTVVpkmWVV"
 			]
 		}
 	},

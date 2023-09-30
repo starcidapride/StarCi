@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./Factory.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract LiquidityPool is Ownable {
     address public factory;
@@ -12,108 +14,242 @@ contract LiquidityPool is Ownable {
 
     address public token0;
     address public token1;
-    
-    uint public token0MaxAmount;
-    uint public token1MaxAmount;
 
-    uint public token1MinPrice;
-    uint public token1MaxPrice;
+    uint256 public token0DepositAmount;
+    uint256 public token1DepositAmount;
 
-    uint public protocolFee;
-    uint public liquidity;
+    // balance price constants
+    uint256 public token0Constant;
+    uint256 public token1Constant;
+
+    uint256 public kConstant;
+
+    // 1 token 0 (decimals) = how many token 1
+    uint256 public token0BasePrice;
+    uint256 public token0MaxPrice;
+
+    uint256 public protocolFee;
 
     constructor(
+        address _factory,
+        address _factoryOwner,
         address _token0,
         address _token1,
-        uint _token0MaxAmount,
-        uint _token1MaxAmount,
-        uint _token1MinPrice,
-        uint _token1MaxPrice,
-        uint _protocolFee,
-        address _factory
+        uint256 _token0DepositAmount,
+        uint256 _token1DepositAmount,
+        uint256 _token0BasePrice,
+        uint256 _token0MaxPrice,
+        uint256 _protocolFee
     ) {
+        factory = _factory;
+        factoryOwner = _factoryOwner;
+
+        require(_token0 != _token1, "Both tokens cannot be the same");
         token0 = _token0;
         token1 = _token1;
 
-        token0MaxAmount = _token0MaxAmount;
-        token1MaxPrice = _token1MaxAmount;
+        token0DepositAmount = _token0DepositAmount;
+        token1DepositAmount = _token1DepositAmount;
 
-        token1MinPrice = _token1MinPrice;
-        token1MaxPrice = _token1MaxPrice;
+        require(
+            _token0MaxPrice >= _token0BasePrice,
+            "Maximum price must be greater than or equal to the base price"
+        );
+        token0BasePrice = _token0BasePrice;
+        token0MaxPrice = _token0MaxPrice;
 
         protocolFee = _protocolFee;
 
-        Factory factoryContract = Factory(_factory);
-        factoryOwner = factoryContract.owner();
+        token0Constant = calcToken0Constant(
+            _token0BasePrice,
+            _token0MaxPrice,
+            _token0DepositAmount
+        );
 
-       // setLiquidityConstant();
+        token1Constant = calcToken1Constant(
+            _token0,
+            _token0BasePrice,
+            token0Constant,
+            _token0DepositAmount,
+            _token1DepositAmount
+        );
+
+        kConstant =
+            (token0DepositAmount + token0Constant) *
+            (token1DepositAmount + token1Constant);
     }
 
-    // function setLiquidityConstant() internal {
-    //     uint X = maxAmountToken0 * token1Price / maxAdditionalToken1Price;
-    //     liquidityConstant = X * (token1Price + maxAdditionalToken1Price);
-    // }
-    
+    function calcToken0Constant(
+        uint256 _token0BasePrice,
+        uint256 _token0MaxPrice,
+        uint256 _token0DepositAmount
+    ) internal pure returns (uint256) {
+        uint256 ratio = SafeMath.div(_token0BasePrice * 10e18, _token0MaxPrice);
+        uint256 sqrtRatio = Math.sqrt(ratio);
 
-    // modifier isFactoryOwner() {
-    //     require(msg.sender == factoryOwner, "Sender is not factory owner.");
-    //     _;
-    // }
+        uint256 numerator = sqrtRatio * _token0DepositAmount;
+        uint256 denominator = 10e9 - sqrtRatio;
 
+        return SafeMath.div(numerator, denominator);
+    }
 
-    // function setToken1Price(uint _token1Price) external isFactoryOwner() {
-    //     token1Price = _token1Price;
-    //     setLiquidityConstant();
-    // }
+    function calcToken1Constant(
+        address _token0,
+        uint256 _token0BasePrice,
+        uint256 _token0Constant,
+        uint256 _token0DepositAmount,
+        uint256 _token1DepositAmount
+    ) internal view returns (uint256) {
+        uint8 token0Decimals = ERC20(_token0).decimals();
 
-    // function setMaxAmountToken0(uint _maxAmountToken0) external isFactoryOwner() {
-    //     maxAmountToken0 = _maxAmountToken0;
-    //     setLiquidityConstant();
-    // }
+        uint256 exponent = 10**token0Decimals;
+        uint256 mulReturn = _token0BasePrice *
+            (_token0DepositAmount + _token0Constant) -
+            exponent *
+            _token1DepositAmount;
 
-    // function calculateAmountToken0Out(uint amountToken1In) public view returns (uint){
-    //     uint X = maxAmountToken0 * token1Price / maxAdditionalToken1Price;
+        return SafeMath.div(mulReturn, exponent);
+    }
 
-    //     uint amountToken0 = ERC20(token0).balanceOf(address(this));
-    //     uint amountToken1 = ERC20(token1).balanceOf(address(this));
+    // testing only
+    function testKConstant() external view returns (uint256) {
+        uint256 token0Balance = ERC20(token0).balanceOf(address(this));
+        uint256 token1Balance = ERC20(token1).balanceOf(address(this));
+        return
+            (token0Balance + token0Constant) * (token1Balance * token1Constant);
+    }
 
-    //     require(amountToken1 >= amountToken1In, "Insufficient amount of token 1.");
+    function token1Output(uint256 _token0Input) public view returns (uint256) {
+        uint256 token0Balance = ERC20(token0).balanceOf(address(this));
+        uint256 token1Balance = ERC20(token1).balanceOf(address(this));
 
-    //     uint afterAmountToken1 = amountToken1 - amountToken1In;
-    //     uint afterAmountToken0 = liquidityConstant/ (X + afterAmountToken1);
+        uint256 newToken0Balance = token0Balance + _token0Input;
 
-    //     return amountToken0 - afterAmountToken0;
-    // }
+        uint256 newToken1Balance = SafeMath.div(
+            kConstant,
+            (newToken0Balance + token0Constant)
+        ) - token1Constant;
 
-    // event RecordSwap (
-    //     address indexed pool,
-    //     uint updatedAmountToken0,
-    //     uint updatedAmountToken1,
-    //     uint updatedToken1Price,
-    //     uint timestamp
-    // );
+        return token1Balance - newToken1Balance;
+    }
 
-    // function buy(uint amountToken1In, uint minAmountToken0Out) external {
-    //     require(IERC20(token1).allowance(msg.sender, address(this)) >= amountToken1In, "Allowance not set for the contract.");
+    function token0Output(uint256 _token1Input) public view returns (uint256) {
+        uint256 token0Balance = ERC20(token0).balanceOf(address(this));
+        uint256 token1Balance = ERC20(token1).balanceOf(address(this));
 
-    //     uint amountToken0Out = calculateAmountToken0Out(amountToken1In);
-    //     require(amountToken0Out >= minAmountToken0Out, "Received amount of token 0 is below the expected minimum.");
+        uint256 newToken1Balance = token1Balance + _token1Input;
 
-    //     uint tokenFee = amountToken1In * protocolFee / 10e5;
-    //     IERC20(token1).transferFrom(msg.sender, factoryOwner, tokenFee);
-    //     IERC20(token1).transferFrom(msg.sender, address(this), amountToken1In - tokenFee);
+        uint256 newToken0Balance = SafeMath.div(
+            kConstant,
+            (newToken1Balance + token1Constant)
+        ) - token0Constant;
 
-    //     IERC20(token0).transfer(msg.sender, amountToken0Out);
+        return token0Balance - newToken0Balance;
+    }
 
-    //     uint amountToken0 = ERC20(token0).balanceOf(address(this));
-    //     uint amountToken1 = ERC20(token1).balanceOf(address(this));
+    struct Props {
+        address token0;
+        address token1;
+        uint256 token0Locked;
+        uint256 token1Locked;
+    }
 
-    //     emit RecordSwap(
-    //         address(this),
-    //         amountToken0,
-    //         amountToken1,
-    //         amountToken0Out / amountToken1In,
-    //         block.timestamp
-    //     );
-    // }
+    function getProps() external view returns (Props memory) {
+        Props memory _props = Props(
+            token0,
+            token1,
+            ERC20(token0).balanceOf(address(this)),
+            ERC20(token1).balanceOf(address(this))
+        );
+
+        return _props;
+    }
+
+    modifier isFactoryOwner() {
+        require(msg.sender == factoryOwner, "Sender is not factory owner");
+        _;
+    }
+
+    event Swap(
+        address indexed sender,
+        uint256 amount0In,
+        uint256 amount1In,
+        uint256 amount0Out,
+        uint256 amount1Out,
+        address indexed to
+    );
+
+    event Sync(uint256 reserve0, uint256 reserve1);
+
+    function _buy(uint256 _amountToken1In, uint256 _minAmountToken0Out)
+        internal
+    {
+        uint256 amountToken0Out = token0Output(_amountToken1In);
+
+        require(
+            amountToken0Out >= _minAmountToken0Out,
+            "Insufficient output amount"
+        );
+
+        ERC20(token1).transferFrom(msg.sender, address(this), _amountToken1In);
+        ERC20(token0).transfer(msg.sender, amountToken0Out);
+
+        emit Swap(
+            msg.sender,
+            0,
+            _amountToken1In,
+            _minAmountToken0Out,
+            0,
+            address(this)
+        );
+    }
+
+    function _sell(uint256 _amountToken0In, uint256 _minAmountToken1Out)
+        internal
+    {
+        uint256 amountToken1Out = token1Output(_amountToken0In);
+
+        require(
+            amountToken1Out >= _minAmountToken1Out,
+            "Insufficient output amount"
+        );
+
+        ERC20(token0).transfer(msg.sender, amountToken1Out);
+
+        uint256 fee = SafeMath.div(protocolFee * amountToken1Out, 10e5);
+
+        ERC20(token1).transferFrom(msg.sender, factoryOwner, fee);
+
+        ERC20(token1).transferFrom(
+            msg.sender,
+            address(this),
+            amountToken1Out - fee
+        );
+
+        emit Swap(
+            msg.sender,
+            _amountToken0In,
+            0,
+            0,
+            _minAmountToken1Out,
+            address(this)
+        );
+    }
+
+    function swap(
+        uint256 _amountTokenIn,
+        uint256 _minAmountTokenOut,
+        bool _isBuy
+    ) public {
+        if (_isBuy) {
+            _buy(_amountTokenIn, _minAmountTokenOut);
+        } else {
+            _sell(_amountTokenIn, _minAmountTokenOut);
+        }
+
+        emit Sync(
+            ERC20(token0).balanceOf(address(this)),
+            ERC20(token1).balanceOf(address(this))
+        );
+    }
 }
