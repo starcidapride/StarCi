@@ -1,6 +1,6 @@
 'use client'
 import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button, Spinner } from '@nextui-org/react'
-import Web3, { Address } from 'web3'
+import { Address } from 'web3'
 import {
     ChartData,
     Chart as ChartJS,
@@ -11,9 +11,11 @@ import {
 import { Chart } from 'react-chartjs-2'
 import { faker } from '@faker-js/faker'
 import { useEffect, useRef, useState } from 'react'
-import { createGradient, teal300, teal50, teal500 } from '@utils/color.utils'
-import { ChainName } from '@utils/constant.utils'
-import { getBalance } from '@web3/contracts/erc20'
+import { createGradient, teal300, teal50, teal500 } from '@utils'
+import { ScopeReference } from '@app/_components/Commons'
+import { getWebsocketWeb3 } from '@web3/web3.utils'
+import { useSelector } from 'react-redux'
+import { RootState } from '@redux/store'
 
 ChartJS.register(
     ...registerables
@@ -21,6 +23,12 @@ ChartJS.register(
 
 export const options: ChartOptions = {
     responsive: true,
+    elements: {
+        line: {
+            borderJoinStyle: 'round',
+            borderWidth : 1.25
+        }
+    },
     plugins: {
         legend: {
             display: false,
@@ -34,8 +42,26 @@ export const options: ChartOptions = {
                     return ''
                 }
             }
+        }
+    },
+    scales: {
+        x: {
+            grid: {
+                display: false
+            }
         },
-    }
+        y: {
+            grid: {
+                display: false
+            }
+        },
+        xAxis: {
+            ticks: {
+                maxTicksLimit: 10
+            }
+        }
+
+    }   
 }
 
 interface PriceChartProps {
@@ -43,23 +69,67 @@ interface PriceChartProps {
     className?: string,
 }
 
+export const deriveTimeFromKey = (key: number) => {
+    if (key < 0 || key > 47) return
+    const hour = Math.floor(key / 2)
+    const minute = key % 2 === 0 ? '00' : '30'
+    return `${hour}:${minute}`
+}
+
+export const deriveTimeFromKeyEach3Hours = (key: number) : string[] | null => {
+    if (key < 0 || key > 47) return null
+
+    const timeList: string[] = []
+
+    for (let i = 0; i < 48; i++){
+        let value : string 
+        if (i % 6 == 0){
+            const valueI = key - i / 6
+            const unsignedI = valueI < 0 ? valueI + 48 : valueI
+            value = deriveTimeFromKey(unsignedI)!
+        } else {
+            value = ''
+        }
+        timeList.push(value)
+    }
+    timeList.reverse()
+    return timeList
+}
+
 export const PriceChart = (props: PriceChartProps) => {
+    const chainName = useSelector((state: RootState) => state.chainName.chainName)
     const chartRef = useRef<ChartJS>(null)
 
-    const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July']
+    const [labels, setLabels] = useState<string[]>([])
 
-    const [chartData, setChartData] = useState<ChartData<'bar'>>({
+    const [chartData, setChartData] = useState<ChartData>({
         datasets: [],
     })
     const [finishLoad, setFinishLoad] = useState(false)
 
     useEffect(() => {
-        const chart = chartRef.current
-
-        if (!chart) return
-
         const handleEffect = async () => {
-            const chartData = {
+
+            const web3 = getWebsocketWeb3(chainName)
+            
+            const currentDate = new Date()
+            const currentHour = currentDate.getHours()
+            const currentMinute = currentDate.getMinutes()
+            
+            const key = currentHour * 2 + (currentMinute >= 30 ? 1 : 0)
+
+            setLabels(deriveTimeFromKeyEach3Hours(key)!)
+        }
+        handleEffect()
+    }, [])
+
+    useEffect(() => {
+        const handleEffect = async () => {
+            const chart = chartRef.current
+
+            if (!chart) return
+
+            const chartData : ChartData = {
                 labels,
                 datasets: [
                     {
@@ -67,7 +137,7 @@ export const PriceChart = (props: PriceChartProps) => {
                         data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
                         fill: true,
                         pointBorderColor: teal500,
-                        pointBackgroundColor: teal500,
+                        pointBackgroundColor: teal500,       
                         borderColor: teal500,
                         backgroundColor: createGradient(chart.ctx,
                             chart.chartArea,
@@ -76,20 +146,19 @@ export const PriceChart = (props: PriceChartProps) => {
                             true,
                         ),
                         pointStyle: 'circle',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointRadius: 1.5,
+                        pointHoverRadius: 2
                     }
                 ],
             }
-             
+         
             setChartData(chartData)
             setFinishLoad(true)
 
             console.log('proccessed')
-        
         }
         handleEffect()
-    }, [])
+    }, [labels])
 
     console.log(finishLoad)
 
@@ -110,10 +179,13 @@ export const PriceChart = (props: PriceChartProps) => {
             {   
                 !finishLoad
                     ? <div className="h-80 place-content-center flex">
-                        <Spinner color="default"/>
+                        <Spinner color="default" />
                     </div>
                     : <div></div>
             }
+            <div className="flex flex-row-reverse">
+                <ScopeReference address={props.poolAddress} className="mt-3 font-bold"/>
+            </div>
 
         </CardBody>
     </Card>)

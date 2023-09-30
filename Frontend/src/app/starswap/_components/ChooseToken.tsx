@@ -2,12 +2,12 @@
 import React, { Fragment, useEffect, useState } from 'react'
 
 import {Modal, ModalContent, ModalHeader, ModalBody, Image, Button, useDisclosure, Divider, Input, Card, CardBody, CardFooter, ModalFooter, Link } from '@nextui-org/react'
-import { ChainName, chainInfos } from '@utils/constant.utils'
+import { ChainName, chainInfos } from '@utils'
 import { getName, getSymbol, isErc20 } from '@web3/contracts/erc20'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { Address } from 'web3'
-import { StableCoinSkeleton } from './StableCoinSkeleton'
+import { StableCoinSkeleton } from '../add-liquidity/_components/StableCoinSkeleton'
 
 interface ChooseTokenProps{
     chainName: ChainName
@@ -108,7 +108,9 @@ export const ChooseToken = (props: ChooseTokenProps) => {
                 formik.resetForm()
                 setTempTokenSymbol(null)
                 onOpen()
-            }}> { tokenSymbol ?? 'Select'} </Button>
+            }}
+            variant="flat"
+            > { tokenSymbol ?? 'Select'} </Button>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false}>     
                 <ModalContent>
                     <form onSubmit={formik.handleSubmit}>

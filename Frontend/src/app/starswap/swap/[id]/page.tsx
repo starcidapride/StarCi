@@ -1,5 +1,5 @@
 'use client'
-import { LiquidityPoolStatistics, PriceChart, SwapSection } from './_components'
+import { LiquidityPoolStatistics, LiquidityPoolStatisticsChart, PriceChart, SwapSection } from './_components'
 
 interface PagePrams {
     params: { id: string }
@@ -11,9 +11,15 @@ const Page = ({ params }: PagePrams) => {
                 <div className="col-span-2"> 
                     <PriceChart 
                         poolAddress={params.id} />
-                    <LiquidityPoolStatistics 
-                        poolAddress={params.id} 
-                        className="mt-6" />
+                    <div className="mt-6 grid grid-cols-3 gap-6"> 
+                        <LiquidityPoolStatistics 
+                            poolAddress={params.id} 
+                            className="col-span-1" />
+                        <LiquidityPoolStatisticsChart 
+                            poolAddress={params.id} 
+                            className="col-span-2" />
+                    </div>
+
                 </div>
             </div>
     
@@ -21,7 +27,8 @@ const Page = ({ params }: PagePrams) => {
                 <SwapSection 
                     poolAddress={params.id}
                     className="col-span-1"/>
-            </div>    
+            </div>
+             
         </div>
     )
 }

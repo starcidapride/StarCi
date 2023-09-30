@@ -8,9 +8,11 @@ const KLAYTN_MAINNET_EXPLORER = ''
 
 const KLAYTN_TESTNET_HTTP_RPC_URL = 'https://api.baobab.klaytn.net:8651'
 const KLAYTN_TESTNET_WEBSOCKET_RPC_URL = 'wss://public-en-baobab.klaytn.net/ws'
-const KLAYTN_TESTNET_CONTRACT_FACTORY = '0xFfe3d935B95b4E2cD1Aaa533b3AaE85F7AbfF05E'
+const KLAYTN_TESTNET_CONTRACT_FACTORY = '0xD80F20322adbd66C9080aaF8040306f441d90B6F'
 const KLAYTN_TESTNET_USDT_CONTRACT = '0xEdEb5f63537EbAe7E6dD79D95Cd2EF20C75Cd732'
 const KLAYTN_TESTNET_EXPLORER = 'https://baobab.klaytnscope.com/'
+
+export const TIME_OUT = 1000
 
 export enum ChainName {
     KlaytnMainnet,

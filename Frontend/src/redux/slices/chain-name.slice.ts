@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { ChainName } from '@utils/constant.utils'
+import { ChainName } from '@utils'
 
 export interface ChainNameSlice {
     chainName: ChainName

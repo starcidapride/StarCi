@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from '@redux/store'
 import { setAccount } from '@redux/slices/account.slice'
 import { ConnectedButton } from './Buttons'
 import { ChainInfo } from './ChainInfo'
-import { ChainName } from '@utils/constant.utils'
+import { ChainName } from '@utils'
 
 export const NavigationBar = () => {
     const web3 = useSelector((state: RootState) => state.web3.web3)

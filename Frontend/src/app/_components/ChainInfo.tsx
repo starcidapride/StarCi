@@ -1,6 +1,6 @@
 'use client'
 import { Avatar } from '@nextui-org/react'
-import { ChainName } from '@utils/constant.utils'
+import { ChainName } from '@utils'
 
 
 interface ChainInfoProps {

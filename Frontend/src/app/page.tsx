@@ -1,9 +1,8 @@
-import { Button } from '@nextui-org/button'
+'use client'
 
 const Page = () => {
     return (
         <div>
-            <Button> Click me </Button>
         </div>
     )
 }

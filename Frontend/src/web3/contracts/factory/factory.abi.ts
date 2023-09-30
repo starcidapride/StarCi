@@ -38,6 +38,19 @@ const abi = [
         'type': 'event'
     },
     {
+        'inputs': [],
+        'name': 'allLiquidityPools',
+        'outputs': [
+            {
+                'internalType': 'address[]',
+                'name': '',
+                'type': 'address[]'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
         'inputs': [
             {
                 'internalType': 'address',
@@ -51,22 +64,22 @@ const abi = [
             },
             {
                 'internalType': 'uint256',
-                'name': '_token0MaxAmount',
+                'name': '_token0DepositAmount',
                 'type': 'uint256'
             },
             {
                 'internalType': 'uint256',
-                'name': '_token1MaxAmount',
+                'name': '_token1DepositAmount',
                 'type': 'uint256'
             },
             {
                 'internalType': 'uint256',
-                'name': '_token1MinPrice',
+                'name': '_token0BasePrice',
                 'type': 'uint256'
             },
             {
                 'internalType': 'uint256',
-                'name': '_token1MaxPrice',
+                'name': '_token0MaxPrice',
                 'type': 'uint256'
             },
             {

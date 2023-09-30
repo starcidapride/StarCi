@@ -1,12 +1,12 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Mooli } from 'next/font/google'
 import NextUIProviders from './nextui.provider'
 import { NavigationBar } from '@app/_components'
 import ReduxProviders from '@redux/redux.provider'
 import { ConfirmTransaction } from './_components/ConfirmTransaction'
 
-const inter = Inter({ subsets: ['latin'] })
+const font = Mooli({ weight: '400', subsets : ['latin'] })
 
 export const metadata: Metadata = {
     title: 'Create Next App',
@@ -18,8 +18,8 @@ const RootLayout = ({
 }: {
   children: React.ReactNode
 }) => (
-    <html lang="en" className="light text-foreground bg-background">
-        <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning className="light text-foreground bg-background">
+        <body className={font.className}>
             <NextUIProviders>
                 <ReduxProviders>
                     <NavigationBar />

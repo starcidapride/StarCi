@@ -1,25 +1,25 @@
 'use client'
 import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Input, Select, SelectItem } from '@nextui-org/react'
-import { ChooseToken } from './ChooseToken'
+import { ChooseToken } from '@app/starswap/_components/ChooseToken'
 import { ArrowsRightLeftIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import { ChainName } from '@utils/constant.utils'
 import { Fragment, useEffect, useState } from 'react'
-import { getBalance, getDecimals, getSymbol } from '@web3/contracts/erc20'
+import { approve, getAllowance, getBalance, getDecimals, getSymbol } from '@web3/contracts/erc20'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@redux/store'
-import { calInverse, calcBalance, calcRound, calcExponent } from '@utils/calc.utils'
+import { calInverse, calcNRedenomination, calcRound, calcExponent, ChainName, chainInfos, calcInt, calcRedenomination } from '@utils'
 import { createLiquidityPool } from '@web3/contracts/factory/factory.contract'
 import { TransactionType, setTransactionType, setVisible } from '@redux/slices/confirm-transaction.slice'
 import { BalanceShow } from '@app/_components/Commons/BalanceShow'
 import { TokenShow } from '@app/_components/Commons/TokenShow'
 
 export const MainForm = () => {
-    
+
     const web3 = useSelector((state: RootState) => state.web3.web3)
     const account = useSelector((state: RootState) => state.account.account)
-    const dispatch : AppDispatch = useDispatch()
+    const chainName = useSelector((state: RootState) => state.chainName.chainName)
+    const dispatch: AppDispatch = useDispatch()
 
     const handleSelectTokenSubmit = (values: {
         tokenAddress: string
@@ -35,10 +35,10 @@ export const MainForm = () => {
             token0: '',
             token1: '',
             isToken0Sell: true,
-            token0MaxAmount: 0,
-            token1MaxAmount: 0,
-            token1MinPrice: 0,
-            token1MaxPrice: 0,
+            token0DepositAmount: 0,
+            token1DepositAmount: 0,
+            token0BasePrice: 0,
+            token0MaxPrice: 0,
             protocolFee: 0
         },
 
@@ -47,54 +47,87 @@ export const MainForm = () => {
                 .required('This field is required'),
             token1: Yup.string()
                 .required('This field is required'),
-            token0MaxAmount: Yup.number()
+            isToken0Sell: Yup.boolean(),
+            token0DepositAmount: Yup.number()
                 .min(0, 'Input must be greater than or equal to 0')
-                .max(token0Balance, '"Input must not exceed your available balance')
+                .max(token0Balance, 'Input must not exceed your available balance')
                 .required('This field is required'),
-            token1MaxAmount: Yup
-                .number().min(0, 'Input must be greater than or equal to 0')
-                .max(token1Balance, '"Input must not exceed your available balance')
+            token1DepositAmount: Yup
+                .number()
+                .min(0, 'Input must be greater than or equal to 0')
+                .max(token1Balance, 'Input must not exceed your available balance')
                 .required('This field is required'),
-            token1MinPrice: Yup.number()
+            token0BasePrice: Yup.number()
                 .min(0, 'Input must be greater than or equal to 0').required('This field is required')
-                .max(Yup.ref('token1MaxPrice'), 'Min price must be less than or equal to max price'),
-            token1MaxPrice: Yup.number()
-                .min(Yup.ref('token1MinPrice'), 'Max price must be greater than or equal to min price')
+                .max(Yup.ref('token0MaxPrice'), 'Min price must be less than or equal to max price'),
+            token0MaxPrice: Yup.number()
+                .min(Yup.ref('token0BasePrice'), 'Max price must be greater than or equal to min price')
                 .required('This field is required'),
             protocolFee: Yup.number().min(0, 'Input must be greater than or equal to 0').required('This field is required'),
         }),
 
         onSubmit: values => {
-            console.log((values.protocolFee * calcExponent(5)).toString() )
-            console.log((values.token1MinPrice * calcExponent(token1Decimals!)).toString())
+            console.log((values.protocolFee * calcExponent(5)).toString())
+            console.log((values.token0BasePrice * calcExponent(token1Decimals!)).toString())
 
             const handleSubmit = async () => {
                 dispatch(setVisible(true))
                 dispatch(setTransactionType(TransactionType.Swap))
+
+                const _factoryAddress = chainInfos[chainName].factoryContract
+                const _token0Allowance = await getAllowance(chainName, values.token0, account!, _factoryAddress)
+                const _token1Allowance = await getAllowance(chainName, values.token1, account!, _factoryAddress)
+
+                if (calcInt(_token0Allowance) < values.token0DepositAmount * calcExponent(token0Decimals!)) {
+                    await approve(
+                        web3!,
+                        account!,
+                        values.token0,
+                        _factoryAddress,
+                        (values.token0DepositAmount * calcExponent(token0Decimals!)).toString()
+                    )
+                }
+
+                if (calcInt(_token1Allowance) < values.token0DepositAmount * calcExponent(token1Decimals!)) {
+                    await approve(
+                        web3!,
+                        account!,
+                        values.token1,
+                        _factoryAddress,
+                        (values.token1DepositAmount * calcExponent(token1Decimals!)).toString()
+                    )
+                }
+
                 const tx = await createLiquidityPool(
                     web3!,
                     ChainName.KalytnTestnet,
-                    account as '',
-                    values.token0,
-                    values.token1,
-                    (values.token0MaxAmount * calcExponent(token0Decimals!)).toString(),
-                    (values.token1MaxAmount * calcExponent(token1Decimals!)).toString(),
-                    (values.token1MinPrice * calcExponent(token1Decimals!)).toString(),
-                    (values.token1MaxPrice * calcExponent(token1Decimals!)).toString(),
-                    (values.protocolFee * calcExponent(5)).toString() 
-                )    
+                    account!,
+                    values.isToken0Sell ? values.token0 : values.token1,
+                    values.isToken0Sell ? values.token1 : values.token0,
+                    values.isToken0Sell ?
+                    calcNRedenomination(values.token0DepositAmount, token0Decimals!)!
+                        : calcNRedenomination(values.token1DepositAmount, token1Decimals!)!,
+                    values.isToken0Sell ?
+                    calcNRedenomination(values.token1DepositAmount, token1Decimals!)!
+                        : calcNRedenomination(values.token0DepositAmount, token0Decimals!)!,
+                        calcNRedenomination(values.token0BasePrice, token0Decimals!)!,
+                    calcNRedenomination(values.token0MaxPrice, token0Decimals!)!,
+                    calcNRedenomination(values.protocolFee, 5)!
+                )
             }
             handleSubmit()
         }
     })
 
+    console.log(formik.values)
+
     const [finishLoad, setFinishLoad] = useState(false)
 
-    const [token0Symbol, setToken0Symbol] = useState<string|null>(null)
-    const [token1Symbol, setToken1Symbol] = useState<string|null>(null)
+    const [token0Symbol, setToken0Symbol] = useState<string | null>(null)
+    const [token1Symbol, setToken1Symbol] = useState<string | null>(null)
 
-    const [token0Decimals, setToken0Decimals] = useState<number|null>(null)
-    const [token1Decimals, setToken1Decimals] = useState<number|null>(null)
+    const [token0Decimals, setToken0Decimals] = useState<number | null>(null)
+    const [token1Decimals, setToken1Decimals] = useState<number | null>(null)
 
     const [inverse, setInverse] = useState(false)
 
@@ -102,28 +135,28 @@ export const MainForm = () => {
         const token0 = formik.values.token0
         const token1 = formik.values.token1
         if (token0 && token1) {
-            
+
             const handleEffect = async () => {
                 const _token0Symbol = await getSymbol(ChainName.KalytnTestnet, formik.values.token0)
                 const _token1Symbol = await getSymbol(ChainName.KalytnTestnet, formik.values.token1)
-                
+
                 setToken0Symbol(_token0Symbol)
                 setToken1Symbol(_token1Symbol)
 
                 const _token0Decimals = await getDecimals(ChainName.KalytnTestnet, formik.values.token0)
                 const _token1Decimals = await getDecimals(ChainName.KalytnTestnet, formik.values.token1)
-                
+
                 setToken0Decimals(Number.parseInt(_token0Decimals.toString()))
                 setToken1Decimals(Number.parseInt(_token1Decimals.toString()))
-                
+
                 if (web3 && account) {
                     const _token0Balance = await getBalance(ChainName.KalytnTestnet, formik.values.token0, account)
                     const _token1Balance = await getBalance(ChainName.KalytnTestnet, formik.values.token1, account)
-                    
-                    setToken0Balance(calcBalance(_token0Balance, _token0Decimals, 5))
-                    setToken1Balance(calcBalance(_token1Balance, _token1Decimals, 5))
+
+                    setToken0Balance(calcRedenomination(_token0Balance, _token0Decimals, 5))
+                    setToken1Balance(calcRedenomination(_token1Balance, _token1Decimals, 5))
                 }
-                
+
                 setToken0Symbol(_token0Symbol)
                 setToken1Symbol(_token1Symbol)
 
@@ -135,7 +168,7 @@ export const MainForm = () => {
     }, [formik.values])
 
     const protocolFees = [
-        {   
+        {
             id: 0,
             title: '0.25%'
         },
@@ -184,8 +217,8 @@ export const MainForm = () => {
                                     <div className="text-sm font-bold text-teal-500"> Pick Protocol Fee Tier </div>
                                     <div className="flex items-center gap-4 mt-6">
                                         {protocolFees.map((fee) =>
-                                            (<Card key={fee.id} className={`flex-1 ${ formik.values.protocolFee === Number.parseFloat(fee.title) / 100 ? 'bg-teal-500' : ''}`} isPressable
-                                                onPress={() => 
+                                            (<Card key={fee.id} className={`flex-1 ${formik.values.protocolFee === Number.parseFloat(fee.title) / 100 ? 'bg-teal-500' : ''}`} isPressable
+                                                onPress={() =>
                                                     formik.setFieldValue('protocolFee', Number.parseFloat(fee.title) / 100)
                                                 }>
                                                 <CardBody className="font-bold text-center">
@@ -200,60 +233,63 @@ export const MainForm = () => {
                                     <div className="text-sm font-bold text-teal-500"> Deposit Token </div>
 
                                     <Select
+                                        size="sm"
                                         isDisabled={!finishLoad}
-                                        items={ (token0Symbol && token1Symbol) ? [
+                                        items={(token0Symbol && token1Symbol) ? [
                                             {
                                                 address: formik.values.token0,
                                                 symbol: token0Symbol
                                             },
-                                            { 
+                                            {
                                                 address: formik.values.token1,
                                                 symbol: token1Symbol
                                             }
-                                        ] : [] }
+                                        ] : []}
                                         label="Sell Token"
                                         className="mt-6"
                                         onChange={event => formik.setFieldValue('isToken0Sell', formik.values.token0 == event.target.value)}
                                     >
-                                        {(token) => <SelectItem 
+                                        {(token) => <SelectItem
                                             key={token.address}>{token.symbol}</SelectItem>}
                                     </Select>
-                                        
+
                                     <div className="grid grid-cols-2 gap-4 mt-5 ">
                                         <div>
                                             <div className="flex justify-between">
-                                                <TokenShow finishLoad={finishLoad} symbol={token0Symbol!}/>
-                                                <BalanceShow balance={token0Balance} finishLoad={finishLoad}/>
+                                                <TokenShow finishLoad={finishLoad} symbol={token0Symbol!} />
+                                                <BalanceShow balance={token0Balance} finishLoad={finishLoad} />
                                             </div>
                                             <Input
-                                                id="token0MaxAmount"
+                                                id="token0DepositAmount"
                                                 isDisabled={!finishLoad}
                                                 type="number"
+                                                size="sm"
                                                 className="mt-1"
                                                 label='Amount'
                                                 variant="bordered"
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                isInvalid={formik.errors.token0MaxAmount ? true : false}
-                                                errorMessage={formik.errors.token0MaxAmount}
+                                                isInvalid={formik.errors.token0DepositAmount != undefined}
+                                                errorMessage={formik.errors.token0DepositAmount}
                                             />
                                         </div>
                                         <div>
                                             <div className="flex justify-between">
-                                                <TokenShow finishLoad={finishLoad} symbol={token1Symbol!}/>
-                                                <BalanceShow balance={token1Balance} finishLoad={finishLoad}/>
+                                                <TokenShow finishLoad={finishLoad} symbol={token1Symbol!} />
+                                                <BalanceShow balance={token1Balance} finishLoad={finishLoad} />
                                             </div>
                                             <Input
-                                                id="token1MaxAmount"
+                                                id="token1DepositAmount"
                                                 isDisabled={!finishLoad}
                                                 type="number"
+                                                size="sm"
                                                 className="mt-1"
                                                 label='Amount'
                                                 variant="bordered"
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                isInvalid={formik.errors.token1MaxAmount != undefined}
-                                                errorMessage={formik.errors.token1MaxAmount}
+                                                isInvalid={(formik.errors.token1DepositAmount && formik.touched.token1DepositAmount) != undefined}
+                                                errorMessage={formik.errors.token1DepositAmount}
                                             />
                                         </div>
                                     </div>
@@ -262,34 +298,34 @@ export const MainForm = () => {
                             <div className="sm:col-span-1 col-span-2 h-full justify-between flex flex-col">
                                 <div>
                                     <div className="text-sm font-bold text-teal-500"> Set Price Range </div>
-                                    <div className="mt-6">  
+                                    <div className="mt-6">
                                         <div className="flex items-start gap-4">
                                             <div className="flex-1">
                                                 <Card>
                                                     <CardHeader className="p-5">
                                                         <div className="font-bold text-center w-full text-sm">
-                                                    Min Price
+                                                            Min Price
                                                         </div>
                                                     </CardHeader>
                                                     <CardBody>
                                                         <div className="items-center flex gap-4">
-                                                            <Button onClick={() => formik.setFieldValue('token1MinPrice', formik.values.token1MinPrice - 1)} isIconOnly radius="full" className="flex-none" size="sm">
+                                                            <Button onClick={() => formik.setFieldValue('token0BasePrice', formik.values.token0BasePrice - 1)} isIconOnly radius="full" className="flex-none" size="sm">
                                                                 <MinusIcon height={16} width={16} />
                                                             </Button>
                                                             <Input
-                                                                id="token1MinPrice"
+                                                                id="token0BasePrice"
                                                                 className="flex-1"
                                                                 type="number"
                                                                 variant="flat"
                                                                 classNames={{
                                                                     'input': 'text-center'
                                                                 }}
-                                                                value={formik.values.token1MinPrice.toString()}
+                                                                value={formik.values.token0BasePrice.toString()}
                                                                 onChange={formik.handleChange}
                                                                 onBlur={formik.handleBlur}
-                                                                isInvalid={formik.errors.token1MinPrice != undefined}
+                                                                isInvalid={formik.errors.token0BasePrice != undefined}
                                                             />
-                                                            <Button onClick={() => formik.setFieldValue('token1MinPrice', formik.values.token1MinPrice + 1)} isIconOnly radius="full" className="flex-none" size="sm">
+                                                            <Button onClick={() => formik.setFieldValue('token0BasePrice', formik.values.token0BasePrice + 1)} isIconOnly radius="full" className="flex-none" size="sm">
                                                                 <PlusIcon height={16} width={16} />
                                                             </Button>
 
@@ -298,79 +334,79 @@ export const MainForm = () => {
                                                     <CardFooter className="p-4">
                                                         <div className="text-center w-full text-sm">
                                                             {!finishLoad ? '' : (!inverse
-                                                                ? <Fragment> {calcRound(formik.values.token1MinPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> </Fragment> 
-                                                                : <Fragment> {calInverse(formik.values.token1MinPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>) } 
-                                                        </div>
-                                                    </CardFooter>
-                                                </Card>  
-                                                {
-                                                    formik.errors.token1MinPrice
-                                                        ? <div className="text-xs text-danger pt-1 px-1"> {formik.errors.token1MinPrice}</div>
-                                                        : null
-                                                }   
-                                            </div>     
-                                            <div className="flex-1">          
-                                                <Card>
-                                                    <CardHeader className="p-5">
-                                                        <div className="font-bold text-center w-full text-sm">
-                                                    Max Price
-                                                        </div>
-                                                    </CardHeader>
-                                                    <CardBody>
-                                                        <div className="items-center flex gap-3">
-                                                            <Button onClick={() => formik.setFieldValue('token1MaxPrice', formik.values.token1MaxPrice - 1)} isIconOnly radius="full" className="flex-none" size="sm">
-                                                                <MinusIcon height={16} width={16} />
-                                                            </Button>
-                                                            <Input
-                                                                id="token1MaxPrice"
-                                                                className="flex-1"
-                                                                type="number"
-                                                                variant="flat"
-                                                                classNames={{
-                                                                    'input': 'text-center'
-                                                                }}
-                                                                value={formik.values.token1MaxPrice.toString()}
-                                                                onChange={formik.handleChange}
-                                                                onBlur={formik.handleBlur}
-                                                                isInvalid={formik.errors.token1MaxPrice != undefined}
-                                                            />
-                                                            <Button onClick={() => formik.setFieldValue('token1MaxPrice', formik.values.token1MaxPrice + 1)} isIconOnly radius="full" className="flex-none" size="sm">
-                                                                <PlusIcon height={16} width={16} />
-                                                            </Button>
-
-                                                        </div>  
-                                                    </CardBody>
-                                                    <CardFooter className="p-4">
-                                                        <div className="text-center w-full text-sm">
-                                                            {!finishLoad ? '' : (!inverse
-                                                                ? <Fragment> {calcRound(formik.values.token1MaxPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> </Fragment> 
-                                                                : <Fragment> {calInverse(formik.values.token1MaxPrice, 3)} <span className="font-bold">{formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>) } 
+                                                                ? <Fragment> {calcRound(formik.values.token0BasePrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> </Fragment>
+                                                                : <Fragment> {calInverse(formik.values.token0BasePrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>)}
                                                         </div>
                                                     </CardFooter>
                                                 </Card>
                                                 {
-                                                    formik.errors.token1MaxPrice
-                                                        ? <div className="text-xs text-danger pt-1 px-1"> {formik.errors.token1MaxPrice}</div>
+                                                    formik.errors.token0BasePrice
+                                                        ? <div className="text-xs text-danger pt-1 px-1"> {formik.errors.token0BasePrice}</div>
                                                         : null
-                                                }   
-                                            </div>  
+                                                }
+                                            </div>
+                                            <div className="flex-1">
+                                                <Card>
+                                                    <CardHeader className="p-5">
+                                                        <div className="font-bold text-center w-full text-sm">
+                                                            Max Price
+                                                        </div>
+                                                    </CardHeader>
+                                                    <CardBody>
+                                                        <div className="items-center flex gap-3">
+                                                            <Button onClick={() => formik.setFieldValue('token0MaxPrice', formik.values.token0MaxPrice - 1)} isIconOnly radius="full" className="flex-none" size="sm">
+                                                                <MinusIcon height={16} width={16} />
+                                                            </Button>
+                                                            <Input
+                                                                id="token0MaxPrice"
+                                                                className="flex-1"
+                                                                type="number"
+                                                                variant="flat"
+                                                                classNames={{
+                                                                    'input': 'text-center'
+                                                                }}
+                                                                value={formik.values.token0MaxPrice.toString()}
+                                                                onChange={formik.handleChange}
+                                                                onBlur={formik.handleBlur}
+                                                                isInvalid={formik.errors.token0MaxPrice != undefined}
+                                                            />
+                                                            <Button onClick={() => formik.setFieldValue('token0MaxPrice', formik.values.token0MaxPrice + 1)} isIconOnly radius="full" className="flex-none" size="sm">
+                                                                <PlusIcon height={16} width={16} />
+                                                            </Button>
+
+                                                        </div>
+                                                    </CardBody>
+                                                    <CardFooter className="p-4">
+                                                        <div className="text-center w-full text-sm">
+                                                            {!finishLoad ? '' : (!inverse
+                                                                ? <Fragment> {calcRound(formik.values.token0MaxPrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> </Fragment>
+                                                                : <Fragment> {calInverse(formik.values.token0MaxPrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>)}
+                                                        </div>
+                                                    </CardFooter>
+                                                </Card>
+                                                {
+                                                    formik.errors.token0MaxPrice
+                                                        ? <div className="text-xs text-danger pt-1 px-1"> {formik.errors.token0MaxPrice}</div>
+                                                        : null
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex justify-end gap-3 items-center mt-4">
                                         <div className="text-sm font-bold">
-                                        Inverse 
+                                            Inverse
                                         </div>
-                                        <Button variant="light" onClick={() => setInverse(!inverse)} isIconOnly radius="full" startContent={<ArrowsRightLeftIcon height={24} width={24} />} />    
+                                        <Button variant="light" onClick={() => setInverse(!inverse)} isIconOnly radius="full" startContent={<ArrowsRightLeftIcon height={24} width={24} />} />
                                     </div>
                                 </div>
-                                <Button 
+                                <Button
                                     size="lg" type="submit" className="mt-12 w-full font-bold bg-teal-500 text-white"> Add Liquidity </Button>
                             </div>
                         </div>
                     </form>
                 </CardBody>
             </Card>
-                                
+
         </div >
     )
 }

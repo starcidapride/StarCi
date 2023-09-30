@@ -3,6 +3,16 @@ const abi = [
         'inputs': [
             {
                 'internalType': 'address',
+                'name': '_factory',
+                'type': 'address'
+            },
+            {
+                'internalType': 'address',
+                'name': '_factoryOwner',
+                'type': 'address'
+            },
+            {
+                'internalType': 'address',
                 'name': '_token0',
                 'type': 'address'
             },
@@ -13,33 +23,28 @@ const abi = [
             },
             {
                 'internalType': 'uint256',
-                'name': '_token0MaxAmount',
+                'name': '_token0DepositAmount',
                 'type': 'uint256'
             },
             {
                 'internalType': 'uint256',
-                'name': '_token1MaxAmount',
+                'name': '_token1DepositAmount',
                 'type': 'uint256'
             },
             {
                 'internalType': 'uint256',
-                'name': '_token1MinPrice',
+                'name': '_token0BasePrice',
                 'type': 'uint256'
             },
             {
                 'internalType': 'uint256',
-                'name': '_token1MaxPrice',
+                'name': '_token0MaxPrice',
                 'type': 'uint256'
             },
             {
                 'internalType': 'uint256',
                 'name': '_protocolFee',
                 'type': 'uint256'
-            },
-            {
-                'internalType': 'address',
-                'name': '_factory',
-                'type': 'address'
             }
         ],
         'stateMutability': 'nonpayable',
@@ -62,6 +67,68 @@ const abi = [
             }
         ],
         'name': 'OwnershipTransferred',
+        'type': 'event'
+    },
+    {
+        'anonymous': false,
+        'inputs': [
+            {
+                'indexed': true,
+                'internalType': 'address',
+                'name': 'sender',
+                'type': 'address'
+            },
+            {
+                'indexed': false,
+                'internalType': 'uint256',
+                'name': 'amount0In',
+                'type': 'uint256'
+            },
+            {
+                'indexed': false,
+                'internalType': 'uint256',
+                'name': 'amount1In',
+                'type': 'uint256'
+            },
+            {
+                'indexed': false,
+                'internalType': 'uint256',
+                'name': 'amount0Out',
+                'type': 'uint256'
+            },
+            {
+                'indexed': false,
+                'internalType': 'uint256',
+                'name': 'amount1Out',
+                'type': 'uint256'
+            },
+            {
+                'indexed': true,
+                'internalType': 'address',
+                'name': 'to',
+                'type': 'address'
+            }
+        ],
+        'name': 'Swap',
+        'type': 'event'
+    },
+    {
+        'anonymous': false,
+        'inputs': [
+            {
+                'indexed': false,
+                'internalType': 'uint256',
+                'name': 'reserve0',
+                'type': 'uint256'
+            },
+            {
+                'indexed': false,
+                'internalType': 'uint256',
+                'name': 'reserve1',
+                'type': 'uint256'
+            }
+        ],
+        'name': 'Sync',
         'type': 'event'
     },
     {
@@ -92,7 +159,42 @@ const abi = [
     },
     {
         'inputs': [],
-        'name': 'liquidity',
+        'name': 'getProps',
+        'outputs': [
+            {
+                'components': [
+                    {
+                        'internalType': 'address',
+                        'name': 'token0',
+                        'type': 'address'
+                    },
+                    {
+                        'internalType': 'address',
+                        'name': 'token1',
+                        'type': 'address'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'token0Locked',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'token1Locked',
+                        'type': 'uint256'
+                    }
+                ],
+                'internalType': 'struct LiquidityPool.Props',
+                'name': '',
+                'type': 'tuple'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
+        'inputs': [],
+        'name': 'kConstant',
         'outputs': [
             {
                 'internalType': 'uint256',
@@ -137,6 +239,42 @@ const abi = [
         'type': 'function'
     },
     {
+        'inputs': [
+            {
+                'internalType': 'uint256',
+                'name': '_amountTokenIn',
+                'type': 'uint256'
+            },
+            {
+                'internalType': 'uint256',
+                'name': '_minAmountTokenOut',
+                'type': 'uint256'
+            },
+            {
+                'internalType': 'bool',
+                'name': '_isBuy',
+                'type': 'bool'
+            }
+        ],
+        'name': 'swap',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+    },
+    {
+        'inputs': [],
+        'name': 'testKConstant',
+        'outputs': [
+            {
+                'internalType': 'uint256',
+                'name': '',
+                'type': 'uint256'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
         'inputs': [],
         'name': 'token0',
         'outputs': [
@@ -151,7 +289,65 @@ const abi = [
     },
     {
         'inputs': [],
-        'name': 'token0MaxAmount',
+        'name': 'token0BasePrice',
+        'outputs': [
+            {
+                'internalType': 'uint256',
+                'name': '',
+                'type': 'uint256'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
+        'inputs': [],
+        'name': 'token0Constant',
+        'outputs': [
+            {
+                'internalType': 'uint256',
+                'name': '',
+                'type': 'uint256'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
+        'inputs': [],
+        'name': 'token0DepositAmount',
+        'outputs': [
+            {
+                'internalType': 'uint256',
+                'name': '',
+                'type': 'uint256'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
+        'inputs': [],
+        'name': 'token0MaxPrice',
+        'outputs': [
+            {
+                'internalType': 'uint256',
+                'name': '',
+                'type': 'uint256'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
+        'inputs': [
+            {
+                'internalType': 'uint256',
+                'name': '_token1Input',
+                'type': 'uint256'
+            }
+        ],
+        'name': 'token0Output',
         'outputs': [
             {
                 'internalType': 'uint256',
@@ -177,7 +373,7 @@ const abi = [
     },
     {
         'inputs': [],
-        'name': 'token1MaxAmount',
+        'name': 'token1Constant',
         'outputs': [
             {
                 'internalType': 'uint256',
@@ -190,7 +386,7 @@ const abi = [
     },
     {
         'inputs': [],
-        'name': 'token1MaxPrice',
+        'name': 'token1DepositAmount',
         'outputs': [
             {
                 'internalType': 'uint256',
@@ -202,8 +398,14 @@ const abi = [
         'type': 'function'
     },
     {
-        'inputs': [],
-        'name': 'token1MinPrice',
+        'inputs': [
+            {
+                'internalType': 'uint256',
+                'name': '_token0Input',
+                'type': 'uint256'
+            }
+        ],
+        'name': 'token1Output',
         'outputs': [
             {
                 'internalType': 'uint256',

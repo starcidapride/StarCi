@@ -30,7 +30,7 @@ export const ConnectWalletButton = () => {
     return (<Button color="default" 
         variant="light" 
         startContent={<MetamaskIcon/>}
-        onClick={connectWallet}
+        onPress={connectWallet}
     >
         Connect Wallet
     </Button>)

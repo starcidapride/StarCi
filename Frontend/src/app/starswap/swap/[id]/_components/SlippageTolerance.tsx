@@ -4,11 +4,11 @@ interface SlippageToleranceProps {
 }
 
 export const SlippageTolerance = (props: SlippageToleranceProps) => {
-    const {isOpen, onOpenChange} = useDisclosure()
+    const {isOpen, onOpen, onOpenChange} = useDisclosure()
     return <>
         <div className={`flex items-center justify-between ${props.className}`}> 
             <div className="font-bold text-xs" > Slippage Tolerance </div>
-            <Button variant="light" size="sm" > <span className="text-sm font-bold text-teal-500    "> 1% </span> </Button>
+            <Button variant="light" size="sm" onPress={onOpen}> <span className="text-sm font-bold text-teal-500"> 1% </span> </Button>
         </div>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}> 
             <ModalContent>
