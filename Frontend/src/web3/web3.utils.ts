@@ -2,7 +2,7 @@ import { ChainName, chainInfos } from '@utils'
 import Web3, { HttpProvider, WebSocketProvider } from 'web3'
 
 export const getHttpWeb3 = (chainName: ChainName, abortController?: AbortController) : Web3 => {
-    console.log(abortController)
+
     const _providerOptions = abortController
         ? {
             providerOptions: {

@@ -9,13 +9,15 @@ import {
 } from 'chart.js'
 
 import { Chart } from 'react-chartjs-2'
-import { faker } from '@faker-js/faker'
 import { useEffect, useRef, useState } from 'react'
-import { createGradient, teal300, teal50, teal500 } from '@utils'
+import { ChartItemData, appendItemsToFull, calcRedenomination, createGradient, deriveKeyFromTime, deriveTimeFromKeyEach3Hours, getDateKey, teal300, teal50, teal500 } from '@utils'
 import { ScopeReference } from '@app/_components/Commons'
 import { getWebsocketWeb3 } from '@web3/web3.utils'
 import { useSelector } from 'react-redux'
 import { RootState } from '@redux/store'
+import { getLiquidityPoolContract, getToken0, getToken1 } from '@web3/contracts/liquidity-pool/liquidity-pool.contract'
+import { EventLog } from 'web3-eth-contract'
+import { getDecimals, getSymbol } from '@web3/contracts/erc20'
 
 ChartJS.register(
     ...registerables
@@ -23,6 +25,7 @@ ChartJS.register(
 
 export const options: ChartOptions = {
     responsive: true,
+
     elements: {
         line: {
             borderJoinStyle: 'round',
@@ -48,19 +51,20 @@ export const options: ChartOptions = {
         x: {
             grid: {
                 display: false
-            }
+            },
+            ticks: {
+                maxRotation: 0,
+                callback: function(val, index) {
+                    return index % 3 === 0 ? this.getLabelForValue(val as number) : ''
+                },  
+            },
         },
         y: {
             grid: {
                 display: false
-            }
-        },
-        xAxis: {
-            ticks: {
-                maxTicksLimit: 10
-            }
+            },
+            suggestedMin: 100
         }
-
     }   
 }
 
@@ -69,32 +73,6 @@ interface PriceChartProps {
     className?: string,
 }
 
-export const deriveTimeFromKey = (key: number) => {
-    if (key < 0 || key > 47) return
-    const hour = Math.floor(key / 2)
-    const minute = key % 2 === 0 ? '00' : '30'
-    return `${hour}:${minute}`
-}
-
-export const deriveTimeFromKeyEach3Hours = (key: number) : string[] | null => {
-    if (key < 0 || key > 47) return null
-
-    const timeList: string[] = []
-
-    for (let i = 0; i < 48; i++){
-        let value : string 
-        if (i % 6 == 0){
-            const valueI = key - i / 6
-            const unsignedI = valueI < 0 ? valueI + 48 : valueI
-            value = deriveTimeFromKey(unsignedI)!
-        } else {
-            value = ''
-        }
-        timeList.push(value)
-    }
-    timeList.reverse()
-    return timeList
-}
 
 export const PriceChart = (props: PriceChartProps) => {
     const chainName = useSelector((state: RootState) => state.chainName.chainName)
@@ -102,21 +80,78 @@ export const PriceChart = (props: PriceChartProps) => {
 
     const [labels, setLabels] = useState<string[]>([])
 
+    const [data, setData] = useState<ChartItemData[] | null>(null)
+    
     const [chartData, setChartData] = useState<ChartData>({
         datasets: [],
     })
+
     const [finishLoad, setFinishLoad] = useState(false)
+
+    const [token0, setToken0] = useState<string | null>(null)
+    const [token1, setToken1] = useState<string | null>(null)
+
+    const [token0Symbol, setToken0Symbol] = useState<string | null>(null)
+    const [token1Symbol, setToken1Symbol] = useState<string | null>(null)
+
+    const [token0Decimals, setToken0Decimals] = useState<number | null>(null)
+    const [token1Decimals, setToken1Decimals] = useState<number | null>(null)
 
     useEffect(() => {
         const handleEffect = async () => {
+            const _token0 = await getToken0(chainName, props.poolAddress)
+            const _token1 = await getToken1(chainName, props.poolAddress)
+        
+            setToken0(_token0)
+            setToken1(_token1)
+
+            const _token0Symbol = await getSymbol(chainName, _token0!)
+            const _token1Symbol = await getSymbol(chainName, _token1!)
+
+            setToken0Symbol(_token0Symbol)
+            setToken1Symbol(_token1Symbol)
+
+            const _token0Decimals = await getDecimals(chainName, _token0!)
+            const _token1Decimals = await getDecimals(chainName, _token1!)
+
+            setToken0Decimals(Number.parseInt(_token0Decimals.toString()))
+            setToken1Decimals(Number.parseInt(_token1Decimals.toString()))
+
 
             const web3 = getWebsocketWeb3(chainName)
             
+            const contract = getLiquidityPoolContract(web3, props.poolAddress)
+
+            const syncEvents = await contract.getPastEvents('Sync', {
+                fromBlock: 0,
+                toBlock: 'latest'
+            })  
+
+            const _readableEvents: ChartItemData[] = []
+
+            for (const syncEvent of syncEvents){
+                const _event = syncEvent as EventLog
+
+                const block = await web3.eth.getBlock(_event.blockHash)
+                const time = new Date(Number(block.timestamp) * 1000)
+
+                _readableEvents.push(
+                    {   
+                        token0: _event.returnValues[0] as string,
+                        token1: _event.returnValues[1] as string,
+                        timeTick : getDateKey(time),
+                        time
+                    }
+                )
+            }
+
+            const _fullData : ChartItemData[] = appendItemsToFull(_readableEvents)
+
+            setData(_fullData)
+
             const currentDate = new Date()
-            const currentHour = currentDate.getHours()
-            const currentMinute = currentDate.getMinutes()
-            
-            const key = currentHour * 2 + (currentMinute >= 30 ? 1 : 0)
+
+            const key = getDateKey(currentDate)
 
             setLabels(deriveTimeFromKeyEach3Hours(key)!)
         }
@@ -133,8 +168,11 @@ export const PriceChart = (props: PriceChartProps) => {
                 labels,
                 datasets: [
                     {
-                        label: '',
-                        data: labels.map(() => faker.datatype.number({ min: -1000, max: 1000 })),
+                        label: token0Symbol!,
+                        data: labels.map((index) => calcRedenomination(
+                            data!.find(_data => _data.timeTick == deriveKeyFromTime(index))!
+                                .token0, token0Decimals!, 5
+                        )),
                         fill: true,
                         pointBorderColor: teal500,
                         pointBackgroundColor: teal500,       
@@ -153,6 +191,7 @@ export const PriceChart = (props: PriceChartProps) => {
             }
          
             setChartData(chartData)
+
             setFinishLoad(true)
 
             console.log('proccessed')

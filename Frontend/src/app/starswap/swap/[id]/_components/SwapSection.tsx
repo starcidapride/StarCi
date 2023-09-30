@@ -43,7 +43,8 @@ export const SwapSection = (props: SwapSectionProps) => {
         }),
         onSubmit: async (values) => {
 
-            const _tokenAllowance = await getAllowance(chainName,
+            const _tokenAllowance = await getAllowance(
+                chainName,
                 values.isBuy ? token1! : token0!,
                 account!,
                 props.poolAddress

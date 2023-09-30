@@ -1,4 +1,3 @@
-import { ScopeReference } from '@app/_components/Commons'
 import { ArrowSmallDownIcon } from '@heroicons/react/24/outline'
 import { Card, Divider, CardHeader, CardBody } from '@nextui-org/react'
 import { Address } from 'web3'
