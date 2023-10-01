@@ -105,3 +105,24 @@ export const swap = async (
         return null
     }   
 }
+
+export const getToken0Constant = async (chainName: ChainName, liquidityPool: Address) => {
+    try{ 
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, liquidityPool)
+        return await liquidityPoolContract.methods.token0Constant().call()
+    } catch(ex){
+        return null
+    }
+
+}
+
+export const getToken1Constant = async (chainName: ChainName, liquidityPool: Address) => {
+    try{
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, liquidityPool)
+        return await liquidityPoolContract.methods.token1Constant().call()
+    } catch(ex){
+        return null
+    }   
+}

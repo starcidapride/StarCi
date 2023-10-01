@@ -10,12 +10,12 @@ import {
 
 import { Chart } from 'react-chartjs-2'
 import { useEffect, useRef, useState } from 'react'
-import { ChartItemData, appendItemsToFull, calcRedenomination, createGradient, deriveKeyFromTime, deriveTimeFromKeyEach3Hours, getDateKey, teal300, teal50, teal500 } from '@utils'
+import { ChartItemData, calcRedenomination, convertSyncEvent, createGradient, teal300, teal50, teal500 } from '@utils'
 import { ScopeReference } from '@app/_components/Commons'
 import { getWebsocketWeb3 } from '@web3/web3.utils'
 import { useSelector } from 'react-redux'
 import { RootState } from '@redux/store'
-import { getLiquidityPoolContract, getToken0, getToken1 } from '@web3/contracts/liquidity-pool/liquidity-pool.contract'
+import { getLiquidityPoolContract, getToken0, getToken0Constant, getToken1, getToken1Constant } from '@web3/contracts/liquidity-pool/liquidity-pool.contract'
 import { EventLog } from 'web3-eth-contract'
 import { getDecimals, getSymbol } from '@web3/contracts/erc20'
 
@@ -97,6 +97,10 @@ export const PriceChart = (props: PriceChartProps) => {
     const [token0Decimals, setToken0Decimals] = useState<number | null>(null)
     const [token1Decimals, setToken1Decimals] = useState<number | null>(null)
 
+    
+    const [token0Constant, setToken0Constant] = useState<number | null>(null)
+    const [token1Constant, setToken1Constant] = useState<number | null>(null)
+
     useEffect(() => {
         const handleEffect = async () => {
             const _token0 = await getToken0(chainName, props.poolAddress)
@@ -114,8 +118,15 @@ export const PriceChart = (props: PriceChartProps) => {
             const _token0Decimals = await getDecimals(chainName, _token0!)
             const _token1Decimals = await getDecimals(chainName, _token1!)
 
+            console.log(_token0Decimals)
             setToken0Decimals(Number.parseInt(_token0Decimals.toString()))
             setToken1Decimals(Number.parseInt(_token1Decimals.toString()))
+
+            const _token0Constant = await getToken0Constant(chainName, props.poolAddress)
+            const _token1Constant = await getToken1Constant(chainName,  props.poolAddress)
+            
+            setToken0Constant(Number.parseInt(_token0Constant!.toString()))
+            setToken1Constant(Number.parseInt(_token1Constant!.toString()))
 
 
             const web3 = getWebsocketWeb3(chainName)
@@ -126,34 +137,22 @@ export const PriceChart = (props: PriceChartProps) => {
                 fromBlock: 0,
                 toBlock: 'latest'
             })  
-
-            const _readableEvents: ChartItemData[] = []
-
-            for (const syncEvent of syncEvents){
-                const _event = syncEvent as EventLog
-
-                const block = await web3.eth.getBlock(_event.blockHash)
-                const time = new Date(Number(block.timestamp) * 1000)
-
-                _readableEvents.push(
-                    {   
-                        token0: _event.returnValues[0] as string,
-                        token1: _event.returnValues[1] as string,
-                        timeTick : getDateKey(time),
-                        time
-                    }
+            
+            const chartItems: ChartItemData[] = []
+            for (const event of syncEvents){
+                const _readableEvent = await convertSyncEvent(
+                    event as EventLog,
+                    chainName,
+                    token0Decimals!,
+                    token1Decimals!,
+                    token0Constant!,
+                    token1Constant!
                 )
+                chartItems.push(_readableEvent)
             }
 
-            const _fullData : ChartItemData[] = appendItemsToFull(_readableEvents)
-
-            setData(_fullData)
-
-            const currentDate = new Date()
-
-            const key = getDateKey(currentDate)
-
-            setLabels(deriveTimeFromKeyEach3Hours(key)!)
+            setLabels(chartItems.map(item => item.time.toLocaleString()))
+            setData(chartItems)
         }
         handleEffect()
     }, [])
@@ -169,9 +168,9 @@ export const PriceChart = (props: PriceChartProps) => {
                 datasets: [
                     {
                         label: token0Symbol!,
-                        data: labels.map((index) => calcRedenomination(
-                            data!.find(_data => _data.timeTick == deriveKeyFromTime(index))!
-                                .token0, token0Decimals!, 5
+                        data: labels.map((label) => calcRedenomination(
+                            data!.find(_data => _data.time.toLocaleString() == label)!
+                                .token0Price, token0Decimals!, 5
                         )),
                         fill: true,
                         pointBorderColor: teal500,
