@@ -1,23 +1,22 @@
 'use client'
 import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button, Spinner } from '@nextui-org/react'
-import { Address } from 'web3'
+import Web3, { Address } from 'web3'
 import {
     ChartData,
     Chart as ChartJS,
     ChartOptions,
     registerables
 } from 'chart.js'
-
 import { Chart } from 'react-chartjs-2'
-import { useEffect, useRef, useState } from 'react'
-import { ChartItemData, calcRedenomination, convertSyncEvent, createGradient, teal300, teal50, teal500 } from '@utils'
+import { useEffect, useReducer, useRef, useState } from 'react'
+import { ChartTick, convertSyncEvent, createGradient, TEAL_300, TEAL_50, TEAL_500 } from '@utils'
 import { ScopeReference } from '@app/_components/Commons'
-import { getWebsocketWeb3 } from '@web3/web3.utils'
 import { useSelector } from 'react-redux'
-import { RootState } from '@redux/store'
-import { getLiquidityPoolContract, getToken0, getToken0Constant, getToken1, getToken1Constant } from '@web3/contracts/liquidity-pool/liquidity-pool.contract'
+import { RootState } from '@redux'
+import { getLiquidityPoolContract, getToken0, getToken0Constant, getToken1, getToken1Constant } from '@web3'
 import { EventLog } from 'web3-eth-contract'
-import { getDecimals, getSymbol } from '@web3/contracts/erc20'
+import { getDecimals, getSymbol, getWebsocketWeb3 } from '@web3'
+import { initialTokenState, tokenReducer } from '@app/starswap/_extras'
 
 ChartJS.register(
     ...registerables
@@ -37,7 +36,7 @@ export const options: ChartOptions = {
             display: false,
         },
         tooltip: {
-            bodyColor: teal500,
+            bodyColor: TEAL_500,
             displayColors: false,
             bodyFont: { weight: 'bold' },
             callbacks: {
@@ -75,12 +74,18 @@ interface PriceChartProps {
 
 
 export const PriceChart = (props: PriceChartProps) => {
+    
     const chainName = useSelector((state: RootState) => state.chainName.chainName)
+
+    const [tokenState, tokenDispatch] = useReducer(tokenReducer, initialTokenState)
+    
     const chartRef = useRef<ChartJS>(null)
+
+    const web3 = useRef<Web3>(getWebsocketWeb3(chainName))
 
     const [labels, setLabels] = useState<string[]>([])
 
-    const [data, setData] = useState<ChartItemData[] | null>(null)
+    const [data, setData] = useState<ChartTick[] | null>(null)
     
     const [chartData, setChartData] = useState<ChartData>({
         datasets: [],
@@ -88,65 +93,57 @@ export const PriceChart = (props: PriceChartProps) => {
 
     const [finishLoad, setFinishLoad] = useState(false)
 
-    const [token0, setToken0] = useState<string | null>(null)
-    const [token1, setToken1] = useState<string | null>(null)
-
-    const [token0Symbol, setToken0Symbol] = useState<string | null>(null)
-    const [token1Symbol, setToken1Symbol] = useState<string | null>(null)
-
-    const [token0Decimals, setToken0Decimals] = useState<number | null>(null)
-    const [token1Decimals, setToken1Decimals] = useState<number | null>(null)
-
-    
-    const [token0Constant, setToken0Constant] = useState<number | null>(null)
-    const [token1Constant, setToken1Constant] = useState<number | null>(null)
-
     useEffect(() => {
         const handleEffect = async () => {
+            
             const _token0 = await getToken0(chainName, props.poolAddress)
+            if (_token0 == null) return
+            tokenDispatch({type: 'SET_TOKEN0', payload: _token0})
+
             const _token1 = await getToken1(chainName, props.poolAddress)
-        
-            setToken0(_token0)
-            setToken1(_token1)
+            if (_token1 == null) return
+            tokenDispatch({type: 'SET_TOKEN1', payload: _token1})
 
-            const _token0Symbol = await getSymbol(chainName, _token0!)
-            const _token1Symbol = await getSymbol(chainName, _token1!)
+            const _token0Symbol = await getSymbol(chainName, _token0)
+            if (_token0Symbol == null) return
+            tokenDispatch({type: 'SET_TOKEN0_SYMBOL', payload: _token0Symbol})
+    
+            const _token1Symbol = await getSymbol(chainName, _token1)
+            if (_token1Symbol == null) return
+            tokenDispatch({type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol})
+    
+            const _token0Decimals = await getDecimals(chainName, _token0)
+            if (_token0Decimals == null) return
+            tokenDispatch({type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals})
+                
+            const _token1Decimals = await getDecimals(chainName, _token1)
+            if (_token1Decimals == null) return
+            tokenDispatch({type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals})
 
-            setToken0Symbol(_token0Symbol)
-            setToken1Symbol(_token1Symbol)
+            const _token0Constant = await getToken0Constant(chainName, _token0)
+            if (_token0Constant == null) return
+            tokenDispatch({type: 'SET_TOKEN0_CONSTANT', payload: _token0Constant})
+                
+            const _token1Constant = await getToken1Constant(chainName, _token1)
+            if (_token1Constant == null) return
+            tokenDispatch({type: 'SET_TOKEN1_CONSTANT', payload: _token1Constant})
 
-            const _token0Decimals = await getDecimals(chainName, _token0!)
-            const _token1Decimals = await getDecimals(chainName, _token1!)
-
-            console.log(_token0Decimals)
-            setToken0Decimals(Number.parseInt(_token0Decimals.toString()))
-            setToken1Decimals(Number.parseInt(_token1Decimals.toString()))
-
-            const _token0Constant = await getToken0Constant(chainName, props.poolAddress)
-            const _token1Constant = await getToken1Constant(chainName,  props.poolAddress)
-            
-            setToken0Constant(Number.parseInt(_token0Constant!.toString()))
-            setToken1Constant(Number.parseInt(_token1Constant!.toString()))
-
-
-            const web3 = getWebsocketWeb3(chainName)
-            
-            const contract = getLiquidityPoolContract(web3, props.poolAddress)
+            const contract = getLiquidityPoolContract(web3.current, props.poolAddress)
 
             const syncEvents = await contract.getPastEvents('Sync', {
                 fromBlock: 0,
                 toBlock: 'latest'
             })  
             
-            const chartItems: ChartItemData[] = []
+            const chartItems: ChartTick[] = []
             for (const event of syncEvents){
                 const _readableEvent = await convertSyncEvent(
                     event as EventLog,
                     chainName,
-                    token0Decimals!,
-                    token1Decimals!,
-                    token0Constant!,
-                    token1Constant!
+                    tokenState.token0Decimals,
+                    tokenState.token1Decimals,
+                    tokenState.token0Constant,
+                    tokenState.token1Constant
                 )
                 chartItems.push(_readableEvent)
             }
@@ -167,19 +164,17 @@ export const PriceChart = (props: PriceChartProps) => {
                 labels,
                 datasets: [
                     {
-                        label: token0Symbol!,
-                        data: labels.map((label) => calcRedenomination(
-                            data!.find(_data => _data.time.toLocaleString() == label)!
-                                .token0Price, token0Decimals!, 5
-                        )),
+                        label: tokenState.token0Symbol,
+                        data: [],
                         fill: true,
-                        pointBorderColor: teal500,
-                        pointBackgroundColor: teal500,       
-                        borderColor: teal500,
-                        backgroundColor: createGradient(chart.ctx,
+                        pointBorderColor: TEAL_500,
+                        pointBackgroundColor: TEAL_500,       
+                        borderColor: TEAL_500,
+                        backgroundColor: createGradient(
+                            chart.ctx,
                             chart.chartArea,
-                            teal50,
-                            teal300,
+                            TEAL_50,
+                            TEAL_300,
                             true,
                         ),
                         pointStyle: 'circle',
@@ -219,7 +214,7 @@ export const PriceChart = (props: PriceChartProps) => {
                     ? <div className="h-80 place-content-center flex">
                         <Spinner color="default" />
                     </div>
-                    : <div></div>
+                    : null
             }
             <div className="flex flex-row-reverse">
                 <ScopeReference address={props.poolAddress} className="mt-3 font-bold"/>

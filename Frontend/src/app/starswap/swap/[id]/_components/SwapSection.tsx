@@ -2,16 +2,16 @@ import { BalanceShow } from '@app/_components/Commons/BalanceShow'
 import { TokenShow } from '@app/_components/Commons/TokenShow'
 import { ArrowsUpDownIcon } from '@heroicons/react/24/outline'
 import { Card, CardHeader, CardBody, Divider, Textarea, Button, Spinner } from '@nextui-org/react'
-import { RootState } from '@redux/store'
-import { TIME_OUT, calcRedenomination, calcNRedenomination, calcInt } from '@utils'
-import { approve, getAllowance, getBalance, getDecimals, getSymbol } from '@web3/contracts/erc20'
-import { getToken0, getToken0Output, getToken1, getToken1Output, swap } from '@web3/contracts/liquidity-pool/liquidity-pool.contract'
-import { useEffect, useRef, useState } from 'react'
+import { RootState } from '@redux'
+import { TIME_OUT, calcRedenomination, calcIRedenomination } from '@utils'
+import { getToken0, getToken0Output, getToken1, getToken1Output, swap,  approve, getAllowance, getBalance, getDecimals, getSymbol  } from '@web3'
+import { useEffect, useReducer, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Address } from 'web3'
 import { SlippageTolerance } from './SlippageTolerance'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import { initialTokenState, tokenReducer } from '@app/starswap/_extras'
 
 interface SwapSectionProps {
     poolAddress: Address
@@ -22,6 +22,8 @@ export const SwapSection = (props: SwapSectionProps) => {
     const chainName = useSelector((state: RootState) => state.chainName.chainName)
     const web3 = useSelector((state: RootState) => state.web3.web3)
     const account = useSelector((state: RootState) => state.account.account)
+    
+    const [tokenState, tokenDispatch] = useReducer(tokenReducer, initialTokenState)
 
     const formik = useFormik({
         initialValues: {
@@ -43,100 +45,89 @@ export const SwapSection = (props: SwapSectionProps) => {
         }),
         onSubmit: async (values) => {
 
+            if (web3 == null) return
+
             const _tokenAllowance = await getAllowance(
                 chainName,
-                values.isBuy ? token1! : token0!,
-                account!,
+                values.isBuy ? tokenState.token1 : tokenState.token0,
+                account,
                 props.poolAddress
             )
 
+            if (_tokenAllowance == null) return
+
             const input = values.isBuy ? values.token1Amount : values.token0Amount
             const output = values.isBuy ? values.token0Amount : values.token1Amount
-            const decimals = values.isBuy ? token1Decimals! : token0Decimals!
+            const token = values.isBuy ? tokenState.token1 : tokenState.token0
+            const decimals = values.isBuy ? tokenState.token1Decimals : tokenState.token0Decimals
             const minOutput = output * (1 - values.slippage)
-            if (calcInt(_tokenAllowance) < Number.parseInt(calcNRedenomination(input, decimals!)!)) {
+
+            if (_tokenAllowance < calcIRedenomination(input, decimals)) {
                 await approve(
-                    web3!,
-                    account!,
-                    values.isBuy ? token1! : token0!,
+                    web3,
+                    account,
+                    token,
                     props.poolAddress,
-                    calcNRedenomination(input, decimals)!
+                    calcIRedenomination(input, decimals)
                 )
             }
 
-            const tx = await swap(
-                web3!,
-                chainName,
-                account!,
+            const txHash = await swap(
+                web3,
+                account,
                 props.poolAddress,
-                calcNRedenomination(input,
-                    values.isBuy
-                        ? token1Decimals!
-                        : token0Decimals!)!,
-                calcNRedenomination(minOutput, decimals)!,
+                calcIRedenomination(input, decimals),
+                calcIRedenomination(minOutput, decimals),
                 values.isBuy
             )
 
-            console.log(account, props.poolAddress + calcNRedenomination(input, token1Decimals!)! + calcNRedenomination(minOutput, token1Decimals!)!)
+            console.log(txHash)
         }
     })
 
     console.log(formik.values)
 
-    const [token0, setToken0] = useState<string | null>(null)
-    const [token1, setToken1] = useState<string | null>(null)
-
-    const [token0Symbol, setToken0Symbol] = useState<string | null>(null)
-    const [token1Symbol, setToken1Symbol] = useState<string | null>(null)
-
-    const [token0Balance, setToken0Balance] = useState<number>(0)
-    const [token1Balance, setToken1Balance] = useState<number>(0)
-
-    const [token0Decimals, setToken0Decimals] = useState<number | null>(null)
-    const [token1Decimals, setToken1Decimals] = useState<number | null>(null)
-
     const [finishLoad, setFinishLoad] = useState(false)
-
-    console.log(token0)
     
     useEffect(
         () => {
             const handleEffect = async () => {
                 const _token0 = await getToken0(chainName, props.poolAddress)
+                if (_token0 == null) return
+                tokenDispatch({type: 'SET_TOKEN0', payload: _token0})
+
                 const _token1 = await getToken1(chainName, props.poolAddress)
-        
-                setToken0(_token0)
-                setToken1(_token1)
+                if (_token1 == null) return
+                tokenDispatch({type: 'SET_TOKEN1', payload: _token1})
 
-                const _token0Symbol = await getSymbol(chainName, _token0!)
-                const _token1Symbol = await getSymbol(chainName, _token1!)
+                const _token0Symbol = await getSymbol(chainName, _token0)
+                if (_token0Symbol == null) return
+                tokenDispatch({type: 'SET_TOKEN0_SYMBOL', payload: _token0Symbol})
+    
+                const _token1Symbol = await getSymbol(chainName, _token1)
+                if (_token1Symbol == null) return
+                tokenDispatch({type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol})
+    
+                const _token0Decimals = await getDecimals(chainName, _token0)
+                if (_token0Decimals == null) return
+                tokenDispatch({type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals})
+                
+                const _token1Decimals = await getDecimals(chainName, _token1)
+                if (_token1Decimals == null) return
+                tokenDispatch({type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals})
 
-                setToken0Symbol(_token0Symbol)
-                setToken1Symbol(_token1Symbol)
-
-                const _token0Decimals = await getDecimals(chainName, _token0!)
-                const _token1Decimals = await getDecimals(chainName, _token1!)
-
-                setToken0Decimals(Number.parseInt(_token0Decimals.toString()))
-                setToken1Decimals(Number.parseInt(_token1Decimals.toString()))
-
-                if (web3 && account) {
-                    const _token0Balance = await getBalance(chainName, _token0!, account)
-                    const _token1Balance = await getBalance(chainName, _token1!, account)
-
-                    setToken0Balance(calcRedenomination(_token0Balance, _token0Decimals, 5))
-                    setToken1Balance(calcRedenomination(_token1Balance, _token1Decimals, 5))
-                }
-
-                setToken0Symbol(_token0Symbol)
-                setToken1Symbol(_token1Symbol)
-
-
+                // const _token0Balance = await getBalance(chainName, _token0, account)
+                // if (_token0Balance == null) return 
+                // tokenDispatch({type: 'SET_TOKEN0_BALANCE', payload: calcRedenomination(_token0Balance, _token0Decimals, 5)})
+                        
+                // const _token1Balance = await getBalance(chainName, _token1, account)
+                // if (_token1Balance == null) return 
+                // tokenDispatch({type: 'SET_TOKEN1_BALANCE', payload: calcRedenomination(_token1Balance, _token0Decimals, 5)})
+    
                 setFinishLoad(true)
             }
             handleEffect()
-        }
-        , []
+        }, []
     )
 
     const preventLoopToken0 = useRef(false)
@@ -148,7 +139,6 @@ export const SwapSection = (props: SwapSectionProps) => {
     useEffect(
         () => {
             if (!preventLoopToken0.current) {
-                console.log('called 0')
                 const controller = new AbortController()
                 const handleEffect = async () => {
                     const token0Amount = formik.values.token0Amount
@@ -157,11 +147,17 @@ export const SwapSection = (props: SwapSectionProps) => {
                         chainName,
                         controller,
                         props.poolAddress,
-                        calcNRedenomination(token0Amount, token0Decimals!)!
+                        calcIRedenomination(token0Amount, tokenState.token0Decimals)
                     )
+
                     if (_token1Out != null) {
-                        formik.setFieldValue('token1Amount', calcRedenomination(_token1Out, token1Decimals!, 5))
+                        formik.setFieldValue('token1Amount', calcRedenomination(
+                            _token1Out, 
+                            tokenState.token1Decimals, 
+                            5
+                        ))
                     }
+
                     setSyncToken1(false)
                 }
                 const delayDebounceFn = setTimeout(() => handleEffect(), TIME_OUT)
@@ -188,12 +184,13 @@ export const SwapSection = (props: SwapSectionProps) => {
                         chainName,
                         controller,
                         props.poolAddress,
-                        calcNRedenomination(token1Amount, token1Decimals!)!
+                        calcIRedenomination(token1Amount, tokenState.token1Decimals)
                     )
-                    console.log(calcNRedenomination(token1Amount, token1Decimals!)!)
+                    
                     if (_token0Out != null) {
-                        formik.setFieldValue('token0Amount', calcRedenomination(_token0Out, token0Decimals!, 5))
+                        formik.setFieldValue('token0Amount', calcRedenomination(_token0Out, tokenState.token1Decimals, 5))
                     }
+
                     setSyncToken0(false)
                 }
                 const delayDebounceFn = setTimeout(() => handleEffect(), TIME_OUT)
@@ -218,8 +215,8 @@ export const SwapSection = (props: SwapSectionProps) => {
                 <div className="space-y-4">               
                     <div>
                         <div className="flex justify-between">
-                            <TokenShow finishLoad={finishLoad} symbol={token0Symbol!} />
-                            <BalanceShow balance={token0Balance} finishLoad={finishLoad} />
+                            <TokenShow finishLoad={finishLoad} symbol={tokenState.token0Symbol!} />
+                            <BalanceShow balance={tokenState.token0Balance} finishLoad={finishLoad} />
                         </div>
 
                         <Textarea
@@ -249,8 +246,8 @@ export const SwapSection = (props: SwapSectionProps) => {
 
                     <div>
                         <div className="flex justify-between">
-                            <TokenShow finishLoad={finishLoad} image="/icons/stable-coins/USDT.svg" symbol={token1Symbol!} />
-                            <BalanceShow balance={token1Balance} finishLoad={finishLoad} />
+                            <TokenShow finishLoad={finishLoad} image="/icons/stable-coins/USDT.svg" symbol={tokenState.token1Symbol!} />
+                            <BalanceShow balance={tokenState.token1Balance} finishLoad={finishLoad} />
                         </div>
                         <Textarea
                             id="token1Amount"

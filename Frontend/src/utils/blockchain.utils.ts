@@ -46,5 +46,5 @@ export const chainInfos : Record<number, ChainInfo> = {
     }
 }
 
-export const gasPrice = Web3.utils.toWei(25, 'gwei')
-export const gasLimit = 3000000
+export const GAS_PRICE = Web3.utils.toWei(25, 'gwei')
+export const GAS_LIMIT = 3000000

@@ -1,18 +1,17 @@
 'use client'
 import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Input, Select, SelectItem } from '@nextui-org/react'
-import { ChooseToken } from '@app/starswap/_components/ChooseToken'
-import { ArrowsRightLeftIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
+import { SelectToken } from '@app/starswap/_components/SelectToken'
+import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import { Fragment, useEffect, useState } from 'react'
-import { approve, getAllowance, getBalance, getDecimals, getSymbol } from '@web3/contracts/erc20'
+import { Fragment, useEffect, useReducer, useState } from 'react'
+import { approve, getAllowance, getBalance, getDecimals, getSymbol, createLiquidityPool } from '@web3'
 import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch, RootState } from '@redux/store'
-import { calInverse, calcNRedenomination, calcRound, calcExponent, ChainName, chainInfos, calcInt, calcRedenomination } from '@utils'
-import { createLiquidityPool } from '@web3/contracts/factory/factory.contract'
-import { TransactionType, setTransactionType, setVisible } from '@redux/slices/confirm-transaction.slice'
+import { AppDispatch, RootState, TransactionType, setTransactionType, setVisible } from '@redux'
+import { calcIRedenomination, calcRound, chainInfos, calcRedenomination, calcExponent } from '@utils'
 import { BalanceShow } from '@app/_components/Commons/BalanceShow'
 import { TokenShow } from '@app/_components/Commons/TokenShow'
+import { initialTokenState, tokenReducer } from '@app/starswap/_extras'
 
 export const MainForm = () => {
 
@@ -21,14 +20,15 @@ export const MainForm = () => {
     const chainName = useSelector((state: RootState) => state.chainName.chainName)
     const dispatch: AppDispatch = useDispatch()
 
+    const [tokenState, tokenDispatch] = useReducer(tokenReducer, initialTokenState)
+
     const handleSelectTokenSubmit = (values: {
         tokenAddress: string
     }, isToken0: boolean) => {
         formik.setFieldValue(isToken0 ? 'token0' : 'token1', values.tokenAddress)
     }
 
-    const [token0Balance, setToken0Balance] = useState<number>(0)
-    const [token1Balance, setToken1Balance] = useState<number>(0)
+    console.log(tokenState)
 
     const formik = useFormik({
         initialValues: {
@@ -50,12 +50,12 @@ export const MainForm = () => {
             isToken0Sell: Yup.boolean(),
             token0DepositAmount: Yup.number()
                 .min(0, 'Input must be greater than or equal to 0')
-                .max(token0Balance, 'Input must not exceed your available balance')
+                .max(tokenState.token0Balance, 'Input must not exceed your available balance')
                 .required('This field is required'),
             token1DepositAmount: Yup
                 .number()
                 .min(0, 'Input must be greater than or equal to 0')
-                .max(token1Balance, 'Input must not exceed your available balance')
+                .max(tokenState.token1Balance, 'Input must not exceed your available balance')
                 .required('This field is required'),
             token0BasePrice: Yup.number()
                 .min(0, 'Input must be greater than or equal to 0').required('This field is required')
@@ -67,53 +67,59 @@ export const MainForm = () => {
         }),
 
         onSubmit: values => {
-            console.log((values.protocolFee * calcExponent(5)).toString())
-            console.log((values.token0BasePrice * calcExponent(token1Decimals!)).toString())
+            if (web3 == null) return
 
             const handleSubmit = async () => {
                 dispatch(setVisible(true))
                 dispatch(setTransactionType(TransactionType.Swap))
 
                 const _factoryAddress = chainInfos[chainName].factoryContract
-                const _token0Allowance = await getAllowance(chainName, values.token0, account!, _factoryAddress)
-                const _token1Allowance = await getAllowance(chainName, values.token1, account!, _factoryAddress)
-
-                if (calcInt(_token0Allowance) < values.token0DepositAmount * calcExponent(token0Decimals!)) {
+                
+                const _token0Allowance = await getAllowance(chainName, values.token0, account, _factoryAddress)
+                if (_token0Allowance == null) return
+                const _iToken0DepositAmount = calcIRedenomination(values.token0DepositAmount, tokenState.token0Decimals)
+                if (_token0Allowance < _iToken0DepositAmount) {
                     await approve(
-                        web3!,
-                        account!,
+                        web3,
+                        account,
                         values.token0,
                         _factoryAddress,
-                        (values.token0DepositAmount * calcExponent(token0Decimals!)).toString()
+                        _iToken0DepositAmount - _token0Allowance
                     )
                 }
 
-                if (calcInt(_token1Allowance) < values.token0DepositAmount * calcExponent(token1Decimals!)) {
+                const _token1Allowance = await getAllowance(chainName, values.token1, account, _factoryAddress)
+                if (_token1Allowance == null) return
+                const _iToken1DepositAmount = calcIRedenomination(values.token1DepositAmount, tokenState.token1Decimals)
+                if (_token1Allowance < _iToken1DepositAmount) {
                     await approve(
-                        web3!,
-                        account!,
+                        web3,
+                        account,
                         values.token1,
                         _factoryAddress,
-                        (values.token1DepositAmount * calcExponent(token1Decimals!)).toString()
+                        _iToken1DepositAmount - _token1Allowance
                     )
                 }
 
-                const tx = await createLiquidityPool(
-                    web3!,
-                    ChainName.KalytnTestnet,
-                    account!,
-                    values.isToken0Sell ? values.token0 : values.token1,
-                    values.isToken0Sell ? values.token1 : values.token0,
-                    values.isToken0Sell ?
-                    calcNRedenomination(values.token0DepositAmount, token0Decimals!)!
-                        : calcNRedenomination(values.token1DepositAmount, token1Decimals!)!,
-                    values.isToken0Sell ?
-                    calcNRedenomination(values.token1DepositAmount, token1Decimals!)!
-                        : calcNRedenomination(values.token0DepositAmount, token0Decimals!)!,
-                        calcNRedenomination(values.token0BasePrice, token0Decimals!)!,
-                    calcNRedenomination(values.token0MaxPrice, token0Decimals!)!,
-                    calcNRedenomination(values.protocolFee, 5)!
+                const _actualToken0 = values.isToken0Sell ? values.token0 : values.token1
+                const _actualToken1 = values.isToken0Sell ? values.token1 : values.token0
+                const _actualToken0DepositAmount = values.isToken0Sell ? _iToken0DepositAmount : _iToken1DepositAmount
+                const _actualToken1DepositAmount = values.isToken0Sell ? _iToken1DepositAmount : _iToken0DepositAmount
+
+                const txHash = await createLiquidityPool(
+                    web3,
+                    chainName,
+                    account,
+                    _actualToken0,
+                    _actualToken1,
+                    _actualToken0DepositAmount,
+                    _actualToken1DepositAmount,
+                    calcIRedenomination(values.token0BasePrice, tokenState.token0Decimals),
+                    calcIRedenomination(values.token0MaxPrice, tokenState.token1Decimals),
+                    calcIRedenomination(values.protocolFee, 5)
                 )
+
+                console.log(txHash)
             }
             handleSubmit()
         }
@@ -123,42 +129,36 @@ export const MainForm = () => {
 
     const [finishLoad, setFinishLoad] = useState(false)
 
-    const [token0Symbol, setToken0Symbol] = useState<string | null>(null)
-    const [token1Symbol, setToken1Symbol] = useState<string | null>(null)
-
-    const [token0Decimals, setToken0Decimals] = useState<number | null>(null)
-    const [token1Decimals, setToken1Decimals] = useState<number | null>(null)
-
-    const [inverse, setInverse] = useState(false)
-
     useEffect(() => {
+
         const token0 = formik.values.token0
         const token1 = formik.values.token1
+        console.log(token0 + token1)
         if (token0 && token1) {
-
             const handleEffect = async () => {
-                const _token0Symbol = await getSymbol(ChainName.KalytnTestnet, formik.values.token0)
-                const _token1Symbol = await getSymbol(ChainName.KalytnTestnet, formik.values.token1)
+                const _token0Symbol = await getSymbol(chainName, formik.values.token0)
+                if (_token0Symbol == null) return
+                tokenDispatch({type: 'SET_TOKEN0_SYMBOL', payload: _token0Symbol})
 
-                setToken0Symbol(_token0Symbol)
-                setToken1Symbol(_token1Symbol)
+                const _token1Symbol = await getSymbol(chainName, formik.values.token1)
+                if (_token1Symbol == null) return
+                tokenDispatch({type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol})
 
-                const _token0Decimals = await getDecimals(ChainName.KalytnTestnet, formik.values.token0)
-                const _token1Decimals = await getDecimals(ChainName.KalytnTestnet, formik.values.token1)
-
-                setToken0Decimals(Number.parseInt(_token0Decimals.toString()))
-                setToken1Decimals(Number.parseInt(_token1Decimals.toString()))
-
-                if (web3 && account) {
-                    const _token0Balance = await getBalance(ChainName.KalytnTestnet, formik.values.token0, account)
-                    const _token1Balance = await getBalance(ChainName.KalytnTestnet, formik.values.token1, account)
-
-                    setToken0Balance(calcRedenomination(_token0Balance, _token0Decimals, 5))
-                    setToken1Balance(calcRedenomination(_token1Balance, _token1Decimals, 5))
-                }
-
-                setToken0Symbol(_token0Symbol)
-                setToken1Symbol(_token1Symbol)
+                const _token0Decimals = await getDecimals(chainName, formik.values.token0)
+                if (_token0Decimals == null) return
+                tokenDispatch({type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals})
+            
+                const _token1Decimals = await getDecimals(chainName, formik.values.token1)
+                if (_token1Decimals == null) return
+                tokenDispatch({type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals})
+                
+                const _token0Balance = await getBalance(chainName, formik.values.token0, account)
+                if (_token0Balance == null) return 
+                tokenDispatch({type: 'SET_TOKEN0_BALANCE', payload: calcRedenomination(_token0Balance, _token0Decimals, 5)})
+                    
+                const _token1Balance = await getBalance(chainName, formik.values.token1, account)
+                if (_token1Balance == null) return 
+                tokenDispatch({type: 'SET_TOKEN1_BALANCE', payload: calcRedenomination(_token1Balance, _token0Decimals, 5)})
 
                 setFinishLoad(true)
             }
@@ -198,15 +198,15 @@ export const MainForm = () => {
                                 <div>
                                     <div className="text-sm font-bold text-teal-500"> Choose Token Pair </div>
                                     <div className="flex items-center gap-4 mt-6">
-                                        <ChooseToken
-                                            chainName={ChainName.KalytnTestnet}
+                                        <SelectToken
+                                            chainName={chainName}
                                             className="grow"
                                             tokenAddress={formik.values.token0}
                                             otherTokenAddress={formik.values.token1}
                                             handleSubmit={values => handleSelectTokenSubmit(values, true)} />
                                         <PlusIcon height={24} width={24} />
-                                        <ChooseToken
-                                            chainName={ChainName.KalytnTestnet}
+                                        <SelectToken
+                                            chainName={chainName}
                                             className="grow"
                                             tokenAddress={formik.values.token1}
                                             otherTokenAddress={formik.values.token0}
@@ -235,14 +235,14 @@ export const MainForm = () => {
                                     <Select
                                         size="sm"
                                         isDisabled={!finishLoad}
-                                        items={(token0Symbol && token1Symbol) ? [
+                                        items={(tokenState.token0Symbol && tokenState.token1Symbol) ? [
                                             {
                                                 address: formik.values.token0,
-                                                symbol: token0Symbol
+                                                symbol: tokenState.token0Symbol
                                             },
                                             {
                                                 address: formik.values.token1,
-                                                symbol: token1Symbol
+                                                symbol: tokenState.token1Symbol
                                             }
                                         ] : []}
                                         label="Sell Token"
@@ -256,8 +256,8 @@ export const MainForm = () => {
                                     <div className="grid grid-cols-2 gap-4 mt-5 ">
                                         <div>
                                             <div className="flex justify-between">
-                                                <TokenShow finishLoad={finishLoad} symbol={token0Symbol!} />
-                                                <BalanceShow balance={token0Balance} finishLoad={finishLoad} />
+                                                <TokenShow finishLoad={finishLoad} symbol={tokenState.token0Symbol} />
+                                                <BalanceShow balance={tokenState.token0Balance} finishLoad={finishLoad} />
                                             </div>
                                             <Input
                                                 id="token0DepositAmount"
@@ -275,8 +275,8 @@ export const MainForm = () => {
                                         </div>
                                         <div>
                                             <div className="flex justify-between">
-                                                <TokenShow finishLoad={finishLoad} symbol={token1Symbol!} />
-                                                <BalanceShow balance={token1Balance} finishLoad={finishLoad} />
+                                                <TokenShow finishLoad={finishLoad} symbol={tokenState.token1Symbol} />
+                                                <BalanceShow balance={tokenState.token1Balance} finishLoad={finishLoad} />
                                             </div>
                                             <Input
                                                 id="token1DepositAmount"
@@ -331,11 +331,16 @@ export const MainForm = () => {
 
                                                         </div>
                                                     </CardBody>
+
                                                     <CardFooter className="p-4">
                                                         <div className="text-center w-full text-sm">
-                                                            {!finishLoad ? '' : (!inverse
-                                                                ? <Fragment> {calcRound(formik.values.token0BasePrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> </Fragment>
-                                                                : <Fragment> {calInverse(formik.values.token0BasePrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>)}
+                                                            {finishLoad 
+                                                                ? <Fragment> {formik.values.token0BasePrice} <span className="font-bold">{!formik.values.isToken0Sell 
+                                                                    ? tokenState.token0Symbol 
+                                                                    : tokenState.token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell 
+                                                                    ? tokenState.token1Symbol 
+                                                                    : tokenState.token0Symbol}</span> </Fragment>
+                                                                : null }
                                                         </div>
                                                     </CardFooter>
                                                 </Card>
@@ -378,9 +383,14 @@ export const MainForm = () => {
                                                     </CardBody>
                                                     <CardFooter className="p-4">
                                                         <div className="text-center w-full text-sm">
-                                                            {!finishLoad ? '' : (!inverse
-                                                                ? <Fragment> {calcRound(formik.values.token0MaxPrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> </Fragment>
-                                                                : <Fragment> {calInverse(formik.values.token0MaxPrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell ? token1Symbol : token0Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell ? token0Symbol : token1Symbol}</span> </Fragment>)}
+                                                            {finishLoad 
+                                                                ? <Fragment> {calcRound(formik.values.token0MaxPrice, 3)} <span className="font-bold">{
+                                                                    !formik.values.isToken0Sell 
+                                                                        ? tokenState.token0Symbol 
+                                                                        : tokenState.token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell 
+                                                                    ? tokenState.token1Symbol 
+                                                                    : tokenState.token0Symbol}</span> </Fragment>
+                                                                : null}
                                                         </div>
                                                     </CardFooter>
                                                 </Card>
@@ -391,12 +401,6 @@ export const MainForm = () => {
                                                 }
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="flex justify-end gap-3 items-center mt-4">
-                                        <div className="text-sm font-bold">
-                                            Inverse
-                                        </div>
-                                        <Button variant="light" onClick={() => setInverse(!inverse)} isIconOnly radius="full" startContent={<ArrowsRightLeftIcon height={24} width={24} />} />
                                     </div>
                                 </div>
                                 <Button

@@ -1,8 +1,9 @@
 import { EventLog } from 'web3-eth-contract'
-import { getHttpWeb3 } from '@web3/web3.utils'
-import { ChainName, calcRedenomination } from '.'
+import { getHttpWeb3 } from '@web3'
+import { bDiv, calcRedenomination } from './calc.utils'
+import { ChainName } from './blockchain.utils'
 
-export type ChartItemData = {
+export type ChartTick = {
     token0: number,
     token1: number,
     token0Price: number,
@@ -14,17 +15,19 @@ export const convertSyncEvent = async (
     chainName: ChainName,
     token0Decimals: number,
     token1Decimals: number,
-    token0Constant: number, 
-    token1Constant: number,
-) : Promise<ChartItemData> => {
+    token0Constant: bigint, 
+    token1Constant: bigint,
+) : Promise<ChartTick> => {
 
+    const reserve1 = event.returnValues[0] as bigint
+    const reserve2 = event.returnValues[1] as bigint
     const web3 = getHttpWeb3(chainName)
-    const token0 = calcRedenomination(Number(event.returnValues[0] as bigint), token0Decimals, 5)!
-    const token1 = calcRedenomination(Number(event.returnValues[1] as bigint), token1Decimals, 5)!
+    const token0 = calcRedenomination(reserve1, token0Decimals, 5)
+    const token1 = calcRedenomination(reserve2, token1Decimals, 5)
     const block = await web3.eth.getBlock(event.blockHash)
     const time = new Date(Number(block.timestamp) * 1000)
     
-    const token0Price = (token1 + token1Constant) / (token0 + token0Constant)
+    const token0Price = bDiv(reserve1 + token1Constant, reserve2 + token0Constant, 5)
 
     return {
         token0,

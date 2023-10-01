@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { Mooli } from 'next/font/google'
 import NextUIProviders from './nextui.provider'
 import { NavigationBar } from '@app/_components'
-import ReduxProviders from '@redux/redux.provider'
+import ReduxProviders from '@redux'
 import { ConfirmTransaction } from './_components/ConfirmTransaction'
 
 const font = Mooli({ weight: '400', subsets : ['latin'] })

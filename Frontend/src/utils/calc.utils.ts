@@ -1,45 +1,40 @@
-import { MatchPrimitiveType } from 'web3'
-
-export const calcExponent = (y: number) => Math.pow(10, y)
+export const calcExponent = (y: number): number => Math.pow(10, y)
 
 export const calcRedenomination = (
-    amount: MatchPrimitiveType<'uint256', unknown>, 
-    decimals: MatchPrimitiveType<'uint8', unknown>, 
-    round: number) => {
-    const _amount = Number.parseInt(amount.toString()) 
-    / calcExponent(Number.parseInt(decimals.toString()))
-    const roundedResult = _amount.toFixed(round)
-    return Number.parseFloat(roundedResult)
+    amount: bigint, 
+    decimals: number, 
+    round: number
+) : number => {
+    const divisor = calcExponent(decimals)
+    return Number(amount * BigInt(calcExponent(round)) / BigInt(divisor)) 
+    / calcExponent(round)
 }
 
-export const calInverse = (y: number, round: number) => 
+export const bDiv = (
+    _a : bigint,
+    _b : bigint,
+    round: number
+) : number => Number((_a * BigInt(calcExponent(round)) / _b)) / calcExponent(round)
+
+export const calcIRedenomination = (
+    amount: number, 
+    decimals: number
+): bigint => {
+    return BigInt(amount * calcExponent(decimals))
+}
+
+
+
+export const calInverse = (
+    y: number,
+    round: number
+) : number => 
 {
     if (y == 0) return 0
     return Number.parseFloat((1/y).toFixed(round))
 }
 
-export const calcRound = (y: number, round: number) => {
-    try{
-        return Number.parseFloat(y.toFixed(round))
-    } catch (ex){
-        return 0
-    }
-}
-
-export const calcInt = (
-    n: MatchPrimitiveType<'uint256', unknown>
-) => Number.parseInt(n.toString())
-
-export const calcNRedenomination = (
-    amount: number | string, 
-    decimals: MatchPrimitiveType<'uint8', unknown>
-) => {
-    try {
-        return (Number.parseFloat(amount.toString()) 
-        * calcExponent(Number.parseInt(decimals.toString())))
-            .toString()
-    } catch(ex){
-        return null
-    }
-
-}
+export const calcRound = (
+    y: number, 
+    round: number
+) : number => Number(y.toFixed(round))

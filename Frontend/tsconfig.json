@@ -20,11 +20,10 @@
     ],
     "paths": {
       "@app/*": ["./src/app/*"],
-      "@redux/*": ["./src/redux/*"],
-      "@utils/*": ["./src/utils/*"],
+      "@redux": ["./src/redux"],
       "@utils" : ["./src/utils"],
       "@private/*": ["./private.key"],
-      "@web3/*": ["./src/web3/*"]
+      "@web3": ["./src/web3"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

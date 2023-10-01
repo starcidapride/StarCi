@@ -2,9 +2,8 @@
 import { MetamaskIcon } from '../MetamaskIcon'
 import { Button } from '@nextui-org/button'
 import { useDispatch } from 'react-redux'
-import { AppDispatch } from '@redux/store'
 import Web3 from 'web3'
-import { setWeb3 } from '@redux/slices/web3.slice'
+import { setWeb3, AppDispatch } from '@redux'
 
 
 export const ConnectWalletButton = () => {

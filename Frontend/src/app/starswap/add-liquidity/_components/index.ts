@@ -1,3 +1,3 @@
 export * from './MainForm'
-export * from '../../_components/ChooseToken'
+export * from '../../_components/SelectToken'
 export * from './SwapTransactionToast'

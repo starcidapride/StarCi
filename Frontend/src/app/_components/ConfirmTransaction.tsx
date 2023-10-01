@@ -1,9 +1,7 @@
 'use client'
 import { Modal, ModalBody, ModalContent } from '@nextui-org/react'
-import { setVisible } from '@redux/slices/confirm-transaction.slice'
-import { AppDispatch, RootState } from '@redux/store'
+import { AppDispatch, RootState, setVisible } from '@redux'
 import { useDispatch, useSelector } from 'react-redux'
-
 
 export const ConfirmTransaction = () => {   
     const visible = useSelector((state: RootState) => state.confirmTransaction.visible)

@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import Web3 from 'web3'
 
 export interface Web3Slice {
-    web3: Web3 | null
+    web3: Web3|null
 }
 
 const initialState: Web3Slice = {

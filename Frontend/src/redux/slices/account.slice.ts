@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export interface AccountSlice {
-    account: string | null
+    account: string
 }
 
 const initialState : AccountSlice = {
-    account: null
+    account: ''
 }
 
 export const accountSlice = createSlice({

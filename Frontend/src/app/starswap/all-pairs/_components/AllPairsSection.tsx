@@ -1,18 +1,15 @@
-import { TableHeader, Table, TableColumn, TableCell, TableRow, TableBody, getKeyValue, Pagination, Input, Card, CardHeader, CardBody, Divider } from '@nextui-org/react'
+import { TableHeader, Table, TableColumn, TableCell, TableRow, TableBody, Pagination, Card, CardBody } from '@nextui-org/react'
 import { useEffect, useMemo, useState } from 'react'
-import { useAsyncList } from '@react-stately/data'
+
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useSelector } from 'react-redux'
-import { ChooseToken } from '@app/starswap/_components'
-import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline'
-import { RootState } from '@redux/store'
-import { getAllLiquidityPools } from '@web3/contracts/factory/factory.contract'
-import { LiquidityPoolProps, getProps } from '@web3/contracts/liquidity-pool/liquidity-pool.contract'
-import { getSymbol } from '@web3/contracts/erc20'
-import { Address } from 'web3'
+
 import { ScopeReference } from '@app/_components/Commons'
 import { useRouter } from 'next/navigation'
+import { getAllLiquidityPools, getProps, getSymbol } from '@web3'
+import { RootState } from '@redux'
+import { Address } from 'web3'
 
 interface AllPairsSectionProps{
     className?: string
@@ -64,7 +61,8 @@ export const AllPairsSection = (props: AllPairsSectionProps) => {
             const _allPairs: ReadableLiquidityPoolProps[] = []
             
             const _allLiquidiyPools = await getAllLiquidityPools(chainName)
-            console.log(_allLiquidiyPools)
+
+            if (_allLiquidiyPools == null) return 
 
             for (const address of _allLiquidiyPools){
                 const _props = await getProps(
@@ -75,10 +73,13 @@ export const AllPairsSection = (props: AllPairsSectionProps) => {
                 if (_props == null) return
 
                 const token0Symbol = await getSymbol(chainName, _props.token0)
+                if (token0Symbol == null) return
+                
                 const token1Symbol = await getSymbol(chainName, _props.token1)
+                if (token1Symbol == null) return
 
                 _allPairs.push({
-                    liquidityPool: address,
+                    poolAddress: address,
                     token0Symbol,
                     token1Symbol,
                     token0Locked:_props.token0Locked,
@@ -87,9 +88,7 @@ export const AllPairsSection = (props: AllPairsSectionProps) => {
             }
 
             setAllPairs(_allPairs)
-
-            console.log(_allPairs)
-
+            
             setFinishLoad(true)
         }   
         handleEffect()
@@ -162,8 +161,8 @@ export const AllPairsSection = (props: AllPairsSectionProps) => {
                         </TableHeader>
                         <TableBody items={allPairs ?? []} className="w-full">
                             {pair => (
-                                <TableRow key={pair.liquidityPool} onClick={() => router.push(`/starswap/swap/${pair.liquidityPool}`)}>
-                                    <TableCell width={'17.5%'} key="address"><ScopeReference className='font-bold text-sm' address={pair.liquidityPool} /></TableCell>
+                                <TableRow key={pair.poolAddress} onClick={() => router.push(`/starswap/swap/${pair.poolAddress}`)}>
+                                    <TableCell width={'17.5%'} key="address"><ScopeReference className='font-bold text-sm' address={pair.poolAddress} /></TableCell>
                                     <TableCell width={'30%'} key="pair">{`${pair.token0Symbol} + ${pair.token1Symbol}`}</TableCell>
                                     <TableCell width={'17.5%'} key="liquidity">LIQUIDITY</TableCell>
                                     <TableCell width={'17.5%'} key="token0Locked">{pair.token0Locked}</TableCell>
@@ -183,7 +182,7 @@ export const AllPairsSection = (props: AllPairsSectionProps) => {
 }
 
 export type ReadableLiquidityPoolProps = {
-    liquidityPool: Address
+    poolAddress: Address
     token0Symbol: string
     token1Symbol: string
     token0Locked: string
