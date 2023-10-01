@@ -3,15 +3,15 @@ import abi from './factory.abi'
 import { ChainName, chainInfos, GAS_PRICE, GAS_LIMIT } from '@utils'
 import { getHttpWeb3 } from '@web3'
 
-export const getFactoryContract = (web3: Web3, chainName: ChainName) => {
+export const getFactoryContract = (chainName: ChainName) => {
+    const web3 = getHttpWeb3(chainName)
     const factoryContract = chainInfos[chainName].factoryContract
     return new web3.eth.Contract(abi, factoryContract, web3)
 }
 
 export const getAllLiquidityPools = async (chainName: ChainName) : Promise<Address[]|null> => {
     try{
-        const web3 = getHttpWeb3(chainName)
-        const contract = getFactoryContract(web3, chainName)
+        const contract = getFactoryContract(chainName)
         
         return await contract.methods.allLiquidityPools().call()
     } catch(ex){
@@ -35,7 +35,7 @@ export const createLiquidityPool = async (
     _protocolFee: bigint
 ) : Promise<Transaction|null>  => {
     try{
-        const contract = getFactoryContract(web3, chainName)
+        const contract = getFactoryContract(chainName)
         const data = contract.methods.createLiquidityPool(
             _token0,
             _token1,

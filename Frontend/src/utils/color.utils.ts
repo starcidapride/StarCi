@@ -24,3 +24,7 @@ export const TEAL_200 = 'rgb(153 246 228)'
 export const TEAL_300 = 'rgb(94 234 212)'
 export const TEAL_400 = 'rgb(45 212 191)'
 export const TEAL_500 = 'rgb(20 184 166)'
+
+export const RED_50 = 'rgb(254 242 242)'
+export const RED_300 = 'rgb(252 165 165)'
+export const RED_500 = 'rgb(239 68 68)'

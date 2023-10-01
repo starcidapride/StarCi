@@ -8,7 +8,7 @@ const KLAYTN_MAINNET_EXPLORER = ''
 
 const KLAYTN_TESTNET_HTTP_RPC_URL = 'https://api.baobab.klaytn.net:8651'
 const KLAYTN_TESTNET_WEBSOCKET_RPC_URL = 'wss://public-en-baobab.klaytn.net/ws'
-const KLAYTN_TESTNET_CONTRACT_FACTORY = '0xD80F20322adbd66C9080aaF8040306f441d90B6F'
+const KLAYTN_TESTNET_CONTRACT_FACTORY = '0x386921AD8b3Ef6f280F8CB3646896a44f4403233'
 const KLAYTN_TESTNET_USDT_CONTRACT = '0xEdEb5f63537EbAe7E6dD79D95Cd2EF20C75Cd732'
 const KLAYTN_TESTNET_EXPLORER = 'https://baobab.klaytnscope.com/'
 
@@ -48,3 +48,8 @@ export const chainInfos : Record<number, ChainInfo> = {
 
 export const GAS_PRICE = Web3.utils.toWei(25, 'gwei')
 export const GAS_LIMIT = 3000000
+
+export type ContractCreationInfo = {
+    block: number,
+    timestamp: Date
+}

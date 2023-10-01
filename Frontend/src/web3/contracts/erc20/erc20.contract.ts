@@ -100,7 +100,7 @@ export const approve = async (
     contractAddress: Address,
     _splender: Address,
     _amount: bigint
-):Promise<Transaction|null> => {
+) : Promise<Transaction|null> => {
     try {
         const _erc20Contract = getErc20Contract(web3, contractAddress)
         const data = _erc20Contract.methods.approve(

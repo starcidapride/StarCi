@@ -1,17 +1,18 @@
 import { ChainName, GAS_LIMIT, GAS_PRICE } from '@utils'
 import Web3, { Address, Contract, Transaction } from 'web3'
 import abi from './liquidity-pool.abi'
-import { getHttpWeb3 } from '@web3'
+import { getFactoryContract, getHttpWeb3 } from '@web3'
+import { EventLog } from 'web3-eth-contract'
 
 export const getLiquidityPoolContract = (
     web3: Web3,
-    liquidityPool: Address
-): Contract<typeof abi> => new web3.eth.Contract(abi, liquidityPool, web3)
+    poolAddress: Address
+): Contract<typeof abi> => new web3.eth.Contract(abi, poolAddress, web3)
 
 export const getToken0 = async (
     chainName: ChainName,
     contractAddress: Address
-): Promise<Address|null> => {
+): Promise<Address | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
@@ -26,7 +27,7 @@ export const getToken0 = async (
 export const getToken1 = async (
     chainName: ChainName,
     contractAddress: Address
-): Promise<Address|null> => {
+): Promise<Address | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
@@ -47,7 +48,7 @@ export type LiquidityPoolProps = {
 export const getProps = async (
     chainName: ChainName,
     contractAddress: Address
-): Promise<LiquidityPoolProps|null> => {
+): Promise<LiquidityPoolProps | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
@@ -70,7 +71,7 @@ export const getToken0Output = async (
     abortController: AbortController,
     contractAddress: Address,
     _token1Input: bigint
-): Promise<bigint|null> => {
+): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName, abortController)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
@@ -86,7 +87,7 @@ export const getToken1Output = async (
     abortController: AbortController,
     contractAddress: Address,
     _token0Input: bigint
-): Promise<bigint|null> => {
+): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName, abortController)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
@@ -104,7 +105,7 @@ export const swap = async (
     _amountTokenIn: bigint,
     _minAmountTokenOut: bigint,
     _isBuy: boolean
-): Promise<Transaction|null> => {
+): Promise<Transaction | null> => {
     try {
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
 
@@ -130,7 +131,7 @@ export const swap = async (
 export const getToken0Constant = async (
     chainName: ChainName,
     contractAddress: Address
-): Promise<bigint|null> => {
+): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
@@ -145,11 +146,46 @@ export const getToken0Constant = async (
 export const getToken1Constant = async (
     chainName: ChainName,
     contractAddress: Address
-): Promise<bigint|null> => {
+): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
         return await liquidityPoolContract.methods.token1Constant().call()
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+type LiquidityPoolCreationInfo = {
+    blockNumber: number,
+    timestamp: Date
+}
+
+
+export const getLiquidityPoolCreationInfo = async (
+    chainName: ChainName,
+    contractAddress: Address,
+): Promise<LiquidityPoolCreationInfo | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const factoryContract = getFactoryContract(chainName)
+        const createdEvents = await factoryContract.getPastEvents('LiquidityPoolCreated',
+            {   
+                fromBlock: 0,
+                toBlock: 'latest'
+            }
+        )
+        const event = createdEvents.find(_event => 
+            (_event as EventLog).returnValues[1] == contractAddress)
+
+        const blockNumber = Number((event as EventLog).blockNumber as bigint)
+        const block = await web3.eth.getBlock(blockNumber)
+        const timestamp = new Date(Number(block.timestamp) * 1000)
+        return {
+            blockNumber,
+            timestamp
+        }
     } catch (ex) {
         console.log(ex)
         return null

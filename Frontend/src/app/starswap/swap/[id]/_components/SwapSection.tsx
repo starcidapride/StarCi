@@ -135,7 +135,7 @@ export const SwapSection = (props: SwapSectionProps) => {
 
     const [syncToken0, setSyncToken0] = useState(false)
     const [syncToken1, setSyncToken1] = useState(false)
-
+    
     useEffect(
         () => {
             if (!preventLoopToken0.current) {
