@@ -8,7 +8,7 @@ import { Fragment, useEffect, useReducer, useState } from 'react'
 import { approve, getAllowance, getBalance, getDecimals, getSymbol, createLiquidityPool } from '@web3'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState, TransactionType, setTransactionType, setVisible } from '@redux'
-import { calcIRedenomination, calcRound, chainInfos, calcRedenomination, calcExponent } from '@utils'
+import { calcIRedenomination, calcRound, chainInfos, calcRedenomination } from '@utils'
 import { BalanceShow } from '@app/_components/Commons/BalanceShow'
 import { TokenShow } from '@app/_components/Commons/TokenShow'
 import { initialTokenState, tokenReducer } from '@app/starswap/_extras'
@@ -49,21 +49,27 @@ export const MainForm = () => {
                 .required('This field is required'),
             isToken0Sell: Yup.boolean(),
             token0DepositAmount: Yup.number()
+                .typeError('Input must be a number')
+                .typeError('')
                 .min(0, 'Input must be greater than or equal to 0')
                 .max(tokenState.token0Balance, 'Input must not exceed your available balance')
                 .required('This field is required'),
-            token1DepositAmount: Yup
-                .number()
+            token1DepositAmount: Yup.number()
+                .typeError('Input must be a number')
                 .min(0, 'Input must be greater than or equal to 0')
                 .max(tokenState.token1Balance, 'Input must not exceed your available balance')
                 .required('This field is required'),
             token0BasePrice: Yup.number()
+                .typeError('Input must be a number')
                 .min(0, 'Input must be greater than or equal to 0').required('This field is required')
                 .max(Yup.ref('token0MaxPrice'), 'Min price must be less than or equal to max price'),
             token0MaxPrice: Yup.number()
+                .typeError('Input must be a number')
                 .min(Yup.ref('token0BasePrice'), 'Max price must be greater than or equal to min price')
                 .required('This field is required'),
-            protocolFee: Yup.number().min(0, 'Input must be greater than or equal to 0').required('This field is required'),
+            protocolFee: Yup.number()
+                .typeError('Input must be a number')
+                .min(0, 'Input must be greater than or equal to 0').required('This field is required'),
         }),
 
         onSubmit: values => {
@@ -262,7 +268,6 @@ export const MainForm = () => {
                                             <Input
                                                 id="token0DepositAmount"
                                                 isDisabled={!finishLoad}
-                                                type="number"
                                                 size="sm"
                                                 className="mt-1"
                                                 label='Amount'
@@ -281,7 +286,6 @@ export const MainForm = () => {
                                             <Input
                                                 id="token1DepositAmount"
                                                 isDisabled={!finishLoad}
-                                                type="number"
                                                 size="sm"
                                                 className="mt-1"
                                                 label='Amount'
@@ -315,7 +319,6 @@ export const MainForm = () => {
                                                             <Input
                                                                 id="token0BasePrice"
                                                                 className="flex-1"
-                                                                type="number"
                                                                 variant="flat"
                                                                 classNames={{
                                                                     'input': 'text-center'
@@ -365,7 +368,6 @@ export const MainForm = () => {
                                                             <Input
                                                                 id="token0MaxPrice"
                                                                 className="flex-1"
-                                                                type="number"
                                                                 variant="flat"
                                                                 classNames={{
                                                                     'input': 'text-center'

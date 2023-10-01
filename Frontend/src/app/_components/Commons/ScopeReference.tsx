@@ -1,5 +1,5 @@
 import { Link } from '@nextui-org/react'
-import { RootState } from '@redux/store'
+import { RootState } from '@redux'
 import { chainInfos } from '@utils'
 import { useSelector } from 'react-redux'
 
