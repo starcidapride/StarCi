@@ -8,7 +8,7 @@ export const calcRedenomination = (
     try {
         const divisor = calcExponent(decimals)
         const result = Number(amount * BigInt(calcExponent(round)) / BigInt(divisor)) / calcExponent(round)
-
+        
         return result
     } catch (ex) {
         console.error(ex)
@@ -22,7 +22,7 @@ export const bDiv = (
     round: number
 ): number => {
     try {
-        const result = Number((_a * BigInt(calcExponent(round)) / _b)) / calcExponent(round)
+        const result = Number(((_a * BigInt(calcExponent(round))) / _b)) / calcExponent(round)
       
         return result
     } catch (ex) {
@@ -61,18 +61,30 @@ export const calInverse = (
 }
 
 export const calcRound = (
-    y: number, 
+    y: number | string, 
     round: number
 ): number => {
     try {
-        const result = Number(y.toFixed(round))
-
-        return result
+        return Number(Number.parseFloat(y.toString()).toFixed(round))
     } catch (ex) {
         console.error(ex)
         return 0
     }
 }
+
+export const mulNumberBigInt = (
+    x: bigint,
+    y: number, 
+    round: number,
+): bigint => {
+    try {
+        return (x * BigInt(y * calcExponent(round))) / BigInt(calcExponent(round))
+    } catch (ex) {
+        console.error(ex)
+        return BigInt(0)
+    }
+}
+
 
 
 

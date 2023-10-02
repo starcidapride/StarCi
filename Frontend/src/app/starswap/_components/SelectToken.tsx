@@ -1,7 +1,7 @@
 'use client'
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 
-import { Modal, ModalContent, ModalHeader, ModalBody, Image, Button, useDisclosure, Divider, Input, Card, CardBody, CardFooter, ModalFooter, Link, Spinner } from '@nextui-org/react'
+import { Modal, ModalContent, ModalHeader, ModalBody, Image, Button, useDisclosure, Divider, Input, Card, CardBody, CardFooter, ModalFooter, Link } from '@nextui-org/react'
 import { ChainName, TIME_OUT, chainInfos } from '@utils'
 import { getName, getSymbol } from '@web3'
 import * as Yup from 'yup'
@@ -10,6 +10,7 @@ import { Address } from 'web3'
 import { StableCoinSkeleton } from '../add-liquidity/_components/StableCoinSkeleton'
 import { useSelector } from 'react-redux'
 import { RootState } from '@redux'
+import { FetchSpinner } from '@app/_components/Commons/FetchSpinner'
 
 interface SelectTokenProps {
     chainName: ChainName
@@ -139,13 +140,40 @@ export const SelectToken = (props: SelectTokenProps) => {
                                         setSyncToken(true)
                                     }}
                                     description={
-                                        syncToken
-                                            ? <div className="gap-2 flex items-center"> <Spinner color="default" size="sm" /> <div className="text-sm"> Checking </div> </div>
-                                            : null
+                                        <FetchSpinner 
+                                            message="Checking"
+                                            finishFetch = {syncToken}
+                                        />
                                     }
                                     onBlur={formik.handleBlur}
-                                    isInvalid={formik.errors.tokenAddress != undefined}
-                                    errorMessage={formik.errors.tokenAddress}
+                                    isInvalid={
+                                        formik.errors.tokenAddress != undefined
+                                        || 
+                                        (tempTokenSymbol == '' 
+                                        && !syncToken
+                                        && formik.values.tokenAddress) 
+                                            ? true : false
+                                        ||
+                                        (tempTokenSymbol 
+                                        && !syncToken
+                                        && formik.values.tokenAddress == props.otherTokenAddress) 
+                                                ? true : false
+                                    }
+                                    errorMessage={
+                                        formik.errors.tokenAddress
+                                        || 
+                                        (tempTokenSymbol == '' 
+                                        && !syncToken
+                                        && formik.values.tokenAddress) 
+                                            ? 'Input does not represent a valid token address'
+                                            : null
+                                        || 
+                                        (tempTokenSymbol 
+                                            && !syncToken
+                                            && formik.values.tokenAddress == props.otherTokenAddress) 
+                                                ? 'Token address pair cannot be the same' 
+                                                : null
+                                    }
                                 />
                             </div>
 
@@ -183,10 +211,8 @@ export const SelectToken = (props: SelectTokenProps) => {
                             </div>
                         </ModalBody>
                         <ModalFooter className="p-5">
-                            {(
-                                tempTokenSymbol && !syncToken
-                            ) ?
-                                formik.values.tokenAddress != props.otherTokenAddress 
+                            {
+                                tempTokenSymbol && !syncToken && formik.values.tokenAddress != props.otherTokenAddress 
                                     ?
                                     <div className="grid grid-cols-4 gap-10 items-center">
                                         <div className="col-span-1 col-start-2">
@@ -197,16 +223,8 @@ export const SelectToken = (props: SelectTokenProps) => {
 
                                         <Button type="submit" size="lg" variant="flat" className="col-span-1 font-bold text-teal-500"> Import </Button>
                                     </div>
-                                    :  <div className="text-red-500 font-bold w-full text-center">Token address cannot be the same</div>
-                                : null
-                            } 
-                            {
-                                tempTokenSymbol == '' 
-                                && !syncToken
-                                && formik.values.tokenAddress != ''
-                                    ? <div className="text-red-500 font-bold w-full text-center">Invalid token address</div> 
                                     : null
-                            }
+                            } 
                         </ModalFooter>
                     </form>
                 </ModalContent>

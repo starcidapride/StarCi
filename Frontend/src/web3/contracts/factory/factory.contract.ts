@@ -43,7 +43,7 @@ export const createLiquidityPool = async (
             _token1DepositAmount,
             _token0BasePrice,
             _token0MaxPrice,
-            _protocolFee   
+            _protocolFee, 
         ).encodeABI()
 
         const to = chainInfos[chainName].factoryContract

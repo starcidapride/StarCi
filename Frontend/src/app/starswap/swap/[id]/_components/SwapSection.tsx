@@ -1,10 +1,10 @@
 import { BalanceShow } from '@app/_components/Commons/BalanceShow'
 import { TokenShow } from '@app/_components/Commons/TokenShow'
 import { ArrowsUpDownIcon } from '@heroicons/react/24/outline'
-import { Card, CardHeader, CardBody, Divider, Textarea, Button, Spinner } from '@nextui-org/react'
+import { Card, CardHeader, CardBody, Divider, Textarea, Button } from '@nextui-org/react'
 import { RootState } from '@redux'
 import { TIME_OUT, calcRedenomination, calcIRedenomination } from '@utils'
-import { getToken0, getToken0Output, getToken1, getToken1Output, swap,  approve, getAllowance, getBalance, getDecimals, getSymbol  } from '@web3'
+import { getToken0, getToken0Output, getToken1, getToken1Output, swap, approve, getAllowance, getBalance, getDecimals, getSymbol } from '@web3'
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Address } from 'web3'
@@ -12,6 +12,7 @@ import { SlippageTolerance } from './SlippageTolerance'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { initialTokenState, tokenReducer } from '@app/starswap/_extras'
+import { FetchSpinner } from '@app/_components/Commons/FetchSpinner'
 
 interface SwapSectionProps {
     poolAddress: Address
@@ -22,7 +23,7 @@ export const SwapSection = (props: SwapSectionProps) => {
     const chainName = useSelector((state: RootState) => state.chainName.chainName)
     const web3 = useSelector((state: RootState) => state.web3.web3)
     const account = useSelector((state: RootState) => state.account.account)
-    
+
     const [tokenState, tokenDispatch] = useReducer(tokenReducer, initialTokenState)
 
     const formik = useFormik({
@@ -41,7 +42,7 @@ export const SwapSection = (props: SwapSectionProps) => {
             token1Amount: Yup.number()
                 .typeError('Input must be a number')
                 .min(0, 'Input must be greater than or equal to 0')
-                .required('This field is required'),
+                .required('This field is required')
         }),
         onSubmit: async (values) => {
 
@@ -88,42 +89,42 @@ export const SwapSection = (props: SwapSectionProps) => {
     console.log(formik.values)
 
     const [finishLoad, setFinishLoad] = useState(false)
-    
+
     useEffect(
         () => {
             const handleEffect = async () => {
                 const _token0 = await getToken0(chainName, props.poolAddress)
                 if (_token0 == null) return
-                tokenDispatch({type: 'SET_TOKEN0', payload: _token0})
+                tokenDispatch({ type: 'SET_TOKEN0', payload: _token0 })
 
                 const _token1 = await getToken1(chainName, props.poolAddress)
                 if (_token1 == null) return
-                tokenDispatch({type: 'SET_TOKEN1', payload: _token1})
+                tokenDispatch({ type: 'SET_TOKEN1', payload: _token1 })
 
                 const _token0Symbol = await getSymbol(chainName, _token0)
                 if (_token0Symbol == null) return
-                tokenDispatch({type: 'SET_TOKEN0_SYMBOL', payload: _token0Symbol})
-    
+                tokenDispatch({ type: 'SET_TOKEN0_SYMBOL', payload: _token0Symbol })
+
                 const _token1Symbol = await getSymbol(chainName, _token1)
                 if (_token1Symbol == null) return
-                tokenDispatch({type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol})
-    
+                tokenDispatch({ type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol })
+
                 const _token0Decimals = await getDecimals(chainName, _token0)
                 if (_token0Decimals == null) return
-                tokenDispatch({type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals})
-                
+                tokenDispatch({ type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals })
+
                 const _token1Decimals = await getDecimals(chainName, _token1)
                 if (_token1Decimals == null) return
-                tokenDispatch({type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals})
+                tokenDispatch({ type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals })
 
                 // const _token0Balance = await getBalance(chainName, _token0, account)
                 // if (_token0Balance == null) return 
                 // tokenDispatch({type: 'SET_TOKEN0_BALANCE', payload: calcRedenomination(_token0Balance, _token0Decimals, 5)})
-                        
+
                 // const _token1Balance = await getBalance(chainName, _token1, account)
                 // if (_token1Balance == null) return 
                 // tokenDispatch({type: 'SET_TOKEN1_BALANCE', payload: calcRedenomination(_token1Balance, _token0Decimals, 5)})
-    
+
                 setFinishLoad(true)
             }
             handleEffect()
@@ -135,7 +136,7 @@ export const SwapSection = (props: SwapSectionProps) => {
 
     const [syncToken0, setSyncToken0] = useState(false)
     const [syncToken1, setSyncToken1] = useState(false)
-    
+
     useEffect(
         () => {
             if (!preventLoopToken0.current) {
@@ -145,15 +146,15 @@ export const SwapSection = (props: SwapSectionProps) => {
 
                     const _token1Out = await getToken1Output(
                         chainName,
-                        controller,
                         props.poolAddress,
-                        calcIRedenomination(token0Amount, tokenState.token0Decimals)
+                        calcIRedenomination(token0Amount, tokenState.token0Decimals),
+                        controller
                     )
 
                     if (_token1Out != null) {
                         formik.setFieldValue('token1Amount', calcRedenomination(
-                            _token1Out, 
-                            tokenState.token1Decimals, 
+                            _token1Out,
+                            tokenState.token1Decimals,
                             5
                         ))
                     }
@@ -182,11 +183,11 @@ export const SwapSection = (props: SwapSectionProps) => {
 
                     const _token0Out = await getToken0Output(
                         chainName,
-                        controller,
                         props.poolAddress,
-                        calcIRedenomination(token1Amount, tokenState.token1Decimals)
+                        calcIRedenomination(token1Amount, tokenState.token1Decimals),
+                        controller
                     )
-                    
+
                     if (_token0Out != null) {
                         formik.setFieldValue('token0Amount', calcRedenomination(_token0Out, tokenState.token1Decimals, 5))
                     }
@@ -212,19 +213,30 @@ export const SwapSection = (props: SwapSectionProps) => {
         <Divider />
         <CardBody>
             <form onSubmit={formik.handleSubmit}>
-                <div className="space-y-4">               
+                <div className="space-y-4">
                     <div>
                         <div className="flex justify-between">
-                            <TokenShow finishLoad={finishLoad} symbol={tokenState.token0Symbol!} />
-                            <BalanceShow balance={tokenState.token0Balance} finishLoad={finishLoad} />
+                            <TokenShow finishLoad={finishLoad}
+                                symbol={
+                                    !formik.values.isBuy
+                                        ? tokenState.token0Symbol
+                                        : tokenState.token1Symbol
+                                } />
+                            <BalanceShow
+                                balance={
+                                    !formik.values.isBuy
+                                        ? tokenState.token0Balance
+                                        : tokenState.token1Balance
+                                }
+                                finishLoad={finishLoad} />
                         </div>
 
                         <Textarea
                             id="token0Amount"
-                            description={
-                                syncToken0
-                                    ? <div className="gap-2 flex items-center"> <Spinner color="default" size="sm" /> <div className="text-sm"> Pricing </div> </div>
-                                    : null}
+                            description={<FetchSpinner
+                                message="Pricing"
+                                finishFetch={syncToken0}
+                            />}
                             maxRows={2}
                             value={formik.values.token0Amount?.toString()}
                             onChange={
@@ -241,20 +253,46 @@ export const SwapSection = (props: SwapSectionProps) => {
                     </div>
 
                     <div className="flex justify-center">
-                        <Button variant="light" isIconOnly radius="full" startContent={<ArrowsUpDownIcon height={24} width={24} />} />
+                        <Button variant="light" onPress=
+                            {
+                                async () => {
+                                    formik.setFieldValue('isBuy', !formik.values.isBuy)
+                                    formik.setFieldValue('token1Amount', formik.values.token0Amount)
+
+                                    const token0Output = await getToken0Output(
+                                        chainName,
+                                        props.poolAddress,
+                                        calcIRedenomination(formik.values.token0Amount, tokenState.token0Decimals))
+                                    
+                                    console.log(token0Output)
+                                }
+                            }
+                        isIconOnly radius="full" startContent={<ArrowsUpDownIcon height={24} width={24} />} />
                     </div>
 
                     <div>
                         <div className="flex justify-between">
-                            <TokenShow finishLoad={finishLoad} image="/icons/stable-coins/USDT.svg" symbol={tokenState.token1Symbol!} />
-                            <BalanceShow balance={tokenState.token1Balance} finishLoad={finishLoad} />
+                            <TokenShow finishLoad={finishLoad}
+                                symbol={
+                                    formik.values.isBuy
+                                        ? tokenState.token0Symbol
+                                        : tokenState.token1Symbol
+                                } />
+                            <BalanceShow
+                                balance={
+                                    formik.values.isBuy
+                                        ? tokenState.token0Balance
+                                        : tokenState.token1Balance
+                                }
+                                finishLoad={finishLoad} />
                         </div>
                         <Textarea
                             id="token1Amount"
                             description={
-                                syncToken1
-                                    ? <div className="gap-2 flex items-center"> <Spinner color="default" size="sm" /> <div className="text-sm"> Pricing </div> </div>
-                                    : null}
+                                <FetchSpinner
+                                    message="Pricing"
+                                    finishFetch={syncToken1}
+                                />}
                             maxRows={2}
                             value={formik.values.token1Amount?.toString()}
                             onChange={

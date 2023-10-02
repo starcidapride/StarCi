@@ -194,7 +194,55 @@ const abi = [
     },
     {
         'inputs': [],
+        'name': 'getTicks',
+        'outputs': [
+            {
+                'components': [
+                    {
+                        'internalType': 'uint256',
+                        'name': 'token0',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'token1',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'token0Price',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'timestamp',
+                        'type': 'uint256'
+                    }
+                ],
+                'internalType': 'struct LPTick.Tick[]',
+                'name': '',
+                'type': 'tuple[]'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
+        'inputs': [],
         'name': 'kConstant',
+        'outputs': [
+            {
+                'internalType': 'uint256',
+                'name': '',
+                'type': 'uint256'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
+        'inputs': [],
+        'name': 'maxTicks',
         'outputs': [
             {
                 'internalType': 'uint256',

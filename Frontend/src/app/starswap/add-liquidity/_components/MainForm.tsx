@@ -39,7 +39,7 @@ export const MainForm = () => {
             token1DepositAmount: 0,
             token0BasePrice: 0,
             token0MaxPrice: 0,
-            protocolFee: 0
+            protocolFee: 0.0025
         },
 
         validationSchema: Yup.object({
@@ -69,7 +69,7 @@ export const MainForm = () => {
                 .required('This field is required'),
             protocolFee: Yup.number()
                 .typeError('Input must be a number')
-                .min(0, 'Input must be greater than or equal to 0').required('This field is required'),
+                .min(0, 'Input must be greater than or equal to 0').required('This field is required')
         }),
 
         onSubmit: values => {
@@ -80,7 +80,7 @@ export const MainForm = () => {
                 dispatch(setTransactionType(TransactionType.Swap))
 
                 const _factoryAddress = chainInfos[chainName].factoryContract
-                
+
                 const _token0Allowance = await getAllowance(chainName, values.token0, account, _factoryAddress)
                 if (_token0Allowance == null) return
                 const _iToken0DepositAmount = calcIRedenomination(values.token0DepositAmount, tokenState.token0Decimals)
@@ -144,27 +144,27 @@ export const MainForm = () => {
             const handleEffect = async () => {
                 const _token0Symbol = await getSymbol(chainName, formik.values.token0)
                 if (_token0Symbol == null) return
-                tokenDispatch({type: 'SET_TOKEN0_SYMBOL', payload: _token0Symbol})
+                tokenDispatch({ type: 'SET_TOKEN0_SYMBOL', payload: _token0Symbol })
 
                 const _token1Symbol = await getSymbol(chainName, formik.values.token1)
                 if (_token1Symbol == null) return
-                tokenDispatch({type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol})
+                tokenDispatch({ type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol })
 
                 const _token0Decimals = await getDecimals(chainName, formik.values.token0)
                 if (_token0Decimals == null) return
-                tokenDispatch({type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals})
-            
+                tokenDispatch({ type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals })
+
                 const _token1Decimals = await getDecimals(chainName, formik.values.token1)
                 if (_token1Decimals == null) return
-                tokenDispatch({type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals})
-                
+                tokenDispatch({ type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals })
+
                 const _token0Balance = await getBalance(chainName, formik.values.token0, account)
-                if (_token0Balance == null) return 
-                tokenDispatch({type: 'SET_TOKEN0_BALANCE', payload: calcRedenomination(_token0Balance, _token0Decimals, 5)})
-                    
+                if (_token0Balance == null) return
+                tokenDispatch({ type: 'SET_TOKEN0_BALANCE', payload: calcRedenomination(_token0Balance, _token0Decimals, 5) })
+
                 const _token1Balance = await getBalance(chainName, formik.values.token1, account)
-                if (_token1Balance == null) return 
-                tokenDispatch({type: 'SET_TOKEN1_BALANCE', payload: calcRedenomination(_token1Balance, _token0Decimals, 5)})
+                if (_token1Balance == null) return
+                tokenDispatch({ type: 'SET_TOKEN1_BALANCE', payload: calcRedenomination(_token1Balance, _token0Decimals, 5) })
 
                 setFinishLoad(true)
             }
@@ -223,7 +223,9 @@ export const MainForm = () => {
                                     <div className="text-sm font-bold text-teal-500"> Pick Protocol Fee Tier </div>
                                     <div className="flex items-center gap-4 mt-6">
                                         {protocolFees.map((fee) =>
-                                            (<Card key={fee.id} className={`flex-1 ${formik.values.protocolFee === Number.parseFloat(fee.title) / 100 ? 'bg-teal-500' : ''}`} isPressable
+                                            (<Card key={fee.id} 
+                                                className={`flex-1 ${formik.values.protocolFee === Number.parseFloat(fee.title) / 100 ? 'bg-teal-500' : ''}`} 
+                                                isPressable = {finishLoad}
                                                 onPress={() =>
                                                     formik.setFieldValue('protocolFee', Number.parseFloat(fee.title) / 100)
                                                 }>
@@ -254,6 +256,12 @@ export const MainForm = () => {
                                         label="Sell Token"
                                         className="mt-6"
                                         onChange={event => formik.setFieldValue('isToken0Sell', formik.values.token0 == event.target.value)}
+                                        selectedKeys = {(tokenState.token0Symbol && tokenState.token1Symbol) 
+                                            ? [formik.values.isToken0Sell 
+                                                ? formik.values.token0 
+                                                : formik.values.token1
+                                            ] : undefined
+                                        }
                                     >
                                         {(token) => <SelectItem
                                             key={token.address}>{token.symbol}</SelectItem>}
@@ -299,7 +307,8 @@ export const MainForm = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="sm:col-span-1 col-span-2 h-full justify-between flex flex-col">
+
+                            <div className="sm:col-span-1 col-span-2 h-full justify-between flex flex-col"  >
                                 <div>
                                     <div className="text-sm font-bold text-teal-500"> Set Price Range </div>
                                     <div className="mt-6">
@@ -308,16 +317,20 @@ export const MainForm = () => {
                                                 <Card>
                                                     <CardHeader className="p-5">
                                                         <div className="font-bold text-center w-full text-sm">
-                                                            Min Price
+                                                            Base Price
                                                         </div>
                                                     </CardHeader>
                                                     <CardBody>
                                                         <div className="items-center flex gap-4">
-                                                            <Button onClick={() => formik.setFieldValue('token0BasePrice', formik.values.token0BasePrice - 1)} isIconOnly radius="full" className="flex-none" size="sm">
-                                                                <MinusIcon height={16} width={16} />
+                                                            <Button variant="flat"
+                                                                isDisabled= {!finishLoad}
+                                                                onClick={() => formik.setFieldValue('token0BasePrice', formik.values.token0BasePrice - 1)}
+                                                                isIconOnly radius="full" className="flex-none w-6 h-6 min-w-0">
+                                                                <MinusIcon height={12} width={12} />
                                                             </Button>
                                                             <Input
                                                                 id="token0BasePrice"
+                                                                isDisabled= {!finishLoad}
                                                                 className="flex-1"
                                                                 variant="flat"
                                                                 classNames={{
@@ -328,8 +341,12 @@ export const MainForm = () => {
                                                                 onBlur={formik.handleBlur}
                                                                 isInvalid={formik.errors.token0BasePrice != undefined}
                                                             />
-                                                            <Button onClick={() => formik.setFieldValue('token0BasePrice', formik.values.token0BasePrice + 1)} isIconOnly radius="full" className="flex-none" size="sm">
-                                                                <PlusIcon height={16} width={16} />
+                                                            <Button variant="flat"
+                                                                isDisabled= {!finishLoad}
+                                                                onClick={() => formik.setFieldValue('token0BasePrice', formik.values.token0BasePrice + 1)}
+                                                                isIconOnly radius="full"
+                                                                className="flex-none w-6 h-6 min-w-0">
+                                                                <PlusIcon height={12} width={12} className="p-0" />
                                                             </Button>
 
                                                         </div>
@@ -337,13 +354,13 @@ export const MainForm = () => {
 
                                                     <CardFooter className="p-4">
                                                         <div className="text-center w-full text-sm">
-                                                            {finishLoad 
-                                                                ? <Fragment> {formik.values.token0BasePrice} <span className="font-bold">{!formik.values.isToken0Sell 
-                                                                    ? tokenState.token0Symbol 
-                                                                    : tokenState.token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell 
-                                                                    ? tokenState.token1Symbol 
+                                                            {finishLoad
+                                                                ? <Fragment> {calcRound(formik.values.token0BasePrice, 3)} <span className="font-bold">{!formik.values.isToken0Sell
+                                                                    ? tokenState.token0Symbol
+                                                                    : tokenState.token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell
+                                                                    ? tokenState.token1Symbol
                                                                     : tokenState.token0Symbol}</span> </Fragment>
-                                                                : null }
+                                                                : null}
                                                         </div>
                                                     </CardFooter>
                                                 </Card>
@@ -362,11 +379,16 @@ export const MainForm = () => {
                                                     </CardHeader>
                                                     <CardBody>
                                                         <div className="items-center flex gap-3">
-                                                            <Button onClick={() => formik.setFieldValue('token0MaxPrice', formik.values.token0MaxPrice - 1)} isIconOnly radius="full" className="flex-none" size="sm">
-                                                                <MinusIcon height={16} width={16} />
+                                                            <Button
+                                                                isDisabled= {!finishLoad}
+                                                                variant="flat"
+                                                                onClick={() => formik.setFieldValue('token0MaxPrice', formik.values.token0MaxPrice - 1)}
+                                                                isIconOnly radius="full" className="flex-none w-6 h-6 min-w-0">
+                                                                <MinusIcon height={12} width={12} />
                                                             </Button>
                                                             <Input
                                                                 id="token0MaxPrice"
+                                                                isDisabled= {!finishLoad}
                                                                 className="flex-1"
                                                                 variant="flat"
                                                                 classNames={{
@@ -377,20 +399,24 @@ export const MainForm = () => {
                                                                 onBlur={formik.handleBlur}
                                                                 isInvalid={formik.errors.token0MaxPrice != undefined}
                                                             />
-                                                            <Button onClick={() => formik.setFieldValue('token0MaxPrice', formik.values.token0MaxPrice + 1)} isIconOnly radius="full" className="flex-none" size="sm">
-                                                                <PlusIcon height={16} width={16} />
+                                                            <Button
+                                                                variant="flat"
+                                                                isDisabled= {!finishLoad}   
+                                                                onClick={() => formik.setFieldValue('token0MaxPrice', formik.values.token0MaxPrice + 1)}
+                                                                isIconOnly radius="full" className="flex-none w-6 h-6 min-w-0">
+                                                                <PlusIcon height={12} width={12} />
                                                             </Button>
 
                                                         </div>
                                                     </CardBody>
                                                     <CardFooter className="p-4">
                                                         <div className="text-center w-full text-sm">
-                                                            {finishLoad 
+                                                            {finishLoad
                                                                 ? <Fragment> {calcRound(formik.values.token0MaxPrice, 3)} <span className="font-bold">{
-                                                                    !formik.values.isToken0Sell 
-                                                                        ? tokenState.token0Symbol 
-                                                                        : tokenState.token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell 
-                                                                    ? tokenState.token1Symbol 
+                                                                    !formik.values.isToken0Sell
+                                                                        ? tokenState.token0Symbol
+                                                                        : tokenState.token1Symbol}</span> per <span className="font-bold">{!formik.values.isToken0Sell
+                                                                    ? tokenState.token1Symbol
                                                                     : tokenState.token0Symbol}</span> </Fragment>
                                                                 : null}
                                                         </div>
@@ -404,7 +430,7 @@ export const MainForm = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> 
                                 <Button
                                     size="lg" type="submit" className="mt-12 w-full font-bold bg-teal-500 text-white"> Add Liquidity </Button>
                             </div>

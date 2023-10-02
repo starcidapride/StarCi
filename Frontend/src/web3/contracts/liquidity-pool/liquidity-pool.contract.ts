@@ -68,9 +68,9 @@ export const getProps = async (
 
 export const getToken0Output = async (
     chainName: ChainName,
-    abortController: AbortController,
     contractAddress: Address,
-    _token1Input: bigint
+    _token1Input: bigint,
+    abortController?: AbortController,
 ): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName, abortController)
@@ -84,9 +84,9 @@ export const getToken0Output = async (
 
 export const getToken1Output = async (
     chainName: ChainName,
-    abortController: AbortController,
     contractAddress: Address,
-    _token0Input: bigint
+    _token0Input: bigint,
+    abortController?: AbortController,
 ): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName, abortController)
@@ -170,7 +170,7 @@ export const getLiquidityPoolCreationInfo = async (
     try {
         const web3 = getHttpWeb3(chainName)
         const factoryContract = getFactoryContract(chainName)
-        const createdEvents = await factoryContract.getPastEvents('LiquidityPoolCreated',
+        const createdEvents = await factoryContract.getPastEvents('CreateLiquidityPool',
             {   
                 fromBlock: 0,
                 toBlock: 'latest'
@@ -186,6 +186,38 @@ export const getLiquidityPoolCreationInfo = async (
             blockNumber,
             timestamp
         }
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export type LPTick = {
+    token0: bigint
+    token1: bigint
+    token0Price: bigint
+    timestamp: Date
+}
+
+export const getTicks = async (
+    chainName: ChainName,
+    contractAddress: Address
+): Promise<LPTick[] | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        const ticks = await liquidityPoolContract.methods.getTicks().call()
+        const _result : LPTick[] = []
+        for (const tick of ticks){
+            
+            _result.push({
+                token0: BigInt(tick.token0),
+                token1: BigInt(tick.token1),
+                token0Price: BigInt(tick.token0Price),
+                timestamp: new Date(Number(tick.timestamp) * 1000)
+            })
+        }
+        return _result
     } catch (ex) {
         console.log(ex)
         return null
