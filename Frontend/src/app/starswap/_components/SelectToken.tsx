@@ -116,6 +116,14 @@ export const SelectToken = (props: SelectTokenProps) => {
 
     const stableCoins = chainInfos[props.chainName].stableCoins
 
+    const getIsValidated = () => {
+        if (formik.errors.tokenAddress) return true
+        if (syncToken) return false
+        if (tempTokenSymbol == '' && formik.values.tokenAddress) return true
+        if (tempTokenSymbol && formik.values.tokenAddress == props.otherTokenAddress) return true
+        return false
+    }
+
     const getErrorMessage = () => {
         if (formik.errors.tokenAddress) return formik.errors.tokenAddress
 
@@ -157,19 +165,7 @@ export const SelectToken = (props: SelectTokenProps) => {
                                         />
                                     }
                                     onBlur={formik.handleBlur}
-                                    isInvalid={
-                                        formik.errors.tokenAddress != undefined
-                                        || 
-                                        (tempTokenSymbol == '' 
-                                        && !syncToken
-                                        && formik.values.tokenAddress) 
-                                            ? true : false
-                                        ||
-                                        (tempTokenSymbol 
-                                        && !syncToken
-                                        && formik.values.tokenAddress == props.otherTokenAddress) 
-                                                ? true : false
-                                    }
+                                    isInvalid={getIsValidated()}
                                     errorMessage={getErrorMessage()}
                                 />
                             </div>
