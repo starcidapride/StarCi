@@ -5,6 +5,8 @@ import NextUIProviders from './nextui.provider'
 import { NavigationBar } from '@app/_components'
 import ReduxProviders from '@redux'
 import { ConfirmTransaction } from './_components/ConfirmTransaction'
+import { TokenData, readTokenPrices, writeTokenPrices } from '../api'
+
 
 const font = Mooli({ weight: '400', subsets : ['latin'] })
 
@@ -17,8 +19,8 @@ const RootLayout = ({
     children,
 }: {
   children: React.ReactNode
-}) => (
-    <html lang="en" suppressHydrationWarning className="light text-foreground bg-background">
+}) => {
+    return ( <html lang="en" suppressHydrationWarning className="light text-foreground bg-background">
         <body className={font.className}>
             <NextUIProviders>
                 <ReduxProviders>
@@ -29,6 +31,21 @@ const RootLayout = ({
             </NextUIProviders>
         </body>
     </html>
-)
+    )
+}
+
+export const getServerSideProps = async () => {
+    let tokenData: TokenData[] | null = readTokenPrices()
+
+    if (tokenData == null) {
+        tokenData = await writeTokenPrices()
+    }
+
+    return {
+        props: {
+            tokenData,
+        },
+    }
+}
 
 export default RootLayout

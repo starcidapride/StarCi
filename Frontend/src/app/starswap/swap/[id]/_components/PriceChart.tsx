@@ -1,5 +1,5 @@
 'use client'
-import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button, Select, SelectItem } from '@nextui-org/react'
+import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button, Select, SelectItem, Skeleton } from '@nextui-org/react'
 import Web3, { Address } from 'web3'
 import {
     ChartData,
@@ -42,7 +42,7 @@ export const PriceChart = (props: PriceChartProps) => {
         datasets: [],
     })
 
-    const [ratio, setRatio] = useState<number|null>(null)
+    const [ratio, setRatio] = useState<number | null>(null)
 
     const [chartInterval, setChartInterval] = useState<ChartInterval>(ChartInterval._24H)
 
@@ -51,7 +51,7 @@ export const PriceChart = (props: PriceChartProps) => {
     const [finishLoad, setFinishLoad] = useState(false)
 
     useEffect(() => {
-        let subscription : LogsSubscription
+        let subscription: LogsSubscription
 
         const handleEffect = async () => {
             try {
@@ -75,7 +75,12 @@ export const PriceChart = (props: PriceChartProps) => {
         handleEffect()
 
         return () => {
-            //subscription.unsubscribe()
+            try {
+                subscription.unsubscribe()
+            } catch (error) {
+                console.error('Error occurred while unsubscribing')
+            }
+
         }
     }, [])
 
@@ -276,11 +281,19 @@ export const PriceChart = (props: PriceChartProps) => {
                 </ButtonGroup>
             </div>
             <div className="mt-6">
-                <div className={`flex items-center gap-1 text-sm ${(ratio ?? 1) >= 1 ? 'text-teal-500' : 'text-red-500'}`}>
-                    {(ratio ?? 1) >= 1 ? <ArrowUpIcon width={12} height={12} /> : <ArrowDownIcon width={12} height={12} />}
-                    {calcRound(Math.abs(1 - (ratio ?? 1)) * 100, 3)} %
+
+                <div className="flex items-center gap-1">
+                    <div className="text-sm"> Price Impact : </div>
+                    {finishLoad ?
+                        <div className={`flex items-center gap-1 text-sm ${(ratio ?? 1) >= 1 ? 'text-teal-500' : 'text-red-500'}`}>
+                            {(ratio ?? 1) >= 1 ? <ArrowUpIcon width={12} height={12} /> : <ArrowDownIcon width={12} height={12} />}
+                            {calcRound(Math.abs(1 - (ratio ?? 1)) * 100, 3)} %
+                        </div>
+                        : <Skeleton className="h-3.5 w-12 rounded-full" />
+                    }
                 </div>
-                <Chart type="line" className="mt-3" ref={chartRef} options={options} data={chartData} />
+
+                <Chart type="line" className="mt-4" ref={chartRef} options={options} data={chartData} />
             </div>
             <div className="flex justify-between mt-4 items-end">
                 <Select
