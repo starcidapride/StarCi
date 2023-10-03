@@ -116,6 +116,17 @@ export const SelectToken = (props: SelectTokenProps) => {
 
     const stableCoins = chainInfos[props.chainName].stableCoins
 
+    const getErrorMessage = () => {
+        if (formik.errors.tokenAddress) return formik.errors.tokenAddress
+
+        if (syncToken) return undefined
+        if (tempTokenSymbol == '' 
+        && formik.values.tokenAddress) return 'Input does not represent a valid token address'
+        if (tempTokenSymbol 
+        && formik.values.tokenAddress == props.otherTokenAddress) return 'Token address pair cannot be the same' 
+        return undefined
+    }
+
     return (
         <Fragment>
             <Button className={props.className} onPress={() => {
@@ -159,21 +170,7 @@ export const SelectToken = (props: SelectTokenProps) => {
                                         && formik.values.tokenAddress == props.otherTokenAddress) 
                                                 ? true : false
                                     }
-                                    errorMessage={
-                                        formik.errors.tokenAddress
-                                        || 
-                                        (tempTokenSymbol == '' 
-                                        && !syncToken
-                                        && formik.values.tokenAddress) 
-                                            ? 'Input does not represent a valid token address'
-                                            : undefined
-                                        || 
-                                        (tempTokenSymbol 
-                                            && !syncToken
-                                            && formik.values.tokenAddress == props.otherTokenAddress) 
-                                                ? 'Token address pair cannot be the same' 
-                                                : undefined
-                                    }
+                                    errorMessage={getErrorMessage()}
                                 />
                             </div>
 
