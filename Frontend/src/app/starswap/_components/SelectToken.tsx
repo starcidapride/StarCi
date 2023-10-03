@@ -166,13 +166,13 @@ export const SelectToken = (props: SelectTokenProps) => {
                                         && !syncToken
                                         && formik.values.tokenAddress) 
                                             ? 'Input does not represent a valid token address'
-                                            : null
+                                            : undefined
                                         || 
                                         (tempTokenSymbol 
                                             && !syncToken
                                             && formik.values.tokenAddress == props.otherTokenAddress) 
                                                 ? 'Token address pair cannot be the same' 
-                                                : null
+                                                : undefined
                                     }
                                 />
                             </div>
