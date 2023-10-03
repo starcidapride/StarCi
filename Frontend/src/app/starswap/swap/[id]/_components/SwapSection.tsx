@@ -137,9 +137,22 @@ export const SwapSection = (props: SwapSectionProps) => {
     const [syncToken0, setSyncToken0] = useState(false)
     const [syncToken1, setSyncToken1] = useState(false)
 
+    const [preventExecutionToken0, setPreventExecutionToken0] = useState(false)
+    const [preventExecutionToken1, setPreventExecutionToken1] = useState(false)
+
+    const firstLoadToken0 = useRef(true)
+    const firstLoadToken1 = useRef(true)
+
     useEffect(
         () => {
+            if (firstLoadToken0.current) {
+                firstLoadToken0.current = false
+                return
+            }
+            if (preventExecutionToken0 == true) return
+
             if (!preventLoopToken0.current) {
+                console.log('called 0')
                 const controller = new AbortController()
                 const handleEffect = async () => {
                     const token0Amount = formik.values.token0Amount
@@ -164,6 +177,8 @@ export const SwapSection = (props: SwapSectionProps) => {
                 const delayDebounceFn = setTimeout(() => handleEffect(), TIME_OUT)
 
                 preventLoopToken1.current = true
+
+                setPreventExecutionToken1(false)
                 return () => {
                     controller.abort()
                     clearTimeout(delayDebounceFn)
@@ -171,10 +186,17 @@ export const SwapSection = (props: SwapSectionProps) => {
             } else {
                 preventLoopToken0.current = false
             }
-        }, [formik.values.token0Amount])
+        }, [formik.values.token0Amount, formik.values.isBuy])
 
     useEffect(
         () => {
+            if (firstLoadToken1.current) {
+                firstLoadToken1.current = false
+                return
+            }
+
+            if (preventExecutionToken1 == true) return
+
             if (!preventLoopToken1.current) {
                 console.log('called 1')
                 const controller = new AbortController()
@@ -197,6 +219,8 @@ export const SwapSection = (props: SwapSectionProps) => {
                 const delayDebounceFn = setTimeout(() => handleEffect(), TIME_OUT)
 
                 preventLoopToken0.current = true
+
+                setPreventExecutionToken0(false)
                 return () => {
                     controller.abort()
                     clearTimeout(delayDebounceFn)
@@ -204,7 +228,7 @@ export const SwapSection = (props: SwapSectionProps) => {
             } else {
                 preventLoopToken1.current = false
             }
-        }, [formik.values.token1Amount])
+        }, [formik.values.token1Amount, formik.values.isBuy])
 
 
 
@@ -232,42 +256,48 @@ export const SwapSection = (props: SwapSectionProps) => {
                         </div>
 
                         <Textarea
-                            id="token0Amount"
+                            id={!formik.values.isBuy ? 'token0Amount' : 'token1Amount'}
                             description={<FetchSpinner
                                 message="Pricing"
-                                finishFetch={syncToken0}
+                                finishFetch={!formik.values.isBuy ? syncToken0 : syncToken1}
                             />}
                             maxRows={2}
-                            value={formik.values.token0Amount?.toString()}
+                            value={
+                                !formik.values.isBuy
+                                    ? formik.values.token0Amount?.toString()
+                                    : formik.values.token1Amount?.toString()
+                            }
                             onChange={
                                 event => {
                                     formik.handleChange(event)
-                                    setSyncToken1(true)
+                                    !formik.values.isBuy
+                                        ? setSyncToken1(true)
+                                        : setSyncToken0(true)
                                 }
                             }
                             onBlur={formik.handleBlur}
-                            isInvalid={formik.errors.token0Amount != undefined}
-                            errorMessage={formik.errors.token0Amount}
-                            isDisabled={syncToken0}
+                            isInvalid={(!formik.values.isBuy ? formik.errors.token0Amount : formik.errors.token1Amount) != undefined}
+                            errorMessage={(!formik.values.isBuy ? formik.errors.token0Amount : formik.errors.token1Amount)}
+                            isDisabled={!formik.values.isBuy ? syncToken0 : syncToken1}
                         />
                     </div>
 
                     <div className="flex justify-center">
-                        <Button variant="light" onPress=
-                            {
-                                async () => {
-                                    formik.setFieldValue('isBuy', !formik.values.isBuy)
-                                    formik.setFieldValue('token1Amount', formik.values.token0Amount)
-
-                                    const token0Output = await getToken0Output(
-                                        chainName,
-                                        props.poolAddress,
-                                        calcIRedenomination(formik.values.token0Amount, tokenState.token0Decimals))
+                        <Button variant="light" 
+                            isDisabled={syncToken0 || syncToken1}
+                            onPress=
+                                {
+                                    async () => {
+                                        setPreventExecutionToken0(!formik.values.isBuy)
+                                        setSyncToken0(!formik.values.isBuy)
                                     
-                                    console.log(token0Output)
+                                        setPreventExecutionToken1(formik.values.isBuy)
+                                        setSyncToken1(formik.values.isBuy)
+
+                                        formik.setFieldValue('isBuy', !formik.values.isBuy) 
+                                    }
                                 }
-                            }
-                        isIconOnly radius="full" startContent={<ArrowsUpDownIcon height={24} width={24} />} />
+                            isIconOnly radius="full" startContent={<ArrowsUpDownIcon height={24} width={24} />} />
                     </div>
 
                     <div>
@@ -287,24 +317,38 @@ export const SwapSection = (props: SwapSectionProps) => {
                                 finishLoad={finishLoad} />
                         </div>
                         <Textarea
-                            id="token1Amount"
+                            id={!formik.values.isBuy ? 'token1Amount' : 'token0Amount'}
                             description={
                                 <FetchSpinner
                                     message="Pricing"
-                                    finishFetch={syncToken1}
+                                    finishFetch={!formik.values.isBuy ? syncToken1 : syncToken0}
                                 />}
                             maxRows={2}
-                            value={formik.values.token1Amount?.toString()}
+                            value={
+                                !formik.values.isBuy
+                                    ? formik.values.token1Amount?.toString()
+                                    : formik.values.token0Amount?.toString()
+                            }
                             onChange={
                                 event => {
                                     formik.handleChange(event)
-                                    setSyncToken0(true)
+
+                                    !formik.values.isBuy
+                                        ? setSyncToken0(true)
+                                        : setSyncToken1(true)
                                 }
                             }
                             onBlur={formik.handleBlur}
-                            isInvalid={formik.errors.token1Amount != undefined}
-                            errorMessage={formik.errors.token1Amount}
-                            isDisabled={syncToken1}
+                            isInvalid={
+                                (!formik.values.isBuy
+                                    ? formik.errors.token1Amount
+                                    : formik.errors.token0Amount)
+                                != undefined}
+                            errorMessage={!formik.values.isBuy
+                                ? formik.errors.token1Amount
+                                : formik.errors.token0Amount
+                            }
+                            isDisabled={!formik.values.isBuy ? syncToken1 : syncToken0}
                         />
                     </div>
                 </div>
