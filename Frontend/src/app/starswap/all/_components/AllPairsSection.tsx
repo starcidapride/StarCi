@@ -161,7 +161,7 @@ export const AllPairsSection = (props: AllPairsSectionProps) => {
                         </TableHeader>
                         <TableBody items={allPairs ?? []} className="w-full">
                             {pair => (
-                                <TableRow key={pair.poolAddress} onClick={() => router.push(`/starswap/swap/${pair.poolAddress}`)}>
+                                <TableRow key={pair.poolAddress} onClick={() => router.push(`/starswap/${pair.poolAddress}`)}>
                                     <TableCell width={'17.5%'} key="address"><ScopeReference className='font-bold text-sm' address={pair.poolAddress} /></TableCell>
                                     <TableCell width={'30%'} key="pair">{`${pair.token0Symbol} + ${pair.token1Symbol}`}</TableCell>
                                     <TableCell width={'17.5%'} key="liquidity">LIQUIDITY</TableCell>

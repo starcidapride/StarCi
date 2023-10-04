@@ -5,10 +5,8 @@ import NextUIProviders from './nextui.provider'
 import { NavigationBar } from '@app/_components'
 import ReduxProviders from '@redux'
 import { ConfirmTransaction } from './_components/ConfirmTransaction'
-import { TokenData, readTokenPrices, writeTokenPrices } from '../api'
 
-
-const font = Mooli({ weight: '400', subsets : ['latin'] })
+const font = Mooli({ weight: '400', subsets: ['latin'] })
 
 export const metadata: Metadata = {
     title: 'Create Next App',
@@ -18,34 +16,17 @@ export const metadata: Metadata = {
 const RootLayout = ({
     children,
 }: {
-  children: React.ReactNode
-}) => {
-    return ( <html lang="en" suppressHydrationWarning className="light text-foreground bg-background">
-        <body className={font.className}>
-            <NextUIProviders>
-                <ReduxProviders>
-                    <NavigationBar />
-                    <ConfirmTransaction />
-                    {children}
-                </ReduxProviders>
-            </NextUIProviders>
-        </body>
-    </html>
-    )
-}
-
-export const getServerSideProps = async () => {
-    let tokenData: TokenData[] | null = readTokenPrices()
-
-    if (tokenData == null) {
-        tokenData = await writeTokenPrices()
-    }
-
-    return {
-        props: {
-            tokenData,
-        },
-    }
-}
+    children: React.ReactNode
+}) => (<html lang="en" suppressHydrationWarning className="light text-foreground bg-background">
+    <body className={font.className}>
+        <NextUIProviders>
+            <ReduxProviders>
+                <NavigationBar />
+                <ConfirmTransaction />
+                {children}
+            </ReduxProviders>
+        </NextUIProviders>
+    </body>
+</html>)
 
 export default RootLayout

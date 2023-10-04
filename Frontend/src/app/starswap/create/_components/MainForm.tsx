@@ -195,7 +195,7 @@ export const MainForm = () => {
     return (
         <div>
             <Card>
-                <CardHeader className='font-bold p-5'> Add Liquidity </CardHeader>
+                <CardHeader className='font-bold p-5'> Create Liquidity Pool </CardHeader>
                 <Divider />
                 <CardBody>
                     <form onSubmit={formik.handleSubmit}>
@@ -432,7 +432,7 @@ export const MainForm = () => {
                                     </div>
                                 </div> 
                                 <Button
-                                    size="lg" type="submit" className="mt-12 w-full font-bold bg-teal-500 text-white"> Add Liquidity </Button>
+                                    size="lg" type="submit" className="mt-12 w-full font-bold bg-teal-500 text-white"> Create </Button>
                             </div>
                         </div>
                     </form>

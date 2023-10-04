@@ -42,8 +42,8 @@ export type LiquidityPoolProps = {
     liquidityPool: Address,
     token0: Address,
     token1: Address,
-    token0Locked: string,
-    token1Locked: string
+    token0Holding: string,
+    token1Holding: string
 }
 export const getProps = async (
     chainName: ChainName,
@@ -57,8 +57,8 @@ export const getProps = async (
             liquidityPool: contractAddress,
             token0: _queried.token0,
             token1: _queried.token1,
-            token0Locked: _queried.token0Locked.toString(),
-            token1Locked: _queried.token1Locked.toString()
+            token0Holding: _queried.token0Holding.toString(),
+            token1Holding: _queried.token1Holding.toString()
         }
     } catch (ex) {
         console.log(ex)
@@ -171,12 +171,12 @@ export const getLiquidityPoolCreationInfo = async (
         const web3 = getHttpWeb3(chainName)
         const factoryContract = getFactoryContract(chainName)
         const createdEvents = await factoryContract.getPastEvents('CreateLiquidityPool',
-            {   
+            {
                 fromBlock: 0,
                 toBlock: 'latest'
             }
         )
-        const event = createdEvents.find(_event => 
+        const event = createdEvents.find(_event =>
             (_event as EventLog).returnValues[1] == contractAddress)
 
         const blockNumber = Number((event as EventLog).blockNumber as bigint)
@@ -207,14 +207,184 @@ export const getTicks = async (
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
         const ticks = await liquidityPoolContract.methods.getTicks().call()
-        const _result : LPTick[] = []
-        for (const tick of ticks){
-            
+        const _result: LPTick[] = []
+        for (const tick of ticks) {
+
             _result.push({
                 token0: BigInt(tick.token0),
                 token1: BigInt(tick.token1),
                 token0Price: BigInt(tick.token0Price),
                 timestamp: new Date(Number(tick.timestamp) * 1000)
+            })
+        }
+        return _result
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const join = async (
+    web3: Web3,
+    fromAddress: Address,
+    contractAddress: Address
+): Promise<Transaction | null> => {
+    try {
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+
+        const data = liquidityPoolContract.methods.join().encodeABI()
+
+        return await web3.eth.sendTransaction({
+            from: fromAddress,
+            to: contractAddress,
+            data,
+            gasLimit: GAS_LIMIT,
+            gasPrice: GAS_PRICE
+        })
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const deposit = async (
+    web3: Web3,
+    fromAddress: Address,
+    contractAddress: Address,
+    _amount1TokenIn: bigint
+): Promise<Transaction | null> => {
+    try {
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+
+        const data = liquidityPoolContract.methods.deposit(
+            _amount1TokenIn
+        ).encodeABI()
+
+        return await web3.eth.sendTransaction({
+            from: fromAddress,
+            to: contractAddress,
+            data,
+            gasLimit: GAS_LIMIT,
+            gasPrice: GAS_PRICE
+        })
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const withdraw = async (
+    web3: Web3,
+    fromAddress: Address,
+    contractAddress: Address,
+    _amountLPTokenIn: bigint,
+    _minAmountToken0Out: bigint
+): Promise<Transaction | null> => {
+    try {
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+
+        const data = liquidityPoolContract.methods.withdraw(
+            _amountLPTokenIn,
+            _minAmountToken0Out
+        ).encodeABI()
+
+        return await web3.eth.sendTransaction({
+            from: fromAddress,
+            to: contractAddress,
+            data,
+            gasLimit: GAS_LIMIT,
+            gasPrice: GAS_PRICE
+        })
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export type LPReward = {
+    amount : bigint,
+    timestamp: Date
+} 
+
+export const getRewards = async (
+    chainName: ChainName,
+    contractAddress: Address,
+    _address: Address
+): Promise<LPReward[] | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        const rewards = await liquidityPoolContract.methods.getRewards(
+            _address
+        ).call()
+        const _result: LPReward[] = []
+        for (const reward of rewards) {
+
+            _result.push({
+                amount: BigInt(reward.amount),
+                timestamp: new Date(Number(reward.timestamp) * 1000),
+            })
+        }
+        return _result
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export type LPDeposit = {
+    amount : bigint,
+    timestamp: Date
+} 
+
+export const getDeposits = async (
+    chainName: ChainName,
+    contractAddress: Address,
+    _address: Address
+): Promise<LPDeposit[] | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        const deposits = await liquidityPoolContract.methods.getDeposits(
+            _address
+        ).call()
+        const _result: LPDeposit[] = []
+        for (const deposit of deposits) {
+
+            _result.push({
+                amount: BigInt(deposit.amount),
+                timestamp: new Date(Number(deposit.timestamp) * 1000),
+            })
+        }
+        return _result
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export type LPWithdrawal = {
+    amount : bigint,
+    timestamp: Date
+} 
+
+export const getWithdrawals = async (
+    chainName: ChainName,
+    contractAddress: Address,
+    _address: Address
+): Promise<LPWithdrawal[] | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        const deposits = await liquidityPoolContract.methods.getWithdrawals(
+            _address
+        ).call()
+        const _result: LPWithdrawal[] = []
+        for (const deposit of deposits) {
+
+            _result.push({
+                amount: BigInt(deposit.amount),
+                timestamp: new Date(Number(deposit.timestamp) * 1000),
             })
         }
         return _result

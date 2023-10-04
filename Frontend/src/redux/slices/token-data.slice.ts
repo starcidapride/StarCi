@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { TokenData } from '../../api'
+import { TokenData } from '../../utils/api'
 
 export interface TokenDataSlice {
     tokenData: TokenData[]

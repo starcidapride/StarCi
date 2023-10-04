@@ -1,5 +1,5 @@
 'use client'
-import { Card, CardHeader, CardBody, Divider, ButtonGroup, Button, Select, SelectItem, Skeleton } from '@nextui-org/react'
+import { Card, CardHeader, CardBody, Divider, Select, SelectItem, Tabs, Tab } from '@nextui-org/react'
 import Web3, { Address } from 'web3'
 import {
     ChartData,
@@ -153,9 +153,10 @@ export const PriceChart = (props: PriceChartProps) => {
                 backDate.setFullYear(backDate.getFullYear() - 1)
                 break
             default:
-                // Handle default case if necessary
                 break
             }
+
+            console.log('A' + chartInterval)
 
             const _displayTicks = ticks.filter(tick => tick.timestamp >= backDate)
 
@@ -231,9 +232,29 @@ export const PriceChart = (props: PriceChartProps) => {
         }
 
         handleEffect()
+
     }, [ticks, chartType, chartInterval])
 
     console.log(finishLoad)
+
+    const chartIntervals = [
+        {
+            id: ChartInterval._24H,
+            value: '24H'
+        },
+        {
+            id: ChartInterval._1W,
+            value: '1W'
+        },
+        {
+            id: ChartInterval._1M,
+            value: '1M'
+        },
+        {
+            id: ChartInterval._1Y,
+            value: '1Y'
+        }
+    ]
 
     return (<Card className={`w-full ${props.className}`}>
         <CardHeader className='font-bold p-5'> Price Chart </CardHeader>
@@ -260,38 +281,33 @@ export const PriceChart = (props: PriceChartProps) => {
                     }
                 </div>
 
-
-                <ButtonGroup size="sm" variant="flat" isDisabled={!finishLoad} className="border-teal-500 rounded-lg" >
-                    <Button className={`font-bold ${chartInterval == ChartInterval._24H
-                        ? 'bg-teal-500' : ''}`}
-                    onPress={() => setChartInterval(ChartInterval._24H)}
-                    > 24H </Button>
-                    <Button className={`font-bold ${chartInterval == ChartInterval._1W
-                        ? 'bg-teal-500' : ''}`}
-                    onPress={() => setChartInterval(ChartInterval._1W)}
-                    > 1W </Button>
-                    <Button className={`font-bold ${chartInterval == ChartInterval._1M
-                        ? 'bg-teal-500' : ''}`}
-                    onPress={() => setChartInterval(ChartInterval._1M)}
-                    > 1M </Button>
-                    <Button className={`font-bold ${chartInterval == ChartInterval._1Y
-                        ? 'bg-teal-500' : ''}`}
-                    onPress={() => setChartInterval(ChartInterval._1Y)}
-                    > 1Y </Button>
-                </ButtonGroup>
+                <Tabs size="sm"
+                    variant="solid"
+                    isDisabled={!finishLoad}
+                    selectedKey={chartInterval.toString()}
+                    onSelectionChange={key => {
+                        const _key = Number(key)
+                        setChartInterval(_key)
+                    }}
+                    classNames={{
+                        cursor: 'bg-teal-500 text-white',
+                        tabContent: 'font-bold group-data-[selected=true]:text-white',
+                    }}
+                >
+                    {chartIntervals.map(interval =>
+                        <Tab key={interval.id} title={interval.value} />
+                    )}
+                </Tabs>
             </div>
             <div className="mt-6">
 
-                <div className="flex items-center gap-1">
-                    <div className="text-sm"> Price Impact : </div>
-                    {finishLoad ?
-                        <div className={`flex items-center gap-1 text-sm ${(ratio ?? 1) >= 1 ? 'text-teal-500' : 'text-red-500'}`}>
-                            {(ratio ?? 1) >= 1 ? <ArrowUpIcon width={12} height={12} /> : <ArrowDownIcon width={12} height={12} />}
-                            {calcRound(Math.abs(1 - (ratio ?? 1)) * 100, 3)} %
-                        </div>
-                        : <Skeleton className="h-3.5 w-12 rounded-full" />
-                    }
-                </div>
+                {finishLoad ?
+                    <div className={`flex items-center gap-1 text-sm ${(ratio ?? 1) >= 1 ? 'text-teal-500' : 'text-red-500'}`}>
+                        {(ratio ?? 1) >= 1 ? <ArrowUpIcon width={12} height={12} /> : <ArrowDownIcon width={12} height={12} />}
+                        {calcRound(Math.abs(1 - (ratio ?? 1)) * 100, 3)} %
+                    </div>
+                    : <div className="h-3.5 w-12 rounded-full" />
+                }
 
                 <Chart type="line" className="mt-4" ref={chartRef} options={options} data={chartData} />
             </div>
@@ -315,8 +331,8 @@ export const PriceChart = (props: PriceChartProps) => {
                                     value: `${tokenState.token0Symbol} Price`
                                 }
                             ] : []}
-                    label="Select Chart Type"
-                    className="max-w-[200px]"
+                    labelPlacement="outside"
+                    className="max-w-[175px]"
                     onChange={
                         event => setChartType(Number.parseInt(event.target.value))
                     }
@@ -374,10 +390,10 @@ export interface PriceChartProps {
 }
 
 export enum ChartInterval {
-    _24H,
-    _1W,
-    _1M,
-    _1Y
+    _24H = 0,
+    _1W = 1,
+    _1M = 2,
+    _1Y = 3
 }
 
 export enum ChartType {
