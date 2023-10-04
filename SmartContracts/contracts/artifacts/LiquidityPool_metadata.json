@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.18+commit.87f61d96"
+		"version": "0.8.21+commit.d9974bed"
 	},
 	"language": "Solidity",
 	"output": {
@@ -255,24 +255,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "burn",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "decimals",
 				"outputs": [
@@ -310,6 +292,43 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_amountToken1In",
+						"type": "uint256"
+					}
+				],
+				"name": "deposit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "depositorInfos",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "depositor",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "factory",
 				"outputs": [
@@ -336,6 +355,37 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_address",
+						"type": "address"
+					}
+				],
+				"name": "getDeposits",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct LPTokenLog.DepositLog[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "getProps",
 				"outputs": [
@@ -353,18 +403,49 @@
 							},
 							{
 								"internalType": "uint256",
-								"name": "token0Locked",
+								"name": "token0Holding",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "token1Locked",
+								"name": "token1Holding",
 								"type": "uint256"
 							}
 						],
 						"internalType": "struct LiquidityPool.Props",
 						"name": "",
 						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_address",
+						"type": "address"
+					}
+				],
+				"name": "getRewards",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct LPTokenLog.RewardLog[]",
+						"name": "",
+						"type": "tuple[]"
 					}
 				],
 				"stateMutability": "view",
@@ -409,6 +490,37 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "_address",
+						"type": "address"
+					}
+				],
+				"name": "getWithdrawals",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct LPTokenLog.WithdrawLog[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
 						"name": "spender",
 						"type": "address"
 					},
@@ -431,7 +543,33 @@
 			},
 			{
 				"inputs": [],
+				"name": "interest",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "kConstant",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "maxRecords",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -453,24 +591,6 @@
 					}
 				],
 				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "mint",
-				"outputs": [],
-				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -732,7 +852,7 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "amount",
+						"name": "value",
 						"type": "uint256"
 					}
 				],
@@ -761,7 +881,7 @@
 					},
 					{
 						"internalType": "uint256",
-						"name": "amount",
+						"name": "value",
 						"type": "uint256"
 					}
 				],
@@ -785,6 +905,24 @@
 					}
 				],
 				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_amountLPTokenIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_minAmountToken0Out",
+						"type": "uint256"
+					}
+				],
+				"name": "withdraw",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -834,12 +972,6 @@
 				"totalSupply()": {
 					"details": "See {IERC20-totalSupply}."
 				},
-				"transfer(address,uint256)": {
-					"details": "See {IERC20-transfer}. Requirements: - `to` cannot be the zero address. - the caller must have a balance of at least `amount`."
-				},
-				"transferFrom(address,address,uint256)": {
-					"details": "See {IERC20-transferFrom}. Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}. NOTE: Does not update the allowance if the current allowance is the maximum `uint256`. Requirements: - `from` and `to` cannot be the zero address. - `from` must have a balance of at least `amount`. - the caller must have allowance for ``from``'s tokens of at least `amount`."
-				},
 				"transferOwnership(address)": {
 					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
 				}
@@ -856,13 +988,13 @@
 		"compilationTarget": {
 			"SmartContracts/contracts/LiquidityPool.sol": "LiquidityPool"
 		},
-		"evmVersion": "paris",
+		"evmVersion": "shanghai",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": false,
+			"enabled": true,
 			"runs": 200
 		},
 		"remappings": []
@@ -932,14 +1064,6 @@
 				"dweb:/ipfs/QmZLnpfiaeVFNrkyotqU1ZUMmjs6ggYmzLWdWVopxuCCwu"
 			]
 		},
-		"SmartContracts/contracts/LPFarm.sol": {
-			"keccak256": "0x30158460065d9745aa1dfbe55d0178ee8dd74e19be00b5ddbc9a08d4b51b5ce6",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://afe835a2b96ef8d933a90d71446d71101de86133df5109a9b875c35cb53f4019",
-				"dweb:/ipfs/Qmbzo7DBL1Nb6BagqnhkNLGLPSTav2A81Rfw8LtwxSzjof"
-			]
-		},
 		"SmartContracts/contracts/LPTick.sol": {
 			"keccak256": "0xf0727b218a969528f351ed01a0c62f567d6afa7d308cf001222ed86c5eae90d9",
 			"license": "MIT",
@@ -948,12 +1072,28 @@
 				"dweb:/ipfs/QmSyfPovJWaSXUt1AagwNgtgde7B4Zhhwa4RYTWPsmEyPm"
 			]
 		},
-		"SmartContracts/contracts/LiquidityPool.sol": {
-			"keccak256": "0x71b75581f2f5a9578094d180d6fd47c9c3a3be0c9c55b10d3ce88ff27e969c68",
+		"SmartContracts/contracts/LPTokenLog.sol": {
+			"keccak256": "0x55cdfe539af9467294fd663d2c1ae22014363ad61520c9a32506d8bb62df4354",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0e63a477b0046bdf2af974733b6b1c33580cd9af9d4a3191b88e29a33dfbbfd1",
-				"dweb:/ipfs/QmRsQyKYp54NTa6QXZ8KRm3wFdWgSL819VaLFBWaZ72sXn"
+				"bzz-raw://8206a8fb784ef521234514e5bc5502975387c64ced7a8ed6846f6a20f4aac74f",
+				"dweb:/ipfs/QmRrwfsGBp5fn8u5WqoVq1tJqqmM1KujS8WeLtqp5a6eTj"
+			]
+		},
+		"SmartContracts/contracts/LiquidityPool.sol": {
+			"keccak256": "0x5697b1d32bbe53d696ce2c2b50de040ac3b0b38abc5d4457cd7cffb3b3e58146",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://79f28c99c1dc5358d1d898a3bf49f98f9a6f47cc46183788b6fab5fff9103c79",
+				"dweb:/ipfs/QmQ2mWaEGHzUsoG6nNtrGRUZv3frsdfxwEJdViYngbgNRr"
+			]
+		},
+		"SmartContracts/contracts/LockERC20.sol": {
+			"keccak256": "0xf139f49a570d7db42c281a78c141e8415df555ed30e25f891c97500e871d8e34",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8d1d8996d9d2d16c1c9b51f85f7e3b71d70b25573a54b6d053f97bfbfe457a89",
+				"dweb:/ipfs/QmXYG1TtzZTjJzABYGNEwjdjEn8Q6pwYroTokaVKybCeNF"
 			]
 		}
 	},

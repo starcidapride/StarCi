@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./LockERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./Factory.sol";
 import "./LPTick.sol";
 import "./LPTokenLog.sol";
@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
+contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
     address public factory;
     address public factoryOwner;
 
@@ -54,7 +54,7 @@ contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
         uint256 _token0BasePrice,
         uint256 _token0MaxPrice,
         uint256 _protocolFee
-    ) LPTick(10) LPTokenLog(10) LockERC20(address(this), "LP Token", "LP") {
+    ) LPTick(10) LPTokenLog(10) ERC20("LP Token", "LP") {
         factory = _factory;
         factoryOwner = _factoryOwner;
 
@@ -107,8 +107,6 @@ contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
         numProviders = 0;
     }
 
-
-
     function calcToken0Constant(
         uint256 _token0BasePrice,
         uint256 _token0MaxPrice,
@@ -149,9 +147,14 @@ contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
         return ERC20(token1).balanceOf(address(this));
     }
 
+    function _allToken1Balance() internal view returns (uint256) {
+        return
+            ERC20(token1).balanceOf(address(this)) + balanceOf(address(this));
+    }
+
     function _updateKConstant() internal {
         uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _token1Balance() + balanceOf(address(this));
+        uint256 token1Balance = _allToken1Balance();
         kConstant =
             (token0Balance + token0Constant) *
             (token1Balance + token1Constant);
@@ -160,14 +163,14 @@ contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
     // testing only
     function testKConstant() external view returns (uint256) {
         uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _token1Balance();
+        uint256 token1Balance = _allToken1Balance();
         return
             (token0Balance + token0Constant) * (token1Balance + token1Constant);
     }
 
     function token1Output(uint256 _token0Input) public view returns (uint256) {
         uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _token1Balance();
+        uint256 token1Balance = _allToken1Balance();
 
         uint256 newToken0Balance = token0Balance + _token0Input;
 
@@ -181,7 +184,7 @@ contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
 
     function token0Output(uint256 _token1Input) public view returns (uint256) {
         uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _token1Balance();
+        uint256 token1Balance = _allToken1Balance();
 
         uint256 newToken1Balance = token1Balance + _token1Input;
 
@@ -299,17 +302,7 @@ contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
         emit Sync(token0Balance, token1Balance);
     }
 
-    function deposit(uint256 _amountToken1In) public {
-        uint256 actual = _amountToken1In * SafeMath.div(8 * 10e4, 10e5);
-        uint256 fee = _amountToken1In - actual;
-
-        ERC20(token1).transferFrom(msg.sender, address(this), actual);
-        ERC20(token1).transferFrom(msg.sender, factoryOwner, fee);
-
-        _mint(msg.sender, _amountToken1In);
-
-        _updateKConstant();
-
+    function register() external {
         if (numProviders == 0) {
             providers[0] = msg.sender;
             numProviders++;
@@ -323,6 +316,18 @@ contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
 
         providers[numProviders] = msg.sender;
         numProviders++;
+    }
+
+    function deposit(uint256 _amountToken1In) public {
+        uint256 actual = _amountToken1In * SafeMath.div(8 * 10e4, 10e5);
+        uint256 fee = _amountToken1In - actual;
+
+        ERC20(token1).transferFrom(msg.sender, address(this), actual);
+        ERC20(token1).transferFrom(msg.sender, factoryOwner, fee);
+
+        _mint(msg.sender, _amountToken1In);
+
+        _updateKConstant();
 
         _generateDeposit(msg.sender, _amountToken1In);
     }
@@ -338,6 +343,7 @@ contract LiquidityPool is LPTick, LPTokenLog, LockERC20, Ownable {
         );
 
         transferFrom(msg.sender, address(this), _amountLPTokenIn);
+
         ERC20(token0).transfer(msg.sender, amountToken0Out);
 
         _generateWithdraw(msg.sender, _amountLPTokenIn);
