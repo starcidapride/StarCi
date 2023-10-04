@@ -1,0 +1,66 @@
+{
+	"compiler": {
+		"version": "0.8.18+commit.87f61d96"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "equalizeKConstant",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "liquidityPool",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"SmartContracts/contracts/Supplier.sol": "Supplier"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"SmartContracts/contracts/Supplier.sol": {
+			"keccak256": "0x214934ab7d535676d9d1f78f029c39d87998ab8eda936a4f92a46b3b1a8958bc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://767254d83ae01089980d1ba97439c453ea0b1f5af3cfb276f74109aaff08ec8a",
+				"dweb:/ipfs/QmTZs9VMKx66pKF3fePiNsWZFV5j191SAoYm24weZUDXWv"
+			]
+		}
+	},
+	"version": 1
+}

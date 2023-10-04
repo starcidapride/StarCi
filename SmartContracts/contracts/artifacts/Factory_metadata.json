@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.18+commit.87f61d96"
+		"version": "0.8.21+commit.d9974bed"
 	},
 	"language": "Solidity",
 	"output": {
@@ -21,7 +21,7 @@
 						"type": "address"
 					}
 				],
-				"name": "LiquidityPoolCreated",
+				"name": "CreateLiquidityPool",
 				"type": "event"
 			},
 			{
@@ -177,13 +177,13 @@
 		"compilationTarget": {
 			"SmartContracts/contracts/Factory.sol": "Factory"
 		},
-		"evmVersion": "paris",
+		"evmVersion": "shanghai",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": false,
+			"enabled": true,
 			"runs": 200
 		},
 		"remappings": []
@@ -246,19 +246,43 @@
 			]
 		},
 		"SmartContracts/contracts/Factory.sol": {
-			"keccak256": "0xe3141222817bc3cdcf6b6280d9a74085ba82bcd0b78e012b7c571709574a59e7",
+			"keccak256": "0x01abb3598b8d07a7349d827609cb00980d389d614c565e5b031cee592d73989e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b21ff68bb445019244accde812131f98f10ed7d3ba44863ffec0ac91de17255f",
-				"dweb:/ipfs/QmQPHBBcvMd9Ch7hebiUzbxKAXTg2GB9jkY6zzEQu7S14X"
+				"bzz-raw://ea8b05c06b3c9e1acd17bf765f9368ef60976bec7c56bcd20bc9ae8666a1cbcf",
+				"dweb:/ipfs/QmZLnpfiaeVFNrkyotqU1ZUMmjs6ggYmzLWdWVopxuCCwu"
+			]
+		},
+		"SmartContracts/contracts/LPTick.sol": {
+			"keccak256": "0xf0727b218a969528f351ed01a0c62f567d6afa7d308cf001222ed86c5eae90d9",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a102af536c34087c87abe361f9e3ab09c02c58ef4f484001909500d284dc1641",
+				"dweb:/ipfs/QmSyfPovJWaSXUt1AagwNgtgde7B4Zhhwa4RYTWPsmEyPm"
+			]
+		},
+		"SmartContracts/contracts/LPTokenLog.sol": {
+			"keccak256": "0x55cdfe539af9467294fd663d2c1ae22014363ad61520c9a32506d8bb62df4354",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8206a8fb784ef521234514e5bc5502975387c64ced7a8ed6846f6a20f4aac74f",
+				"dweb:/ipfs/QmRrwfsGBp5fn8u5WqoVq1tJqqmM1KujS8WeLtqp5a6eTj"
 			]
 		},
 		"SmartContracts/contracts/LiquidityPool.sol": {
-			"keccak256": "0xe5689d1d32c5ac02e27698772a5a25cd05decfc34ee1f69ef69eddc2bf4e13fe",
+			"keccak256": "0x5697b1d32bbe53d696ce2c2b50de040ac3b0b38abc5d4457cd7cffb3b3e58146",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://57cf837172c4db50ec42ca0d8f0a8ca15982783fb55702276b2b88c8dc875059",
-				"dweb:/ipfs/QmaQdLJfEgMXB6TgoDKXhJLkjQ72Zf4NXv1GyTVVpkmWVV"
+				"bzz-raw://79f28c99c1dc5358d1d898a3bf49f98f9a6f47cc46183788b6fab5fff9103c79",
+				"dweb:/ipfs/QmQ2mWaEGHzUsoG6nNtrGRUZv3frsdfxwEJdViYngbgNRr"
+			]
+		},
+		"SmartContracts/contracts/LockERC20.sol": {
+			"keccak256": "0xf139f49a570d7db42c281a78c141e8415df555ed30e25f891c97500e871d8e34",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8d1d8996d9d2d16c1c9b51f85f7e3b71d70b25573a54b6d053f97bfbfe457a89",
+				"dweb:/ipfs/QmXYG1TtzZTjJzABYGNEwjdjEn8Q6pwYroTokaVKybCeNF"
 			]
 		}
 	},

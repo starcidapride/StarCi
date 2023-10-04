@@ -10,7 +10,7 @@ contract Factory is Ownable {
     LiquidityPool[] public liquidityPools;
 
 
-    event LiquidityPoolCreated (
+    event CreateLiquidityPool (
         address indexed creator,
         address indexed liquidityPool
     );
@@ -43,7 +43,7 @@ contract Factory is Ownable {
 
         liquidityPools.push(liquidityPool);
 
-        emit LiquidityPoolCreated(
+        emit CreateLiquidityPool(
             msg.sender, 
             address(liquidityPool)
             );

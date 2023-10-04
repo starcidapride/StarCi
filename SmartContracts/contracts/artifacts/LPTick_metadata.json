@@ -1,0 +1,94 @@
+{
+	"compiler": {
+		"version": "0.8.21+commit.d9974bed"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "getTicks",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "token0",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "token1",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "token0Price",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct LPTick.Tick[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "maxTicks",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"SmartContracts/contracts/LPTick.sol": "LPTick"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"SmartContracts/contracts/LPTick.sol": {
+			"keccak256": "0xf0727b218a969528f351ed01a0c62f567d6afa7d308cf001222ed86c5eae90d9",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a102af536c34087c87abe361f9e3ab09c02c58ef4f484001909500d284dc1641",
+				"dweb:/ipfs/QmSyfPovJWaSXUt1AagwNgtgde7B4Zhhwa4RYTWPsmEyPm"
+			]
+		}
+	},
+	"version": 1
+}

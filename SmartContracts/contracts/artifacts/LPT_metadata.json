@@ -1,0 +1,44 @@
+{
+	"compiler": {
+		"version": "0.8.18+commit.87f61d96"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"SmartContracts/contracts/LPTick.sol": "LPT"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"SmartContracts/contracts/LPTick.sol": {
+			"keccak256": "0x0e6144d849e431596b0b0ad35a8f13161bacf4b58ff0d43925faa405e732f38a",
+			"urls": [
+				"bzz-raw://52218a70b651a20171040395d922dc292a28988e9cbc14c9ee9bc592cef5a4e3",
+				"dweb:/ipfs/QmQCyXWpETkVAv1yTCaDkr2HMAtiaXzLPLDKTxb4BNUUXe"
+			]
+		}
+	},
+	"version": 1
+}
