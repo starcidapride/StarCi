@@ -45,6 +45,16 @@ const abi = [
                 'internalType': 'uint256',
                 'name': '_protocolFee',
                 'type': 'uint256'
+            },
+            {
+                'internalType': 'string',
+                'name': '_token1Name',
+                'type': 'string'
+            },
+            {
+                'internalType': 'string',
+                'name': '_token1Symbol',
+                'type': 'string'
             }
         ],
         'stateMutability': 'nonpayable',

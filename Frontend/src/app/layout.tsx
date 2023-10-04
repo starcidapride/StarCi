@@ -23,7 +23,9 @@ const RootLayout = ({
             <ReduxProviders>
                 <NavigationBar />
                 <ConfirmTransaction />
-                {children}
+                <div className="max-w-[1024px] mx-auto mt-12">
+                    {children}
+                </div>
             </ReduxProviders>
         </NextUIProviders>
     </body>

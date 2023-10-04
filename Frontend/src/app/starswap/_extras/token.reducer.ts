@@ -9,6 +9,13 @@ export type TokenState = {
     token1Decimals: number
     token0Constant: bigint
     token1Constant: bigint
+
+    farmingTokenBalance: number
+    farmingTokenSymbol: string
+    farmingTokenDecimals: number
+
+    finishLoadWithoutAuth: boolean
+    finishLoadWithAuth: boolean
 }
 
 export interface SetTokenAction {
@@ -17,17 +24,17 @@ export interface SetTokenAction {
 }
 
 export interface SetTokenBalanceAction {
-    type: 'SET_TOKEN0_BALANCE' | 'SET_TOKEN1_BALANCE'
+    type: 'SET_TOKEN0_BALANCE' | 'SET_TOKEN1_BALANCE' | 'SET_FARMING_TOKEN_BALANCE'
     payload: number
 }
 
 export interface SetTokenSymbolAction {
-    type: 'SET_TOKEN0_SYMBOL' | 'SET_TOKEN1_SYMBOL'
+    type: 'SET_TOKEN0_SYMBOL' | 'SET_TOKEN1_SYMBOL' | 'SET_FARMING_TOKEN_SYMBOL'
     payload: string
 }
 
 export interface SetTokenDecimalsAction {
-    type: 'SET_TOKEN0_DECIMALS' | 'SET_TOKEN1_DECIMALS'
+    type: 'SET_TOKEN0_DECIMALS' | 'SET_TOKEN1_DECIMALS' | 'SET_FARMING_TOKEN_DECIMALS'
     payload: number
 }
 
@@ -36,8 +43,13 @@ export interface SetTokenConstantAction {
     payload: bigint
 }
 
+export interface SetFinishLoad {
+    type: 'SET_FINISH_LOAD_WITHOUT_AUTH' | 'SET_FINISH_LOAD_WITH_AUTH'
+    payload: boolean
+}
 
-export type TokenAction = SetTokenAction | SetTokenBalanceAction | SetTokenSymbolAction | SetTokenDecimalsAction | SetTokenConstantAction
+
+export type TokenAction = SetTokenAction | SetTokenBalanceAction | SetTokenSymbolAction | SetTokenDecimalsAction | SetTokenConstantAction | SetFinishLoad
 
 export const initialTokenState: TokenState = {
     token0: '',
@@ -49,7 +61,14 @@ export const initialTokenState: TokenState = {
     token0Decimals: 0,
     token1Decimals: 0,
     token0Constant: BigInt(0),
-    token1Constant: BigInt(0)
+    token1Constant: BigInt(0),
+
+    farmingTokenBalance: 0,
+    farmingTokenDecimals: 0,
+    farmingTokenSymbol: '',
+
+    finishLoadWithAuth: false,
+    finishLoadWithoutAuth: false
 }
 
 export const tokenReducer = (
@@ -105,7 +124,32 @@ export const tokenReducer = (
     case 'SET_TOKEN1_CONSTANT':
         return {
             ...state,
-            token1Constant:  action.payload
+            token1Constant: action.payload
+        }
+    case 'SET_FARMING_TOKEN_SYMBOL':
+        return {
+            ...state,
+            farmingTokenSymbol: action.payload
+        }
+    case 'SET_FARMING_TOKEN_BALANCE':
+        return {
+            ...state,
+            farmingTokenBalance: action.payload
+        }
+    case 'SET_FARMING_TOKEN_DECIMALS':
+        return {
+            ...state,
+            farmingTokenDecimals: action.payload
+        }
+    case 'SET_FINISH_LOAD_WITHOUT_AUTH':
+        return {
+            ...state,
+            finishLoadWithoutAuth: action.payload
+        }
+    case 'SET_FINISH_LOAD_WITH_AUTH':
+        return {
+            ...state,
+            finishLoadWithAuth: action.payload
         }
     default:
         return state

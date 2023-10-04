@@ -3,10 +3,8 @@
 import { AllPairsSection } from './_components'
 
 const Page = () => {
-    return (
-        <div>
-            <AllPairsSection />
-        </div>
+    return (    
+        <AllPairsSection />
     )
 }
 export default Page

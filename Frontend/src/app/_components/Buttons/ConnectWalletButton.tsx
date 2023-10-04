@@ -11,7 +11,6 @@ export const ConnectWalletButton = () => {
     
     const connectWallet = async (): Promise<void> => {
         try {
-		    // eslint-disable-next-line no-mixed-spaces-and-tabs
 		    if (typeof window.ethereum !== 'undefined') {
                 await window.ethereum.request({ method: 'eth_requestAccounts' })
 

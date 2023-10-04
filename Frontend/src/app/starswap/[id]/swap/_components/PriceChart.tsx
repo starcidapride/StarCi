@@ -260,19 +260,12 @@ export const PriceChart = (props: PriceChartProps) => {
         <CardHeader className='font-bold p-5'> Price Chart </CardHeader>
         <Divider />
         <CardBody>
-            <div className="flex items-start justify-between">
+            <div className="flex items-center justify-between">
                 <div>
                     {finishLoad ?
-                        <div className="items-center flex gap-3">
-                            <div>
-                                <span className="text-2xl font-bold">1 </span>
-                                <span className="text-sm"> {tokenState.token0Symbol} </span>
-                            </div>
-                            <span className="text-2xl font-bold"> = </span>
-                            <div>
-                                <span className="text-2xl font-bold">{calcRedenomination(ticks.at(-1)?.token0Price ?? BigInt(0), tokenState.token0Decimals, 3)}</span>
-                                <span className="text-sm"> {tokenState.token1Symbol} </span>
-                            </div>
+                        <div className="gap-2 flex items-end"> 
+                            <span className="text-4xl font-bold">{calcRedenomination(ticks.at(-1)?.token0Price ?? BigInt(0), tokenState.token0Decimals, 3)}</span>
+                            <span className="text-sm"> {tokenState.token0Symbol}/{tokenState.token1Symbol}</span>
                         </div>
                         :
                         <div>
@@ -311,8 +304,9 @@ export const PriceChart = (props: PriceChartProps) => {
 
                 <Chart type="line" className="mt-4" ref={chartRef} options={options} data={chartData} />
             </div>
-            <div className="flex justify-between mt-4 items-end">
+            <div className="flex justify-between mt-4 items-center">
                 <Select
+                    aria-label="select"
                     size="sm"
                     isDisabled={!finishLoad}
                     items={

@@ -10,11 +10,9 @@ import { ChainInfo } from './ChainInfo'
 import { ChainName } from '@utils'
 
 export const NavigationBar = () => {
-    const tokenData = useSelector((state: RootState) => state.tokenData.tokenData) 
     const web3 = useSelector((state: RootState) => state.web3.web3)
     const account = useSelector((state: RootState) => state.account.account)
     const dispatch: AppDispatch = useDispatch()
-    console.log(tokenData)
 
     useEffect(() => {
         if (web3 != null) {
@@ -46,7 +44,7 @@ export const NavigationBar = () => {
     ]
 
     return (
-        <Navbar disableAnimation isBordered>
+        <Navbar disableAnimation isBordered classNames={{wrapper: 'px-5'}}>
             <NavbarContent className="sm:hidden" justify="start">
                 <NavbarMenuToggle />
             </NavbarContent>

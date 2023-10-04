@@ -393,3 +393,60 @@ export const getWithdrawals = async (
         return null
     }
 }
+
+export const getFarmingTokenName = async (
+    chainName: ChainName,
+    contractAddress: Address
+): Promise<string | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        return await liquidityPoolContract.methods.name().call()
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const getFarmingTokenSymbol = async (
+    chainName: ChainName,
+    contractAddress: Address,
+): Promise<string | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        return await liquidityPoolContract.methods.symbol().call()
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const getFarmingTokenDecimals = async (
+    chainName: ChainName,
+    contractAddress: Address
+): Promise<number | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        return Number(await liquidityPoolContract.methods.decimals().call())
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const getFarmingTokenBalance = async (
+    chainName: ChainName,
+    contractAddress: Address,
+    _address: Address
+): Promise<string | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        return await liquidityPoolContract.methods.balanceOf(_address).call()
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}

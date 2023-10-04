@@ -1,13 +1,13 @@
-const ChildrenLayout = ({
+import { Fragment } from 'react'
+
+const RootLayout = ({
     children,
 }: {
-  children: React.ReactNode
+    children: React.ReactNode
 }) => (
-    <main className="justify-center flex mt-6">
-        <section className="max-w-screen-lg px-6 w-full">
-            {children}
-        </section>
-    </main>
+    <Fragment>
+        {children}
+    </Fragment>
 )
 
-export default ChildrenLayout
+export default RootLayout

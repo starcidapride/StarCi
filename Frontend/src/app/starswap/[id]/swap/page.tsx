@@ -25,7 +25,6 @@ const Page = ({ params }: PagePrams) => {
     
             <div className="col-span-1">
                 <SwapSection 
-                    poolAddress={params.id}
                     className="col-span-1"/>
             </div>
              

@@ -5,17 +5,15 @@ import { Card, CardHeader, CardBody, Divider, Textarea, Button } from '@nextui-o
 import { RootState } from '@redux'
 import { TIME_OUT, calcRedenomination, calcIRedenomination } from '@utils'
 import { getToken0, getToken0Output, getToken1, getToken1Output, swap, approve, getAllowance, getBalance, getDecimals, getSymbol } from '@web3'
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useContext, useEffect, useReducer, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Address } from 'web3'
 import { SlippageTolerance } from './SlippageTolerance'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import { initialTokenState, tokenReducer } from '@app/starswap/_extras'
 import { FetchSpinner } from '@app/_components/Commons/FetchSpinner'
+import { PoolAddressContext, TokenContext } from '../../layout'
 
 interface SwapSectionProps {
-    poolAddress: Address
     className?: string
 }
 
@@ -24,7 +22,8 @@ export const SwapSection = (props: SwapSectionProps) => {
     const web3 = useSelector((state: RootState) => state.web3.web3)
     const account = useSelector((state: RootState) => state.account.account)
 
-    const [tokenState, tokenDispatch] = useReducer(tokenReducer, initialTokenState)
+    const tokenState = useContext(TokenContext)
+    const poolAddress = useContext(PoolAddressContext)
 
     const formik = useFormik({
         initialValues: {
@@ -52,7 +51,7 @@ export const SwapSection = (props: SwapSectionProps) => {
                 chainName,
                 values.isBuy ? tokenState.token1 : tokenState.token0,
                 account,
-                props.poolAddress
+                poolAddress
             )
 
             if (_tokenAllowance == null) return
@@ -68,7 +67,7 @@ export const SwapSection = (props: SwapSectionProps) => {
                     web3,
                     account,
                     token,
-                    props.poolAddress,
+                    poolAddress,
                     calcIRedenomination(input, decimals)
                 )
             }
@@ -76,7 +75,7 @@ export const SwapSection = (props: SwapSectionProps) => {
             const txHash = await swap(
                 web3,
                 account,
-                props.poolAddress,
+                poolAddress,
                 calcIRedenomination(input, decimals),
                 calcIRedenomination(minOutput, decimals),
                 values.isBuy
@@ -87,49 +86,6 @@ export const SwapSection = (props: SwapSectionProps) => {
     })
 
     console.log(formik.values)
-
-    const [finishLoad, setFinishLoad] = useState(false)
-
-    useEffect(
-        () => {
-            const handleEffect = async () => {
-                const _token0 = await getToken0(chainName, props.poolAddress)
-                if (_token0 == null) return
-                tokenDispatch({ type: 'SET_TOKEN0', payload: _token0 })
-
-                const _token1 = await getToken1(chainName, props.poolAddress)
-                if (_token1 == null) return
-                tokenDispatch({ type: 'SET_TOKEN1', payload: _token1 })
-
-                const _token0Symbol = await getSymbol(chainName, _token0)
-                if (_token0Symbol == null) return
-                tokenDispatch({ type: 'SET_TOKEN0_SYMBOL', payload: _token0Symbol })
-
-                const _token1Symbol = await getSymbol(chainName, _token1)
-                if (_token1Symbol == null) return
-                tokenDispatch({ type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol })
-
-                const _token0Decimals = await getDecimals(chainName, _token0)
-                if (_token0Decimals == null) return
-                tokenDispatch({ type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals })
-
-                const _token1Decimals = await getDecimals(chainName, _token1)
-                if (_token1Decimals == null) return
-                tokenDispatch({ type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals })
-
-                // const _token0Balance = await getBalance(chainName, _token0, account)
-                // if (_token0Balance == null) return 
-                // tokenDispatch({type: 'SET_TOKEN0_BALANCE', payload: calcRedenomination(_token0Balance, _token0Decimals, 5)})
-
-                // const _token1Balance = await getBalance(chainName, _token1, account)
-                // if (_token1Balance == null) return 
-                // tokenDispatch({type: 'SET_TOKEN1_BALANCE', payload: calcRedenomination(_token1Balance, _token0Decimals, 5)})
-
-                setFinishLoad(true)
-            }
-            handleEffect()
-        }, []
-    )
 
     const preventLoopToken0 = useRef(false)
     const preventLoopToken1 = useRef(false)
@@ -159,7 +115,7 @@ export const SwapSection = (props: SwapSectionProps) => {
 
                     const _token1Out = await getToken1Output(
                         chainName,
-                        props.poolAddress,
+                        poolAddress,
                         calcIRedenomination(token0Amount, tokenState.token0Decimals),
                         controller
                     )
@@ -205,7 +161,7 @@ export const SwapSection = (props: SwapSectionProps) => {
 
                     const _token0Out = await getToken0Output(
                         chainName,
-                        props.poolAddress,
+                        poolAddress,
                         calcIRedenomination(token1Amount, tokenState.token1Decimals),
                         controller
                     )
@@ -240,7 +196,7 @@ export const SwapSection = (props: SwapSectionProps) => {
                 <div className="space-y-4">
                     <div>
                         <div className="flex justify-between">
-                            <TokenShow finishLoad={finishLoad}
+                            <TokenShow finishLoad={tokenState.finishLoadWithoutAuth}
                                 symbol={
                                     !formik.values.isBuy
                                         ? tokenState.token0Symbol
@@ -252,7 +208,7 @@ export const SwapSection = (props: SwapSectionProps) => {
                                         ? tokenState.token0Balance
                                         : tokenState.token1Balance
                                 }
-                                finishLoad={finishLoad} />
+                                finishLoad={tokenState.finishLoadWithAuth} />
                         </div>
 
                         <Textarea
@@ -302,7 +258,7 @@ export const SwapSection = (props: SwapSectionProps) => {
 
                     <div>
                         <div className="flex justify-between">
-                            <TokenShow finishLoad={finishLoad}
+                            <TokenShow finishLoad={tokenState.finishLoadWithoutAuth}
                                 symbol={
                                     formik.values.isBuy
                                         ? tokenState.token0Symbol
@@ -314,7 +270,7 @@ export const SwapSection = (props: SwapSectionProps) => {
                                         ? tokenState.token0Balance
                                         : tokenState.token1Balance
                                 }
-                                finishLoad={finishLoad} />
+                                finishLoad={tokenState.finishLoadWithAuth} />
                         </div>
                         <Textarea
                             id={!formik.values.isBuy ? 'token1Amount' : 'token0Amount'}
