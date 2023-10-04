@@ -1,0 +1,182 @@
+{
+	"compiler": {
+		"version": "0.8.18+commit.87f61d96"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_liquidityPool",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "supplier",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "quantity",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "liquidityPool",
+						"type": "address"
+					}
+				],
+				"name": "EqualizeKConstant",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "equalizeKConstant",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "liquidityPool",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"SmartContracts/contracts/LPSupplier.sol": "LPSupplier"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0xba43b97fba0d32eb4254f6a5a297b39a19a247082a02d6e69349e071e2946218",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://fc980984badf3984b6303b377711220e067722bbd6a135b24669ff5069ef9f32",
+				"dweb:/ipfs/QmPHXMSXj99XjSVM21YsY6aNtLLjLVXDbyN76J5HQYvvrz"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+			"keccak256": "0xa56ca923f70c1748830700250b19c61b70db9a683516dc5e216694a50445d99c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cac938788bc4be12101e59d45588b4e059579f4e61062e1cda8d6b06c0191b15",
+				"dweb:/ipfs/QmV2JKCyjTVH3rkWNrfdJRhAT7tZ3usAN2XcnD4h53Mvih"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+			"keccak256": "0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5",
+				"dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+			"keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+				"dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/Math.sol": {
+			"keccak256": "0xe4455ac1eb7fc497bb7402579e7b4d64d928b846fce7d2b6fde06d366f21c2b3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cc8841b3cd48ad125e2f46323c8bad3aa0e88e399ec62acb9e57efa7e7c8058c",
+				"dweb:/ipfs/QmSqE4mXHA2BXW58deDbXE8MTcsL5JSKNDbm23sVQxRLPS"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/SafeMath.sol": {
+			"keccak256": "0x58b21219689909c4f8339af00813760337f7e2e7f169a97fe49e2896dcfb3b9a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ef8e012e946dec20e59f2d4446f4b44bb098f3fa8bac103b1b5112fff777447b",
+				"dweb:/ipfs/QmVTooKWcLkJ9W68yNX4MgdrbAKiAXwuRN9A7f4NkdcdtQ"
+			]
+		},
+		"SmartContracts/contracts/Factory.sol": {
+			"keccak256": "0xa952400ee919b8d7235496bed01c799c92c1d21cbe542d3582917abb2f92b974",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e5220d8d11bb6e5244bc1256573d1bd29c4e236245eadec9778bebc9f0a1e930",
+				"dweb:/ipfs/QmNLof26hsBr3ZxjksNwHPnocpFXi1ceDVQaccTMt4145i"
+			]
+		},
+		"SmartContracts/contracts/LPSupplier.sol": {
+			"keccak256": "0x1dce51162ae07f0453b0c7c2d8000fb9ed2d4fe66aef1bacb96f398eb42104a1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b0139e54a3fadc388e26f26def576fb0914602ef3fd81735a100f4518ded7cc9",
+				"dweb:/ipfs/QmSAL3rvyWUUURfw8Tq8G3tcc4CByCXuk2unwhqjMs4w4Z"
+			]
+		},
+		"SmartContracts/contracts/LPTick.sol": {
+			"keccak256": "0x2e8cb271379fbf6f00f931912ab8a84e0a7ffa7e44c0afc425b81804e64b9fcd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://561905c2b74d966390897aecfc8fd8b1a0d757987b4d7762852626c45fa9b9c5",
+				"dweb:/ipfs/QmeBnDzzVkmHJMJ7KyRFVhzMYDaF3zdJjS2zML6nArzb36"
+			]
+		},
+		"SmartContracts/contracts/LiquidityPool.sol": {
+			"keccak256": "0xec0ea9c0101ad7f21f6f313d228f05aebebc4d57a89962468c902f11585206e1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7ccc9964a0c3e2b35bce57c0723ee2b33b4849a0fb0e3c221d73045a7ec984d7",
+				"dweb:/ipfs/QmZmUUaQJ46h7oQuCpZbpQWhx6bZ4WB7PRxa3vHdoGyqrq"
+			]
+		}
+	},
+	"version": 1
+}

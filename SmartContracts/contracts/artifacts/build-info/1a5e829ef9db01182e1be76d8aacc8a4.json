@@ -1,0 +1,300 @@
+{
+	"id": "1a5e829ef9db01182e1be76d8aacc8a4",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.18",
+	"solcLongVersion": "0.8.18+commit.87f61d96",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"SmartContracts/contracts/SwapTick.sol": {
+				"content": "abstract contract S{\r\n    \r\n    struct TickItem {\r\n        uint token0;\r\n        uint token1;\r\n        uint token0Price;\r\n        uint token1Price;\r\n        uint timestamp;\r\n    }\r\n\r\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			}
+		}
+	},
+	"output": {
+		"contracts": {
+			"SmartContracts/contracts/SwapTick.sol": {
+				"S": {
+					"abi": [],
+					"devdoc": {
+						"kind": "dev",
+						"methods": {},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.18+commit.87f61d96\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"SmartContracts/contracts/SwapTick.sol\":\"S\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"SmartContracts/contracts/SwapTick.sol\":{\"keccak256\":\"0x2fef83daf19fbaec78e620148ceb06c1c6bfe36ab7b7e7140778e3c82576d93a\",\"urls\":[\"bzz-raw://9d851fc55cd234584534302824dec6850218412437c2732d1efd47adac6022e6\",\"dweb:/ipfs/QmSiF44TUHWq5ztFyutx1sMFvsaebFWr3ScF89e7Lt66Nv\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"version": 1
+					}
+				}
+			}
+		},
+		"errors": [
+			{
+				"component": "general",
+				"errorCode": "1878",
+				"formattedMessage": "Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing \"SPDX-License-Identifier: <SPDX-License>\" to each source file. Use \"SPDX-License-Identifier: UNLICENSED\" for non-open-source code. Please see https://spdx.org for more information.\n--> SmartContracts/contracts/SwapTick.sol\n\n",
+				"message": "SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing \"SPDX-License-Identifier: <SPDX-License>\" to each source file. Use \"SPDX-License-Identifier: UNLICENSED\" for non-open-source code. Please see https://spdx.org for more information.",
+				"severity": "warning",
+				"sourceLocation": {
+					"end": -1,
+					"file": "SmartContracts/contracts/SwapTick.sol",
+					"start": -1
+				},
+				"type": "Warning"
+			},
+			{
+				"component": "general",
+				"errorCode": "3420",
+				"formattedMessage": "Warning: Source file does not specify required compiler version! Consider adding \"pragma solidity ^0.8.18;\"\n--> SmartContracts/contracts/SwapTick.sol\n\n",
+				"message": "Source file does not specify required compiler version! Consider adding \"pragma solidity ^0.8.18;\"",
+				"severity": "warning",
+				"sourceLocation": {
+					"end": -1,
+					"file": "SmartContracts/contracts/SwapTick.sol",
+					"start": -1
+				},
+				"type": "Warning"
+			}
+		],
+		"sources": {
+			"SmartContracts/contracts/SwapTick.sol": {
+				"ast": {
+					"absolutePath": "SmartContracts/contracts/SwapTick.sol",
+					"exportedSymbols": {
+						"S": [
+							12
+						]
+					},
+					"id": 13,
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"abstract": true,
+							"baseContracts": [],
+							"canonicalName": "S",
+							"contractDependencies": [],
+							"contractKind": "contract",
+							"fullyImplemented": true,
+							"id": 12,
+							"linearizedBaseContracts": [
+								12
+							],
+							"name": "S",
+							"nameLocation": "18:1:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"canonicalName": "S.TickItem",
+									"id": 11,
+									"members": [
+										{
+											"constant": false,
+											"id": 2,
+											"mutability": "mutable",
+											"name": "token0",
+											"nameLocation": "64:6:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 11,
+											"src": "59:11:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 1,
+												"name": "uint",
+												"nodeType": "ElementaryTypeName",
+												"src": "59:4:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 4,
+											"mutability": "mutable",
+											"name": "token1",
+											"nameLocation": "86:6:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 11,
+											"src": "81:11:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 3,
+												"name": "uint",
+												"nodeType": "ElementaryTypeName",
+												"src": "81:4:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 6,
+											"mutability": "mutable",
+											"name": "token0Price",
+											"nameLocation": "108:11:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 11,
+											"src": "103:16:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 5,
+												"name": "uint",
+												"nodeType": "ElementaryTypeName",
+												"src": "103:4:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 8,
+											"mutability": "mutable",
+											"name": "token1Price",
+											"nameLocation": "135:11:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 11,
+											"src": "130:16:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 7,
+												"name": "uint",
+												"nodeType": "ElementaryTypeName",
+												"src": "130:4:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 10,
+											"mutability": "mutable",
+											"name": "timestamp",
+											"nameLocation": "162:9:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 11,
+											"src": "157:14:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 9,
+												"name": "uint",
+												"nodeType": "ElementaryTypeName",
+												"src": "157:4:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										}
+									],
+									"name": "TickItem",
+									"nameLocation": "39:8:0",
+									"nodeType": "StructDefinition",
+									"scope": 12,
+									"src": "32:147:0",
+									"visibility": "public"
+								}
+							],
+							"scope": 13,
+							"src": "0:184:0",
+							"usedErrors": []
+						}
+					],
+					"src": "0:184:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}
