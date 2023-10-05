@@ -1,3 +1,4 @@
+'use client'
 import { Image, Skeleton } from '@nextui-org/react'
 
 interface TokenShowProps {

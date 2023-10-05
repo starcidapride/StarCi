@@ -2,9 +2,10 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Mooli } from 'next/font/google'
 import NextUIProviders from './nextui.provider'
-import { NavigationBar } from '@app/_components'
+import { ErrorModal, NavigationBar, TransactionToast } from '@app/_components'
 import ReduxProviders from '@redux'
-import { ConfirmTransaction } from './_components/ConfirmTransaction'
+import { ConfirmTransaction } from './_components/Modals/ConfirmTransactionModal'
+import { ConnectMetamask } from './_components'
 
 const font = Mooli({ weight: '400', subsets: ['latin'] })
 
@@ -22,7 +23,10 @@ const RootLayout = ({
         <NextUIProviders>
             <ReduxProviders>
                 <NavigationBar />
+                <ConnectMetamask />
                 <ConfirmTransaction />
+                <ErrorModal />
+                <TransactionToast />
                 <div className="max-w-[1024px] mx-auto mt-12">
                     {children}
                 </div>

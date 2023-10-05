@@ -10,8 +10,8 @@ import { ChainInfo } from './ChainInfo'
 import { ChainName } from '@utils'
 
 export const NavigationBar = () => {
-    const web3 = useSelector((state: RootState) => state.web3.web3)
-    const account = useSelector((state: RootState) => state.account.account)
+    const web3 = useSelector((state: RootState) => state.blockchain.web3)
+    const account = useSelector((state: RootState) => state.blockchain.account)
     const dispatch: AppDispatch = useDispatch()
 
     useEffect(() => {
@@ -22,7 +22,7 @@ export const NavigationBar = () => {
             }
             handleEffect()
         }
-    }, [dispatch, web3])
+    }, [web3])
 
     type MenuItem = {
         id: number,

@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@redux'
 import { LPTick, getLiquidityPoolCreationInfo, getTicks, getToken0, getToken0Constant, getToken1, getToken1Constant } from '@web3'
 import { getDecimals, getSymbol, getWebsocketWeb3 } from '@web3'
-import { initialTokenState, tokenReducer } from '@app/starswap/_extras'
+import { initialTokenState, tokenReducer } from '@app/starswap/_context'
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline'
 import { LogsSubscription } from 'web3-eth'
 
@@ -28,7 +28,7 @@ ChartJS.register(
 
 export const PriceChart = (props: PriceChartProps) => {
 
-    const chainName = useSelector((state: RootState) => state.chainName.chainName)
+    const chainName = useSelector((state: RootState) => state.blockchain.chainName)
 
     const [tokenState, tokenDispatch] = useReducer(tokenReducer, initialTokenState)
 

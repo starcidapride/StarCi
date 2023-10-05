@@ -1,4 +1,4 @@
-import Web3, { Address, Transaction } from 'web3'
+import Web3, { Address, TransactionReceipt } from 'web3'
 import abi from './factory.abi'
 import { ChainName, chainInfos, GAS_PRICE, GAS_LIMIT } from '@utils'
 import { getHttpWeb3 } from '@web3'
@@ -33,7 +33,7 @@ export const createLiquidityPool = async (
     _token0BasePrice: bigint,
     _token0MaxPrice: bigint,
     _protocolFee: bigint
-) : Promise<Transaction|null>  => {
+) : Promise<TransactionReceipt|null>  => {
     try{
         const contract = getFactoryContract(chainName)
         const data = contract.methods.createLiquidityPool(

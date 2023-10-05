@@ -2,8 +2,8 @@
 import { useReducer, useEffect, createContext } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '@redux'
-import { getToken0, getToken1, getSymbol, getDecimals, getFarmingTokenSymbol, getFarmingTokenDecimals, getBalance } from '@web3'
-import { tokenReducer, initialTokenState, TokenState } from '@app/starswap/_extras'
+import { getToken0, getToken1, getSymbol, getDecimals, getBalance } from '@web3'
+import { tokenReducer, initialTokenState, TokenState } from '@app/starswap/_context'
 import { useParams } from 'next/navigation'
 import { calcRedenomination } from '../../../utils/calc.utils'
 
@@ -15,9 +15,10 @@ const ChildrenLayout = ({
 }: {
     children: React.ReactNode
 }) => {
-    const chainName = useSelector((state: RootState) => state.chainName.chainName)
+    const chainName = useSelector((state: RootState) => state.blockchain.chainName)
+    const account = useSelector((state: RootState) => state.blockchain.account)
+
     const [tokenState, tokenDispatch] = useReducer(tokenReducer, initialTokenState)
-    const account = useSelector((state: RootState) => state.account.account)
 
     const params = useParams()
     const poolAddress = params.id as string
@@ -41,6 +42,10 @@ const ChildrenLayout = ({
             if (_token1Symbol == null) return
             tokenDispatch({ type: 'SET_TOKEN1_SYMBOL', payload: _token1Symbol })
 
+            const _farmingTokenSymbol = await getSymbol(chainName, poolAddress)
+            if (_farmingTokenSymbol == null) return
+            tokenDispatch({ type: 'SET_FARMING_TOKEN_SYMBOL', payload: _farmingTokenSymbol })
+
             const _token0Decimals = await getDecimals(chainName, _token0)
             if (_token0Decimals == null) return
             tokenDispatch({ type: 'SET_TOKEN0_DECIMALS', payload: _token0Decimals })
@@ -49,11 +54,7 @@ const ChildrenLayout = ({
             if (_token1Decimals == null) return
             tokenDispatch({ type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals })
 
-            const _farmingTokenSymbol = await getFarmingTokenSymbol(chainName, poolAddress)
-            if (_farmingTokenSymbol == null) return
-            tokenDispatch({ type: 'SET_FARMING_TOKEN_SYMBOL', payload: _farmingTokenSymbol })
-
-            const _farmingTokenDecimals = await getFarmingTokenDecimals(chainName, poolAddress)
+            const _farmingTokenDecimals = await getDecimals(chainName, poolAddress)
             if (_farmingTokenDecimals == null) return
             tokenDispatch({ type: 'SET_FARMING_TOKEN_DECIMALS', payload: _farmingTokenDecimals })
 

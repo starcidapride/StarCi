@@ -1,20 +1,34 @@
 'use client'
 import { Button, Modal, ModalBody, ModalContent } from '@nextui-org/react'
-import { AppDispatch, RootState, setVisible } from '@redux'
-import { useContext, useState } from 'react'
+import { AppDispatch, RootState, setMetamaskVisible, setVisible } from '@redux'
+import { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/navigation'
 import { PoolAddressContext } from '../../layout'
-import {join} from '@web3'
+import {getHasJoined, joinFarming} from '@web3'
 
 export const BlockModal = () => {   
 
-    const [visible, setVisible] = useState(true)
+    const [visible, setVisible] = useState(false)
     const router = useRouter()
     
     const account = useSelector((state: RootState) => state.account.account)
     const web3 = useSelector((state: RootState) => state.web3.web3)
     const poolAddress = useContext(PoolAddressContext)
+
+    const dispatch : AppDispatch = useDispatch()
+
+    useEffect(() => {
+            const handleEffect = async () => {
+                const hasJoined = await getHasJoined(web3, poolAddress)
+                if (hasJoined == null) return
+
+                setVisible(!hasJoined)
+            }
+            handleEffect()
+            dispatch(setMetamaskVisible(true))
+
+    }, []) 
 
     return (
         <Modal 
@@ -42,7 +56,7 @@ export const BlockModal = () => {
                             onPress={async () => 
                             {
                                 if (web3 == null) return
-                                await join(
+                                await joinFarming(
                                     web3,
                                     account,
                                     poolAddress

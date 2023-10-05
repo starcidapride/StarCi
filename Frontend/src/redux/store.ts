@@ -1,15 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
-import web3Reducer, { web3Slice } from './slices/web3.slice'
-import accountReducer, { accountSlice } from './slices/account.slice'
-import confirmTransactionReducer, { confirmTransactionSlice } from './slices/confirm-transaction.slice'
-import chainNameReducer, {chainNameSlice} from './slices/chain-name.slice'
+import blockchainReducer, { blockchainSlice } from './slices/blockchain.slice'
+import modalReducer, { modalSlice } from './slices/modal.slice'
+import toastReducer, { toastSlice } from './slices/toast.slice'
+
 
 const store = configureStore({
     reducer: {
-        [web3Slice.name]: web3Reducer,
-        [accountSlice.name]: accountReducer,
-        [confirmTransactionSlice.name]: confirmTransactionReducer,
-        [chainNameSlice.name]: chainNameReducer
+        [blockchainSlice.name]: blockchainReducer,
+        [modalSlice.name]: modalReducer,
+        [toastSlice.name]: toastReducer
     },
     devTools: false
 })

@@ -224,7 +224,7 @@ export const getTicks = async (
     }
 }
 
-export const join = async (
+export const joinFarming = async (
     web3: Web3,
     fromAddress: Address,
     contractAddress: Address
@@ -232,7 +232,7 @@ export const join = async (
     try {
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
 
-        const data = liquidityPoolContract.methods.join().encodeABI()
+        const data = liquidityPoolContract.methods.joinFarming().encodeABI()
 
         return await web3.eth.sendTransaction({
             from: fromAddress,
@@ -247,7 +247,20 @@ export const join = async (
     }
 }
 
-export const deposit = async (
+export const getHasJoined = async (
+    web3: Web3,
+    contractAddress: Address
+): Promise<boolean | null> => {
+    try {
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        return await liquidityPoolContract.methods.hasJoined().call()
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const depositTokensForFarmingTokens = async (
     web3: Web3,
     fromAddress: Address,
     contractAddress: Address,
@@ -256,7 +269,7 @@ export const deposit = async (
     try {
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
 
-        const data = liquidityPoolContract.methods.deposit(
+        const data = liquidityPoolContract.methods.depositTokensForFarmingTokens(
             _amount1TokenIn
         ).encodeABI()
 
@@ -273,7 +286,7 @@ export const deposit = async (
     }
 }
 
-export const withdraw = async (
+export const withdrawFarmingTokens = async (
     web3: Web3,
     fromAddress: Address,
     contractAddress: Address,
@@ -283,7 +296,7 @@ export const withdraw = async (
     try {
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
 
-        const data = liquidityPoolContract.methods.withdraw(
+        const data = liquidityPoolContract.methods.withdrawFarmingTokens(
             _amountLPTokenIn,
             _minAmountToken0Out
         ).encodeABI()
@@ -388,63 +401,6 @@ export const getWithdrawals = async (
             })
         }
         return _result
-    } catch (ex) {
-        console.log(ex)
-        return null
-    }
-}
-
-export const getFarmingTokenName = async (
-    chainName: ChainName,
-    contractAddress: Address
-): Promise<string | null> => {
-    try {
-        const web3 = getHttpWeb3(chainName)
-        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
-        return await liquidityPoolContract.methods.name().call()
-    } catch (ex) {
-        console.log(ex)
-        return null
-    }
-}
-
-export const getFarmingTokenSymbol = async (
-    chainName: ChainName,
-    contractAddress: Address,
-): Promise<string | null> => {
-    try {
-        const web3 = getHttpWeb3(chainName)
-        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
-        return await liquidityPoolContract.methods.symbol().call()
-    } catch (ex) {
-        console.log(ex)
-        return null
-    }
-}
-
-export const getFarmingTokenDecimals = async (
-    chainName: ChainName,
-    contractAddress: Address
-): Promise<number | null> => {
-    try {
-        const web3 = getHttpWeb3(chainName)
-        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
-        return Number(await liquidityPoolContract.methods.decimals().call())
-    } catch (ex) {
-        console.log(ex)
-        return null
-    }
-}
-
-export const getFarmingTokenBalance = async (
-    chainName: ChainName,
-    contractAddress: Address,
-    _address: Address
-): Promise<string | null> => {
-    try {
-        const web3 = getHttpWeb3(chainName)
-        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
-        return await liquidityPoolContract.methods.balanceOf(_address).call()
     } catch (ex) {
         console.log(ex)
         return null

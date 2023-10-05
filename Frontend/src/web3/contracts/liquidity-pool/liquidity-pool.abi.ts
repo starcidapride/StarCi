@@ -303,7 +303,7 @@ const abi = [
                 'type': 'uint256'
             }
         ],
-        'name': 'deposit',
+        'name': 'depositTokensForFarmingTokens',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function'
@@ -522,6 +522,19 @@ const abi = [
         'type': 'function'
     },
     {
+        'inputs': [],
+        'name': 'hasJoined',
+        'outputs': [
+            {
+                'internalType': 'bool',
+                'name': '',
+                'type': 'bool'
+            }
+        ],
+        'stateMutability': 'view',
+        'type': 'function'
+    },
+    {
         'inputs': [
             {
                 'internalType': 'address',
@@ -560,7 +573,7 @@ const abi = [
     },
     {
         'inputs': [],
-        'name': 'join',
+        'name': 'joinFarming',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function'
@@ -933,7 +946,7 @@ const abi = [
                 'type': 'uint256'
             }
         ],
-        'name': 'withdraw',
+        'name': 'withdrawFarmingTokens',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function'

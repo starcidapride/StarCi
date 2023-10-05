@@ -3,12 +3,14 @@ import { Button, ButtonGroup, Card, CardBody, CardHeader, Divider, Input, Skelet
 import { Fragment, useContext, useEffect, useReducer, useState } from 'react'
 import { Address } from 'web3'
 import { useAsyncList } from '@react-stately/data'
-import { initialTokenState, tokenReducer } from '@app/starswap/_extras'
-import { useSelector } from 'react-redux'
+import { initialTokenState, tokenReducer } from '@app/starswap/_context'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router'
 import { PoolAddressContext, TokenContext } from '../../layout'
 import { calcRedenomination } from '@utils'
 import { BlockModal } from '.'
+import { AppDispatch, RootState } from '../../../../../redux/store'
+import { setMetamaskVisible } from '../../../../../redux/slices'
 
 interface MainSectionProps {
     className?: string
@@ -64,10 +66,10 @@ export const MainSection = (props: FarmSectionProps) => {
                                     <div className="gap-2 flex items-end">
                                         <div className="text-4xl font-bold">
                                             {
-                                                tokenState.finishLoadWithAuth 
+                                                tokenState.finishLoadWithAuth
                                                     ? tokenState.farmingTokenBalance
                                                     : 0
-                                            } 
+                                            }
                                         </div>
 
                                         {tokenState.finishLoadWithoutAuth
@@ -117,13 +119,13 @@ export const MainSection = (props: FarmSectionProps) => {
                                 >
                                     <TableHeader>
                                         <TableColumn key="name" width={'25%'} allowsSorting>
-                                        #
+                                            #
                                         </TableColumn>
                                         <TableColumn key="height" width={'50%'} allowsSorting>
-                                        Tx Hash
+                                            Tx Hash
                                         </TableColumn>
                                         <TableColumn key="birth_year" width={'30%'} allowsSorting>
-                                        Rewards
+                                            Rewards
                                         </TableColumn>
                                     </TableHeader>
                                     <TableBody

@@ -4,8 +4,8 @@ import { ArrowsUpDownIcon } from '@heroicons/react/24/outline'
 import { Card, CardHeader, CardBody, Divider, Textarea, Button } from '@nextui-org/react'
 import { RootState } from '@redux'
 import { TIME_OUT, calcRedenomination, calcIRedenomination } from '@utils'
-import { getToken0, getToken0Output, getToken1, getToken1Output, swap, approve, getAllowance, getBalance, getDecimals, getSymbol } from '@web3'
-import { useContext, useEffect, useReducer, useRef, useState } from 'react'
+import { getToken0Output, getToken1Output, swap, approve, getAllowance } from '@web3'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { SlippageTolerance } from './SlippageTolerance'
 import { useFormik } from 'formik'
@@ -18,9 +18,9 @@ interface SwapSectionProps {
 }
 
 export const SwapSection = (props: SwapSectionProps) => {
-    const chainName = useSelector((state: RootState) => state.chainName.chainName)
-    const web3 = useSelector((state: RootState) => state.web3.web3)
-    const account = useSelector((state: RootState) => state.account.account)
+    const chainName = useSelector((state: RootState) => state.blockchain.chainName)
+    const web3 = useSelector((state: RootState) => state.blockchain.web3)
+    const account = useSelector((state: RootState) => state.blockchain.account)
 
     const tokenState = useContext(TokenContext)
     const poolAddress = useContext(PoolAddressContext)

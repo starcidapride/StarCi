@@ -1,10 +1,13 @@
 'use client'
 import { NextUIProvider } from '@nextui-org/react'
+import { ReduxProviders } from '../redux/redux.provider'
 
 const NextUIProviders = ({children}: { children: React.ReactNode }) => {
     return (
         <NextUIProvider>
-            {children}
+            <ReduxProviders>
+                {children}
+            </ReduxProviders>
         </NextUIProvider>
     )
 }

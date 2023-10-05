@@ -1,13 +1,14 @@
-import Web3, { Address, Transaction } from 'web3'
+import Web3, { Address, TransactionReceipt } from 'web3'
 import abi from './erc20.abi'
 import { ChainName, GAS_LIMIT, GAS_PRICE } from '@utils'
 import { getHttpWeb3 } from '@web3'
 
-export const getErc20Contract = (web3: Web3, erc20Contract: Address) => new web3.eth.Contract(abi, erc20Contract, web3)
+export const getErc20Contract = (web3: Web3, erc20Contract: Address) =>
+    new web3.eth.Contract(abi, erc20Contract, web3)
 
 export const getName = async (
     chainName: ChainName,
-    contractAddress: Address
+    contractAddress: Address,
 ): Promise<Address | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
@@ -17,13 +18,12 @@ export const getName = async (
         console.log(ex)
         return null
     }
-
 }
 
 export const getSymbol = async (
     chainName: ChainName,
     contractAddress: Address,
-    abortController?: AbortController
+    abortController?: AbortController,
 ): Promise<string | null> => {
     try {
         const web3 = getHttpWeb3(chainName, abortController)
@@ -38,7 +38,7 @@ export const getSymbol = async (
 export const getBalance = async (
     chainName: ChainName,
     contractAddress: Address,
-    _address: Address
+    _address: Address,
 ): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
@@ -52,7 +52,7 @@ export const getBalance = async (
 
 export const getDecimals = async (
     chainName: ChainName,
-    contractAddress: Address
+    contractAddress: Address,
 ): Promise<number | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
@@ -66,7 +66,7 @@ export const getDecimals = async (
 
 export const getTotalSupply = async (
     chainName: ChainName,
-    contractAddress: Address
+    contractAddress: Address,
 ): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
@@ -82,8 +82,8 @@ export const getAllowance = async (
     chainName: ChainName,
     erc20Contract: Address,
     _owner: Address,
-    _splender: Address
-):Promise<bigint|null> => {
+    _splender: Address,
+): Promise<bigint | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const _erc20Contract = getErc20Contract(web3, erc20Contract)
@@ -99,23 +99,20 @@ export const approve = async (
     fromAddress: Address,
     contractAddress: Address,
     _splender: Address,
-    _amount: bigint
-) : Promise<Transaction|null> => {
+    _amount: bigint,
+): Promise<TransactionReceipt | null> => {
     try {
         const _erc20Contract = getErc20Contract(web3, contractAddress)
-        const data = _erc20Contract.methods.approve(
-            _splender,
-            _amount
-        ).encodeABI()
+        const data = _erc20Contract.methods.approve(_splender, _amount).encodeABI()
 
         return await web3.eth.sendTransaction({
             from: fromAddress,
             to: contractAddress,
             data,
             gasLimit: GAS_LIMIT,
-            gasPrice: GAS_PRICE
+            gasPrice: GAS_PRICE,
         })
-    } catch(ex){
+    } catch (ex) {
         console.log(ex)
         return null
     }
