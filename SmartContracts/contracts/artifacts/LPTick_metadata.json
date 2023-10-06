@@ -13,17 +13,37 @@
 						"components": [
 							{
 								"internalType": "uint256",
-								"name": "token0",
+								"name": "amountToken0Locked",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
-								"name": "token1",
+								"name": "amountToken1Locked",
 								"type": "uint256"
 							},
 							{
 								"internalType": "uint256",
 								"name": "token0Price",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount0In",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount1In",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount0Out",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount1Out",
 								"type": "uint256"
 							},
 							{
@@ -35,19 +55,6 @@
 						"internalType": "struct LPTick.Tick[]",
 						"name": "",
 						"type": "tuple[]"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "maxTicks",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -82,11 +89,11 @@
 	},
 	"sources": {
 		"SmartContracts/contracts/LPTick.sol": {
-			"keccak256": "0xf0727b218a969528f351ed01a0c62f567d6afa7d308cf001222ed86c5eae90d9",
+			"keccak256": "0x47e94db9f7d16a3fedd7affe3de25a583b6ad6d9a4557289ee6932245638cb5a",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a102af536c34087c87abe361f9e3ab09c02c58ef4f484001909500d284dc1641",
-				"dweb:/ipfs/QmSyfPovJWaSXUt1AagwNgtgde7B4Zhhwa4RYTWPsmEyPm"
+				"bzz-raw://354723810aa172dd75373388f5c28643bc1ee8b5c6a5addd78e6e7118a817930",
+				"dweb:/ipfs/QmdW7xHH5u7EveqsAHth6BpkH5uLMo1ZLrMWhLsWExeNjD"
 			]
 		}
 	},

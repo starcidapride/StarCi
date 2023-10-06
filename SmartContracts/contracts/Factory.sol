@@ -24,6 +24,12 @@ contract Factory is Ownable {
         uint _token0MaxPrice,
         uint _protocolFee
     ) public {
+        string memory LPTokenName = ERC20(_token1).name();
+        string memory LPTokenSymbol = ERC20(_token1).symbol();
+
+        string memory _profitableTokenName = string.concat("Profitable ", LPTokenName);
+        string memory _profitableTokenSymbol = string.concat("pr", LPTokenSymbol);
+
         LiquidityPool liquidityPool = new LiquidityPool(
             address(this),
             owner(),
@@ -33,7 +39,9 @@ contract Factory is Ownable {
             _token1DepositAmount,
             _token0BasePrice,
             _token0MaxPrice,
-            _protocolFee
+            _protocolFee,
+            _profitableTokenName,
+            _profitableTokenSymbol
         );
 
         liquidityPool.transferOwnership(msg.sender);

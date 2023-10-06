@@ -125,7 +125,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"SmartContracts/contracts/LPTokenLog.sol": "LPTokenLog"
+			"SmartContracts/contracts/ProfitableTokenTick.sol": "LPTokenLog"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -133,13 +133,13 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": true,
+			"enabled": false,
 			"runs": 200
 		},
 		"remappings": []
 	},
 	"sources": {
-		"SmartContracts/contracts/LPTokenLog.sol": {
+		"SmartContracts/contracts/ProfitableTokenTick.sol": {
 			"keccak256": "0x55cdfe539af9467294fd663d2c1ae22014363ad61520c9a32506d8bb62df4354",
 			"license": "MIT",
 			"urls": [

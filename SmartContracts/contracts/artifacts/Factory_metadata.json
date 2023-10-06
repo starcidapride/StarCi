@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.21+commit.d9974bed"
+		"version": "0.8.18+commit.87f61d96"
 	},
 	"language": "Solidity",
 	"output": {
@@ -177,13 +177,13 @@
 		"compilationTarget": {
 			"SmartContracts/contracts/Factory.sol": "Factory"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "paris",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": true,
+			"enabled": false,
 			"runs": 200
 		},
 		"remappings": []
@@ -246,11 +246,11 @@
 			]
 		},
 		"SmartContracts/contracts/Factory.sol": {
-			"keccak256": "0x01abb3598b8d07a7349d827609cb00980d389d614c565e5b031cee592d73989e",
+			"keccak256": "0x99d1080ec2b6eeabdea025623df687e5583294dfead045a431b155c755888fd5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ea8b05c06b3c9e1acd17bf765f9368ef60976bec7c56bcd20bc9ae8666a1cbcf",
-				"dweb:/ipfs/QmZLnpfiaeVFNrkyotqU1ZUMmjs6ggYmzLWdWVopxuCCwu"
+				"bzz-raw://29a15875df3037ca34a58395a44896247ee440abac6226e904035ab898de9cc3",
+				"dweb:/ipfs/QmNRUzqfruRAf1qUSe5YtbuzCzULmaov7b68AYuLXFebep"
 			]
 		},
 		"SmartContracts/contracts/LPTick.sol": {
@@ -270,19 +270,11 @@
 			]
 		},
 		"SmartContracts/contracts/LiquidityPool.sol": {
-			"keccak256": "0x5697b1d32bbe53d696ce2c2b50de040ac3b0b38abc5d4457cd7cffb3b3e58146",
+			"keccak256": "0x748074f6f0e1c0cbdfc138777379d5ee22fb23f01ba5c2cd3eda561181a1d701",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://79f28c99c1dc5358d1d898a3bf49f98f9a6f47cc46183788b6fab5fff9103c79",
-				"dweb:/ipfs/QmQ2mWaEGHzUsoG6nNtrGRUZv3frsdfxwEJdViYngbgNRr"
-			]
-		},
-		"SmartContracts/contracts/LockERC20.sol": {
-			"keccak256": "0xf139f49a570d7db42c281a78c141e8415df555ed30e25f891c97500e871d8e34",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://8d1d8996d9d2d16c1c9b51f85f7e3b71d70b25573a54b6d053f97bfbfe457a89",
-				"dweb:/ipfs/QmXYG1TtzZTjJzABYGNEwjdjEn8Q6pwYroTokaVKybCeNF"
+				"bzz-raw://3737b13aab5866d4e93dd326f9ef4bd63d3121786b25d5ad8a1e48ad6e107da4",
+				"dweb:/ipfs/QmNjFwDEAAG58jf4PN7aZ6Wv9PnYM1UVc9EDQqz1pFU3qn"
 			]
 		}
 	},
