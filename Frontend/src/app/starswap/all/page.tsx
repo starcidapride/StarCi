@@ -1,10 +1,10 @@
 'use client'
 
-import { AllPairsSection } from './_components'
+import { MainSection } from './_components'
 
 const Page = () => {
     return (    
-        <AllPairsSection />
+        <MainSection />
     )
 }
 export default Page

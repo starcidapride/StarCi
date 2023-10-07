@@ -1,5 +1,5 @@
 import { ChainName, GAS_LIMIT, GAS_PRICE } from '@utils'
-import Web3, { Address, Contract, Transaction } from 'web3'
+import Web3, { Address, Contract, Transaction, TransactionReceipt } from 'web3'
 import abi from './liquidity-pool.abi'
 import { getFactoryContract, getHttpWeb3 } from '@web3'
 import { EventLog } from 'web3-eth-contract'
@@ -92,6 +92,34 @@ export const getToken1Output = async (
         const web3 = getHttpWeb3(chainName, abortController)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
         return await liquidityPoolContract.methods.token1Output(_token0Input).call()
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const getToken0BasePrice = async (
+    chainName: ChainName,
+    contractAddress: Address
+): Promise<bigint | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        return await liquidityPoolContract.methods.token0BasePrice().call()
+    } catch (ex) {
+        console.log(ex)
+        return null
+    }
+}
+
+export const getToken0MaxPrice = async (
+    chainName: ChainName,
+    contractAddress: Address
+): Promise<bigint | null> => {
+    try {
+        const web3 = getHttpWeb3(chainName)
+        const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
+        return await liquidityPoolContract.methods.token0MaxPrice().call()
     } catch (ex) {
         console.log(ex)
         return null
@@ -193,9 +221,13 @@ export const getLiquidityPoolCreationInfo = async (
 }
 
 export type LPTick = {
-    token0: bigint
-    token1: bigint
+    amountToken0Locked: bigint
+    amountToken1Locked: bigint
+    previousToken0Price: bigint
     token0Price: bigint
+    amountSwappedToken0: bigint 
+    amountSwappedToken1: bigint
+    isBuy: boolean
     timestamp: Date
 }
 
@@ -209,11 +241,15 @@ export const getTicks = async (
         const ticks = await liquidityPoolContract.methods.getTicks().call()
         const _result: LPTick[] = []
         for (const tick of ticks) {
-
+            const _isBuy = tick.amount0In == 0 && tick.amount1Out == 0
             _result.push({
-                token0: BigInt(tick.token0),
-                token1: BigInt(tick.token1),
+                amountToken0Locked: BigInt(tick.amountToken0Locked),
+                amountToken1Locked: BigInt(tick.amountToken1Locked),
+                previousToken0Price: BigInt(tick.previousToken0Price),
                 token0Price: BigInt(tick.token0Price),
+                amountSwappedToken0: _isBuy ? BigInt(tick.amount0Out) : BigInt(tick.amount0In),
+                amountSwappedToken1: _isBuy ? BigInt(tick.amount1In) : BigInt(tick.amount1In),
+                isBuy: _isBuy,
                 timestamp: new Date(Number(tick.timestamp) * 1000)
             })
         }
@@ -224,15 +260,15 @@ export const getTicks = async (
     }
 }
 
-export const joinFarming = async (
+export const startEarning = async (
     web3: Web3,
     fromAddress: Address,
     contractAddress: Address
-): Promise<Transaction | null> => {
+): Promise<TransactionReceipt | null> => {
     try {
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
 
-        const data = liquidityPoolContract.methods.joinFarming().encodeABI()
+        const data = liquidityPoolContract.methods.startEarning().encodeABI()
 
         return await web3.eth.sendTransaction({
             from: fromAddress,
@@ -247,30 +283,33 @@ export const joinFarming = async (
     }
 }
 
-export const getHasJoined = async (
+export const getHasEarned = async (
     web3: Web3,
     contractAddress: Address
 ): Promise<boolean | null> => {
     try {
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
-        return await liquidityPoolContract.methods.hasJoined().call()
+        return await liquidityPoolContract.methods.hasEarned().call()
     } catch (ex) {
         console.log(ex)
         return null
     }
 }
 
-export const depositTokensForFarmingTokens = async (
+export const depositTokens = async (
     web3: Web3,
     fromAddress: Address,
     contractAddress: Address,
-    _amount1TokenIn: bigint
+    _amountToken1In: bigint,
+    _amountProfitableTokenOut: bigint
+
 ): Promise<Transaction | null> => {
     try {
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
 
-        const data = liquidityPoolContract.methods.depositTokensForFarmingTokens(
-            _amount1TokenIn
+        const data = liquidityPoolContract.methods.depositTokens(
+            _amountToken1In,
+            _amountProfitableTokenOut
         ).encodeABI()
 
         return await web3.eth.sendTransaction({
@@ -286,19 +325,17 @@ export const depositTokensForFarmingTokens = async (
     }
 }
 
-export const withdrawFarmingTokens = async (
+export const withdrawTokens = async (
     web3: Web3,
     fromAddress: Address,
     contractAddress: Address,
-    _amountLPTokenIn: bigint,
-    _minAmountToken0Out: bigint
+    _amountProfitableTokenIn: bigint,
 ): Promise<Transaction | null> => {
     try {
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
 
-        const data = liquidityPoolContract.methods.withdrawFarmingTokens(
-            _amountLPTokenIn,
-            _minAmountToken0Out
+        const data = liquidityPoolContract.methods.withdrawTokens(
+            _amountProfitableTokenIn
         ).encodeABI()
 
         return await web3.eth.sendTransaction({
@@ -314,8 +351,8 @@ export const withdrawFarmingTokens = async (
     }
 }
 
-export type LPReward = {
-    amount : bigint,
+export type LPRewardTick = {
+    amountProfitableToken : bigint,
     timestamp: Date
 } 
 
@@ -323,18 +360,18 @@ export const getRewards = async (
     chainName: ChainName,
     contractAddress: Address,
     _address: Address
-): Promise<LPReward[] | null> => {
+): Promise<LPRewardTick[] | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
         const rewards = await liquidityPoolContract.methods.getRewards(
             _address
         ).call()
-        const _result: LPReward[] = []
+        const _result: LPRewardTick[] = []
         for (const reward of rewards) {
 
             _result.push({
-                amount: BigInt(reward.amount),
+                amountProfitableToken: BigInt(reward.amountProfitableToken),
                 timestamp: new Date(Number(reward.timestamp) * 1000),
             })
         }
@@ -345,8 +382,9 @@ export const getRewards = async (
     }
 }
 
-export type LPDeposit = {
-    amount : bigint,
+export type LPDepositTick = {
+    amountToken1In : bigint,
+    amountProfitableTokenOut: bigint,
     timestamp: Date
 } 
 
@@ -354,18 +392,19 @@ export const getDeposits = async (
     chainName: ChainName,
     contractAddress: Address,
     _address: Address
-): Promise<LPDeposit[] | null> => {
+): Promise<LPDepositTick[] | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
         const deposits = await liquidityPoolContract.methods.getDeposits(
             _address
         ).call()
-        const _result: LPDeposit[] = []
+        const _result: LPDepositTick[] = []
         for (const deposit of deposits) {
 
             _result.push({
-                amount: BigInt(deposit.amount),
+                amountToken1In: BigInt(deposit.amountProfitableTokenOut),
+                amountProfitableTokenOut: BigInt(deposit.amountProfitableTokenOut),
                 timestamp: new Date(Number(deposit.timestamp) * 1000),
             })
         }
@@ -376,8 +415,9 @@ export const getDeposits = async (
     }
 }
 
-export type LPWithdrawal = {
-    amount : bigint,
+export type LPWithdrawTick = {
+    amountProfitableTokenIn : bigint,
+    amountToken1Out: bigint,
     timestamp: Date
 } 
 
@@ -385,18 +425,19 @@ export const getWithdrawals = async (
     chainName: ChainName,
     contractAddress: Address,
     _address: Address
-): Promise<LPWithdrawal[] | null> => {
+): Promise<LPWithdrawTick[] | null> => {
     try {
         const web3 = getHttpWeb3(chainName)
         const liquidityPoolContract = getLiquidityPoolContract(web3, contractAddress)
         const deposits = await liquidityPoolContract.methods.getWithdrawals(
             _address
         ).call()
-        const _result: LPWithdrawal[] = []
+        const _result: LPWithdrawTick[] = []
         for (const deposit of deposits) {
 
             _result.push({
-                amount: BigInt(deposit.amount),
+                amountProfitableTokenIn: BigInt(deposit.amountProfitableTokenIn),
+                amountToken1Out: BigInt(deposit.amountProfitableTokenIn),
                 timestamp: new Date(Number(deposit.timestamp) * 1000),
             })
         }

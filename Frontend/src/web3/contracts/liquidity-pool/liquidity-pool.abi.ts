@@ -301,9 +301,14 @@ const abi = [
                 'internalType': 'uint256',
                 'name': '_amountToken1In',
                 'type': 'uint256'
+            },
+            {
+                'internalType': 'uint256',
+                'name': '_minAmountProfitableTokenOut',
+                'type': 'uint256'
             }
         ],
-        'name': 'depositTokensForFarmingTokens',
+        'name': 'depositTokens',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function'
@@ -372,7 +377,12 @@ const abi = [
                 'components': [
                     {
                         'internalType': 'uint256',
-                        'name': 'amount',
+                        'name': 'amountToken1In',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'amountProfitableTokenOut',
                         'type': 'uint256'
                     },
                     {
@@ -381,7 +391,7 @@ const abi = [
                         'type': 'uint256'
                     }
                 ],
-                'internalType': 'struct LPTokenLog.DepositLog[]',
+                'internalType': 'struct ProfitableTokenTick.DepositTick[]',
                 'name': '',
                 'type': 'tuple[]'
             }
@@ -438,7 +448,7 @@ const abi = [
                 'components': [
                     {
                         'internalType': 'uint256',
-                        'name': 'amount',
+                        'name': 'amountProfitableToken',
                         'type': 'uint256'
                     },
                     {
@@ -447,7 +457,7 @@ const abi = [
                         'type': 'uint256'
                     }
                 ],
-                'internalType': 'struct LPTokenLog.RewardLog[]',
+                'internalType': 'struct ProfitableTokenTick.RewardTick[]',
                 'name': '',
                 'type': 'tuple[]'
             }
@@ -463,17 +473,42 @@ const abi = [
                 'components': [
                     {
                         'internalType': 'uint256',
-                        'name': 'token0',
+                        'name': 'amountToken0Locked',
                         'type': 'uint256'
                     },
                     {
                         'internalType': 'uint256',
-                        'name': 'token1',
+                        'name': 'amountToken1Locked',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'previousToken0Price',
                         'type': 'uint256'
                     },
                     {
                         'internalType': 'uint256',
                         'name': 'token0Price',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'amount0In',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'amount1In',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'amount0Out',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'amount1Out',
                         'type': 'uint256'
                     },
                     {
@@ -504,7 +539,12 @@ const abi = [
                 'components': [
                     {
                         'internalType': 'uint256',
-                        'name': 'amount',
+                        'name': 'amountProfitableTokenIn',
+                        'type': 'uint256'
+                    },
+                    {
+                        'internalType': 'uint256',
+                        'name': 'amountToken1Out',
                         'type': 'uint256'
                     },
                     {
@@ -513,7 +553,7 @@ const abi = [
                         'type': 'uint256'
                     }
                 ],
-                'internalType': 'struct LPTokenLog.WithdrawLog[]',
+                'internalType': 'struct ProfitableTokenTick.WithdrawTick[]',
                 'name': '',
                 'type': 'tuple[]'
             }
@@ -523,7 +563,7 @@ const abi = [
     },
     {
         'inputs': [],
-        'name': 'hasJoined',
+        'name': 'hasEarned',
         'outputs': [
             {
                 'internalType': 'bool',
@@ -573,13 +613,6 @@ const abi = [
     },
     {
         'inputs': [],
-        'name': 'joinFarming',
-        'outputs': [],
-        'stateMutability': 'nonpayable',
-        'type': 'function'
-    },
-    {
-        'inputs': [],
         'name': 'kConstant',
         'outputs': [
             {
@@ -594,19 +627,6 @@ const abi = [
     {
         'inputs': [],
         'name': 'maxRecords',
-        'outputs': [
-            {
-                'internalType': 'uint256',
-                'name': '',
-                'type': 'uint256'
-            }
-        ],
-        'stateMutability': 'view',
-        'type': 'function'
-    },
-    {
-        'inputs': [],
-        'name': 'maxTicks',
         'outputs': [
             {
                 'internalType': 'uint256',
@@ -659,6 +679,13 @@ const abi = [
     {
         'inputs': [],
         'name': 'renounceOwnership',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function'
+    },
+    {
+        'inputs': [],
+        'name': 'startEarning',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function'
@@ -937,16 +964,11 @@ const abi = [
         'inputs': [
             {
                 'internalType': 'uint256',
-                'name': '_amountLPTokenIn',
-                'type': 'uint256'
-            },
-            {
-                'internalType': 'uint256',
-                'name': '_minAmountToken0Out',
+                'name': '_amountProfitableTokenIn',
                 'type': 'uint256'
             }
         ],
-        'name': 'withdrawFarmingTokens',
+        'name': 'withdrawTokens',
         'outputs': [],
         'stateMutability': 'nonpayable',
         'type': 'function'

@@ -1,1 +1,1 @@
-export * from './AllPairsSection'
+export * from './MainSection'

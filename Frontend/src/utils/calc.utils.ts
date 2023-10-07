@@ -1,14 +1,14 @@
 export const calcExponent = (y: number): number => Math.pow(10, y)
 
 export const calcRedenomination = (
-    amount: bigint, 
-    decimals: number, 
+    amount: bigint,
+    decimals: number,
     round: number
 ): number => {
     try {
         const divisor = calcExponent(decimals)
         const result = Number(amount * BigInt(calcExponent(round)) / BigInt(divisor)) / calcExponent(round)
-        
+
         return result
     } catch (ex) {
         console.error(ex)
@@ -23,7 +23,7 @@ export const bDiv = (
 ): number => {
     try {
         const result = Number(((_a * BigInt(calcExponent(round))) / _b)) / calcExponent(round)
-      
+
         return result
     } catch (ex) {
         console.error(ex)
@@ -32,7 +32,7 @@ export const bDiv = (
 }
 
 export const calcIRedenomination = (
-    amount: number, 
+    amount: number,
     decimals: number
 ): bigint => {
     try {
@@ -61,7 +61,7 @@ export const calInverse = (
 }
 
 export const calcRound = (
-    y: number | string, 
+    y: number | string,
     round: number
 ): number => {
     try {
@@ -74,7 +74,7 @@ export const calcRound = (
 
 export const mulNumberBigInt = (
     x: bigint,
-    y: number, 
+    y: number,
     round: number,
 ): bigint => {
     try {
@@ -82,6 +82,19 @@ export const mulNumberBigInt = (
     } catch (ex) {
         console.error(ex)
         return BigInt(0)
+    }
+}
+
+export const calPercentage = (
+    x: number,
+    y: number,
+    round: number
+): number => {
+    try {
+        return Number((Math.abs(1 - x/y) * 100).toFixed(round))
+    } catch (ex) {
+        console.log(ex)
+        return 0
     }
 }
 

@@ -2,27 +2,40 @@
 import { useReducer, useEffect, createContext } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '@redux'
-import { getToken0, getToken1, getSymbol, getDecimals, getBalance } from '@web3'
-import { tokenReducer, initialTokenState, TokenState } from '@app/starswap/_context'
+import {
+    getToken0,
+    getToken1,
+    getSymbol,
+    getDecimals,
+    getBalance,
+    getToken1Output,
+    getToken0BasePrice,
+    getToken0MaxPrice,
+} from '@web3'
+import {
+    tokenReducer,
+    initialTokenState,
+    TokenState,
+} from '@app/starswap/_context'
 import { useParams } from 'next/navigation'
-import { calcRedenomination } from '../../../utils/calc.utils'
+import { calcExponent, calcIRedenomination, calcRedenomination } from '@utils'
 
 export const PoolAddressContext = createContext<string>('')
 export const TokenContext = createContext<TokenState>(initialTokenState)
 
-const ChildrenLayout = ({
-    children,
-}: {
-    children: React.ReactNode
-}) => {
-    const chainName = useSelector((state: RootState) => state.blockchain.chainName)
+const ChildrenLayout = ({ children }: { children: React.ReactNode }) => {
+    const chainName = useSelector(
+        (state: RootState) => state.blockchain.chainName,
+    )
     const account = useSelector((state: RootState) => state.blockchain.account)
 
-    const [tokenState, tokenDispatch] = useReducer(tokenReducer, initialTokenState)
+    const [tokenState, tokenDispatch] = useReducer(
+        tokenReducer,
+        initialTokenState,
+    )
 
     const params = useParams()
     const poolAddress = params.id as string
-
 
     useEffect(() => {
         const handleEffect = async () => {
@@ -44,7 +57,10 @@ const ChildrenLayout = ({
 
             const _farmingTokenSymbol = await getSymbol(chainName, poolAddress)
             if (_farmingTokenSymbol == null) return
-            tokenDispatch({ type: 'SET_FARMING_TOKEN_SYMBOL', payload: _farmingTokenSymbol })
+            tokenDispatch({
+                type: 'SET_FARMING_TOKEN_SYMBOL',
+                payload: _farmingTokenSymbol,
+            })
 
             const _token0Decimals = await getDecimals(chainName, _token0)
             if (_token0Decimals == null) return
@@ -54,38 +70,103 @@ const ChildrenLayout = ({
             if (_token1Decimals == null) return
             tokenDispatch({ type: 'SET_TOKEN1_DECIMALS', payload: _token1Decimals })
 
+            const _token0Price = await getToken1Output(
+                chainName,
+                poolAddress,
+                BigInt(calcExponent(_token0Decimals)),
+            )
+            if (_token0Price == null) return
+            tokenDispatch({
+                type: 'SET_TOKEN0_PRICE',
+                payload: calcRedenomination(_token0Price, _token1Decimals, 3),
+            })
+
+            const _token0BasePrice = await getToken0BasePrice(
+                chainName,
+                poolAddress
+            )
+            if (_token0BasePrice == null) return
+            tokenDispatch({
+                type: 'SET_TOKEN0_BASE_PRICE',
+                payload: calcRedenomination(_token0BasePrice, _token1Decimals, 3),
+            })
+
+            const _token0MaxPrice = await getToken0MaxPrice(
+                chainName,
+                poolAddress
+            )
+            if (_token0MaxPrice == null) return
+            tokenDispatch({
+                type: 'SET_TOKEN0_MAX_PRICE',
+                payload: calcRedenomination(_token0MaxPrice, _token1Decimals, 3),
+            })
+
             const _farmingTokenDecimals = await getDecimals(chainName, poolAddress)
             if (_farmingTokenDecimals == null) return
-            tokenDispatch({ type: 'SET_FARMING_TOKEN_DECIMALS', payload: _farmingTokenDecimals })
+            tokenDispatch({
+                type: 'SET_FARMING_TOKEN_DECIMALS',
+                payload: _farmingTokenDecimals,
+            })
 
             tokenDispatch({ type: 'SET_FINISH_LOAD_WITHOUT_AUTH', payload: true })
         }
         handleEffect()
-    }, []
-    )
+    }, [])
 
     useEffect(() => {
-        if (account != '' && tokenState.finishLoadWithoutAuth){
+        if (account != '' && tokenState.finishLoadWithoutAuth) {
             console.log('called' + poolAddress)
             const handleEffect = async () => {
-                const _token0Balance = await getBalance(chainName, tokenState.token0, account)
+                const _token0Balance = await getBalance(
+                    chainName,
+                    tokenState.token0,
+                    account,
+                )
                 if (_token0Balance == null) return
-                tokenDispatch({ type: 'SET_TOKEN0_BALANCE', payload: calcRedenomination(_token0Balance, tokenState.token0Decimals, 5) })
-    
-                const _token1Balance = await getBalance(chainName, tokenState.token0, account)
+                tokenDispatch({
+                    type: 'SET_TOKEN0_BALANCE',
+                    payload: calcRedenomination(
+                        _token0Balance,
+                        tokenState.token0Decimals,
+                        5,
+                    ),
+                })
+
+                const _token1Balance = await getBalance(
+                    chainName,
+                    tokenState.token0,
+                    account,
+                )
                 if (_token1Balance == null) return
-                tokenDispatch({ type: 'SET_TOKEN1_BALANCE', payload: calcRedenomination(_token1Balance, tokenState.token0Decimals, 5) })
-    
-                const _farmingTokenBalance = await getBalance(chainName, poolAddress, account)
+                tokenDispatch({
+                    type: 'SET_TOKEN1_BALANCE',
+                    payload: calcRedenomination(
+                        _token1Balance,
+                        tokenState.token0Decimals,
+                        5,
+                    ),
+                })
+
+                const _farmingTokenBalance = await getBalance(
+                    chainName,
+                    poolAddress,
+                    account,
+                )
                 if (_farmingTokenBalance == null) return
-                tokenDispatch({ type: 'SET_FARMING_TOKEN_BALANCE', payload: calcRedenomination(_farmingTokenBalance, tokenState.token0Decimals, 5) })
+                tokenDispatch({
+                    type: 'SET_FARMING_TOKEN_BALANCE',
+                    payload: calcRedenomination(
+                        _farmingTokenBalance,
+                        tokenState.token0Decimals,
+                        5,
+                    ),
+                })
 
                 tokenDispatch({ type: 'SET_FINISH_LOAD_WITH_AUTH', payload: true })
             }
             handleEffect()
         }
-    }, [account, tokenState.finishLoadWithoutAuth]
-    )
+    }, [account, tokenState.finishLoadWithoutAuth])
 
     console.log(tokenState)
     return (
@@ -98,4 +179,3 @@ const ChildrenLayout = ({
 }
 
 export default ChildrenLayout
-

@@ -188,130 +188,131 @@ export const SwapSection = (props: SwapSectionProps) => {
 
 
 
-    return (<Card className={`w-full ${props.className}`}>
-        <CardHeader className='font-bold p-5'> Swap </CardHeader>
-        <Divider />
-        <CardBody>
-            <form onSubmit={formik.handleSubmit}>
-                <div className="space-y-4">
-                    <div>
-                        <div className="flex justify-between">
-                            <TokenShow finishLoad={tokenState.finishLoadWithoutAuth}
-                                symbol={
+    return (
+        <Card className={`w-full ${props.className}`}>
+            <CardHeader className='font-bold p-5'> Swap </CardHeader>
+            <Divider />
+            <CardBody>
+                <form onSubmit={formik.handleSubmit}>
+                    <div className="space-y-4">
+                        <div>
+                            <div className="flex justify-between">
+                                <TokenShow finishLoad={tokenState.finishLoadWithoutAuth}
+                                    symbol={
+                                        !formik.values.isBuy
+                                            ? tokenState.token0Symbol
+                                            : tokenState.token1Symbol
+                                    } />
+                                <BalanceShow
+                                    balance={
+                                        !formik.values.isBuy
+                                            ? tokenState.token0Balance
+                                            : tokenState.token1Balance
+                                    }
+                                    finishLoad={tokenState.finishLoadWithAuth} />
+                            </div>
+
+                            <Textarea
+                                id={!formik.values.isBuy ? 'token0Amount' : 'token1Amount'}
+                                description={<FetchSpinner
+                                    message="Pricing"
+                                    finishFetch={!formik.values.isBuy ? syncToken0 : syncToken1}
+                                />}
+                                maxRows={2}
+                                value={
                                     !formik.values.isBuy
-                                        ? tokenState.token0Symbol
-                                        : tokenState.token1Symbol
-                                } />
-                            <BalanceShow
-                                balance={
-                                    !formik.values.isBuy
-                                        ? tokenState.token0Balance
-                                        : tokenState.token1Balance
+                                        ? formik.values.token0Amount?.toString()
+                                        : formik.values.token1Amount?.toString()
                                 }
-                                finishLoad={tokenState.finishLoadWithAuth} />
-                        </div>
-
-                        <Textarea
-                            id={!formik.values.isBuy ? 'token0Amount' : 'token1Amount'}
-                            description={<FetchSpinner
-                                message="Pricing"
-                                finishFetch={!formik.values.isBuy ? syncToken0 : syncToken1}
-                            />}
-                            maxRows={2}
-                            value={
-                                !formik.values.isBuy
-                                    ? formik.values.token0Amount?.toString()
-                                    : formik.values.token1Amount?.toString()
-                            }
-                            onChange={
-                                event => {
-                                    formik.handleChange(event)
-                                    !formik.values.isBuy
-                                        ? setSyncToken1(true)
-                                        : setSyncToken0(true)
-                                }
-                            }
-                            onBlur={formik.handleBlur}
-                            isInvalid={(!formik.values.isBuy ? formik.errors.token0Amount : formik.errors.token1Amount) != undefined}
-                            errorMessage={(!formik.values.isBuy ? formik.errors.token0Amount : formik.errors.token1Amount)}
-                            isDisabled={!formik.values.isBuy ? syncToken0 : syncToken1}
-                        />
-                    </div>
-
-                    <div className="flex justify-center">
-                        <Button variant="light" 
-                            isDisabled={syncToken0 || syncToken1}
-                            onPress=
-                                {
-                                    async () => {
-                                        setPreventExecutionToken0(!formik.values.isBuy)
-                                        setSyncToken0(!formik.values.isBuy)
-                                    
-                                        setPreventExecutionToken1(formik.values.isBuy)
-                                        setSyncToken1(formik.values.isBuy)
-
-                                        formik.setFieldValue('isBuy', !formik.values.isBuy) 
+                                onChange={
+                                    event => {
+                                        formik.handleChange(event)
+                                        !formik.values.isBuy
+                                            ? setSyncToken1(true)
+                                            : setSyncToken0(true)
                                     }
                                 }
-                            isIconOnly radius="full" startContent={<ArrowsUpDownIcon height={24} width={24} />} />
-                    </div>
-
-                    <div>
-                        <div className="flex justify-between">
-                            <TokenShow finishLoad={tokenState.finishLoadWithoutAuth}
-                                symbol={
-                                    formik.values.isBuy
-                                        ? tokenState.token0Symbol
-                                        : tokenState.token1Symbol
-                                } />
-                            <BalanceShow
-                                balance={
-                                    formik.values.isBuy
-                                        ? tokenState.token0Balance
-                                        : tokenState.token1Balance
-                                }
-                                finishLoad={tokenState.finishLoadWithAuth} />
+                                onBlur={formik.handleBlur}
+                                isInvalid={(!formik.values.isBuy ? formik.errors.token0Amount : formik.errors.token1Amount) != undefined}
+                                errorMessage={(!formik.values.isBuy ? formik.errors.token0Amount : formik.errors.token1Amount)}
+                                isDisabled={!formik.values.isBuy ? syncToken0 : syncToken1}
+                            />
                         </div>
-                        <Textarea
-                            id={!formik.values.isBuy ? 'token1Amount' : 'token0Amount'}
-                            description={
-                                <FetchSpinner
-                                    message="Pricing"
-                                    finishFetch={!formik.values.isBuy ? syncToken1 : syncToken0}
-                                />}
-                            maxRows={2}
-                            value={
-                                !formik.values.isBuy
-                                    ? formik.values.token1Amount?.toString()
-                                    : formik.values.token0Amount?.toString()
-                            }
-                            onChange={
-                                event => {
-                                    formik.handleChange(event)
 
+                        <div className="flex justify-center">
+                            <Button variant="light" 
+                                isDisabled={syncToken0 || syncToken1}
+                                onPress=
+                                    {
+                                        async () => {
+                                            setPreventExecutionToken0(!formik.values.isBuy)
+                                            setSyncToken0(!formik.values.isBuy)
+                                    
+                                            setPreventExecutionToken1(formik.values.isBuy)
+                                            setSyncToken1(formik.values.isBuy)
+
+                                            formik.setFieldValue('isBuy', !formik.values.isBuy) 
+                                        }
+                                    }
+                                isIconOnly radius="full" startContent={<ArrowsUpDownIcon height={24} width={24} />} />
+                        </div>
+
+                        <div>
+                            <div className="flex justify-between">
+                                <TokenShow finishLoad={tokenState.finishLoadWithoutAuth}
+                                    symbol={
+                                        formik.values.isBuy
+                                            ? tokenState.token0Symbol
+                                            : tokenState.token1Symbol
+                                    } />
+                                <BalanceShow
+                                    balance={
+                                        formik.values.isBuy
+                                            ? tokenState.token0Balance
+                                            : tokenState.token1Balance
+                                    }
+                                    finishLoad={tokenState.finishLoadWithAuth} />
+                            </div>
+                            <Textarea
+                                id={!formik.values.isBuy ? 'token1Amount' : 'token0Amount'}
+                                description={
+                                    <FetchSpinner
+                                        message="Pricing"
+                                        finishFetch={!formik.values.isBuy ? syncToken1 : syncToken0}
+                                    />}
+                                maxRows={2}
+                                value={
                                     !formik.values.isBuy
-                                        ? setSyncToken0(true)
-                                        : setSyncToken1(true)
+                                        ? formik.values.token1Amount?.toString()
+                                        : formik.values.token0Amount?.toString()
                                 }
-                            }
-                            onBlur={formik.handleBlur}
-                            isInvalid={
-                                (!formik.values.isBuy
-                                    ? formik.errors.token1Amount
-                                    : formik.errors.token0Amount)
+                                onChange={
+                                    event => {
+                                        formik.handleChange(event)
+
+                                        !formik.values.isBuy
+                                            ? setSyncToken0(true)
+                                            : setSyncToken1(true)
+                                    }
+                                }
+                                onBlur={formik.handleBlur}
+                                isInvalid={
+                                    (!formik.values.isBuy
+                                        ? formik.errors.token1Amount
+                                        : formik.errors.token0Amount)
                                 != undefined}
-                            errorMessage={!formik.values.isBuy
-                                ? formik.errors.token1Amount
-                                : formik.errors.token0Amount
-                            }
-                            isDisabled={!formik.values.isBuy ? syncToken1 : syncToken0}
-                        />
+                                errorMessage={!formik.values.isBuy
+                                    ? formik.errors.token1Amount
+                                    : formik.errors.token0Amount
+                                }
+                                isDisabled={!formik.values.isBuy ? syncToken1 : syncToken0}
+                            />
+                        </div>
                     </div>
-                </div>
-                <SlippageTolerance className="mt-6" />
-                <Button
-                    size="lg" type="submit" className="mt-6 w-full font-bold bg-teal-500 text-white"> Swap </Button>
-            </form>
-        </CardBody>
-    </Card>)
+                    <SlippageTolerance className="mt-6" />
+                    <Button
+                        size="lg" type="submit" className="mt-6 w-full font-bold bg-teal-500 text-white"> Swap </Button>
+                </form>
+            </CardBody>
+        </Card>)
 }
