@@ -49,8 +49,7 @@
 		},
 		"gasEstimates": null,
 		"methodIdentifiers": {
-			"getTicks()": "3d1c387b",
-			"maxTicks()": "870e415e"
+			"getTicks()": "3d1c387b"
 		}
 	},
 	"abi": [
@@ -62,17 +61,37 @@
 					"components": [
 						{
 							"internalType": "uint256",
-							"name": "token0",
+							"name": "amountToken0Locked",
 							"type": "uint256"
 						},
 						{
 							"internalType": "uint256",
-							"name": "token1",
+							"name": "amountToken1Locked",
 							"type": "uint256"
 						},
 						{
 							"internalType": "uint256",
 							"name": "token0Price",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "amount0In",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "amount1In",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "amount0Out",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "amount1Out",
 							"type": "uint256"
 						},
 						{
@@ -84,19 +103,6 @@
 					"internalType": "struct LPTick.Tick[]",
 					"name": "",
 					"type": "tuple[]"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [],
-			"name": "maxTicks",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
 				}
 			],
 			"stateMutability": "view",

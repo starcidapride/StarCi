@@ -1,0 +1,1645 @@
+{
+	"id": "47620efcb693362277a4500db78b0659",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.21",
+	"solcLongVersion": "0.8.21+commit.d9974bed",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"SmartContracts/contracts/LPTick.sol": {
+				"content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.9;\n\nabstract contract LPTick {\n    struct Tick {\n        uint256 amountToken0Locked;\n        uint256 amountToken1Locked;\n        uint256 token0Price;\n        uint256 amount0In;\n        uint256 amount1In;\n        uint256 amount0Out;\n        uint256 amount1Out;\n        uint256 timestamp;\n    }\n\n    mapping(uint256 => Tick) ticks;\n\n    uint256 private numTicks;\n\n    constructor() {\n        numTicks = 0;\n    }\n\n    function _generateTick(\n        uint256 _amountToken0Locked,\n        uint256 _amountToken1Locked,\n        uint256 _token0Price,\n        uint256 _amount0In,\n        uint256 _amount1In,\n        uint256 _amount0Out,\n        uint256 _amount1Out\n    ) internal {\n        ticks[numTicks] = Tick(\n            _amountToken0Locked,\n            _amountToken1Locked,\n            _token0Price,\n            _amount0In,\n            _amount1In,\n            _amount0Out,\n            _amount1Out,\n            block.timestamp\n        );\n\n        numTicks++;\n    }\n\n    function getTicks() external view returns (Tick[] memory) {\n        Tick[] memory _ticks = new Tick[](numTicks);\n        for (uint256 i = 0; i < numTicks; i++) {\n            _ticks[i] = ticks[i];\n        }\n        return _ticks;\n    }\n}\n"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": true,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			}
+		}
+	},
+	"output": {
+		"contracts": {
+			"SmartContracts/contracts/LPTick.sol": {
+				"LPTick": {
+					"abi": [
+						{
+							"inputs": [],
+							"name": "getTicks",
+							"outputs": [
+								{
+									"components": [
+										{
+											"internalType": "uint256",
+											"name": "amountToken0Locked",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "amountToken1Locked",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "token0Price",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "amount0In",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "amount1In",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "amount0Out",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "amount1Out",
+											"type": "uint256"
+										},
+										{
+											"internalType": "uint256",
+											"name": "timestamp",
+											"type": "uint256"
+										}
+									],
+									"internalType": "struct LPTick.Tick[]",
+									"name": "",
+									"type": "tuple[]"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						}
+					],
+					"devdoc": {
+						"kind": "dev",
+						"methods": {},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {
+							"getTicks()": "3d1c387b"
+						}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.21+commit.d9974bed\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"getTicks\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"amountToken0Locked\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountToken1Locked\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"token0Price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount0In\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount1In\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount0Out\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount1Out\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"internalType\":\"struct LPTick.Tick[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"SmartContracts/contracts/LPTick.sol\":\"LPTick\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"SmartContracts/contracts/LPTick.sol\":{\"keccak256\":\"0x47e94db9f7d16a3fedd7affe3de25a583b6ad6d9a4557289ee6932245638cb5a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://354723810aa172dd75373388f5c28643bc1ee8b5c6a5addd78e6e7118a817930\",\"dweb:/ipfs/QmdW7xHH5u7EveqsAHth6BpkH5uLMo1ZLrMWhLsWExeNjD\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [
+							{
+								"astId": 23,
+								"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+								"label": "ticks",
+								"offset": 0,
+								"slot": "0",
+								"type": "t_mapping(t_uint256,t_struct(Tick)18_storage)"
+							},
+							{
+								"astId": 25,
+								"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+								"label": "numTicks",
+								"offset": 0,
+								"slot": "1",
+								"type": "t_uint256"
+							}
+						],
+						"types": {
+							"t_mapping(t_uint256,t_struct(Tick)18_storage)": {
+								"encoding": "mapping",
+								"key": "t_uint256",
+								"label": "mapping(uint256 => struct LPTick.Tick)",
+								"numberOfBytes": "32",
+								"value": "t_struct(Tick)18_storage"
+							},
+							"t_struct(Tick)18_storage": {
+								"encoding": "inplace",
+								"label": "struct LPTick.Tick",
+								"members": [
+									{
+										"astId": 3,
+										"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+										"label": "amountToken0Locked",
+										"offset": 0,
+										"slot": "0",
+										"type": "t_uint256"
+									},
+									{
+										"astId": 5,
+										"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+										"label": "amountToken1Locked",
+										"offset": 0,
+										"slot": "1",
+										"type": "t_uint256"
+									},
+									{
+										"astId": 7,
+										"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+										"label": "token0Price",
+										"offset": 0,
+										"slot": "2",
+										"type": "t_uint256"
+									},
+									{
+										"astId": 9,
+										"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+										"label": "amount0In",
+										"offset": 0,
+										"slot": "3",
+										"type": "t_uint256"
+									},
+									{
+										"astId": 11,
+										"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+										"label": "amount1In",
+										"offset": 0,
+										"slot": "4",
+										"type": "t_uint256"
+									},
+									{
+										"astId": 13,
+										"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+										"label": "amount0Out",
+										"offset": 0,
+										"slot": "5",
+										"type": "t_uint256"
+									},
+									{
+										"astId": 15,
+										"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+										"label": "amount1Out",
+										"offset": 0,
+										"slot": "6",
+										"type": "t_uint256"
+									},
+									{
+										"astId": 17,
+										"contract": "SmartContracts/contracts/LPTick.sol:LPTick",
+										"label": "timestamp",
+										"offset": 0,
+										"slot": "7",
+										"type": "t_uint256"
+									}
+								],
+								"numberOfBytes": "256"
+							},
+							"t_uint256": {
+								"encoding": "inplace",
+								"label": "uint256",
+								"numberOfBytes": "32"
+							}
+						}
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"SmartContracts/contracts/LPTick.sol": {
+				"ast": {
+					"absolutePath": "SmartContracts/contracts/LPTick.sol",
+					"exportedSymbols": {
+						"LPTick": [
+							113
+						]
+					},
+					"id": 114,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".9"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "32:23:0"
+						},
+						{
+							"abstract": true,
+							"baseContracts": [],
+							"canonicalName": "LPTick",
+							"contractDependencies": [],
+							"contractKind": "contract",
+							"fullyImplemented": true,
+							"id": 113,
+							"linearizedBaseContracts": [
+								113
+							],
+							"name": "LPTick",
+							"nameLocation": "75:6:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"canonicalName": "LPTick.Tick",
+									"id": 18,
+									"members": [
+										{
+											"constant": false,
+											"id": 3,
+											"mutability": "mutable",
+											"name": "amountToken0Locked",
+											"nameLocation": "118:18:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 18,
+											"src": "110:26:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 2,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "110:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 5,
+											"mutability": "mutable",
+											"name": "amountToken1Locked",
+											"nameLocation": "154:18:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 18,
+											"src": "146:26:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 4,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "146:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 7,
+											"mutability": "mutable",
+											"name": "token0Price",
+											"nameLocation": "190:11:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 18,
+											"src": "182:19:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 6,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "182:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 9,
+											"mutability": "mutable",
+											"name": "amount0In",
+											"nameLocation": "219:9:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 18,
+											"src": "211:17:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 8,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "211:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 11,
+											"mutability": "mutable",
+											"name": "amount1In",
+											"nameLocation": "246:9:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 18,
+											"src": "238:17:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 10,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "238:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 13,
+											"mutability": "mutable",
+											"name": "amount0Out",
+											"nameLocation": "273:10:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 18,
+											"src": "265:18:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 12,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "265:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 15,
+											"mutability": "mutable",
+											"name": "amount1Out",
+											"nameLocation": "301:10:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 18,
+											"src": "293:18:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 14,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "293:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										},
+										{
+											"constant": false,
+											"id": 17,
+											"mutability": "mutable",
+											"name": "timestamp",
+											"nameLocation": "329:9:0",
+											"nodeType": "VariableDeclaration",
+											"scope": 18,
+											"src": "321:17:0",
+											"stateVariable": false,
+											"storageLocation": "default",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											},
+											"typeName": {
+												"id": 16,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "321:7:0",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												}
+											},
+											"visibility": "internal"
+										}
+									],
+									"name": "Tick",
+									"nameLocation": "95:4:0",
+									"nodeType": "StructDefinition",
+									"scope": 113,
+									"src": "88:257:0",
+									"visibility": "public"
+								},
+								{
+									"constant": false,
+									"id": 23,
+									"mutability": "mutable",
+									"name": "ticks",
+									"nameLocation": "376:5:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 113,
+									"src": "351:30:0",
+									"stateVariable": true,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Tick_$18_storage_$",
+										"typeString": "mapping(uint256 => struct LPTick.Tick)"
+									},
+									"typeName": {
+										"id": 22,
+										"keyName": "",
+										"keyNameLocation": "-1:-1:-1",
+										"keyType": {
+											"id": 19,
+											"name": "uint256",
+											"nodeType": "ElementaryTypeName",
+											"src": "359:7:0",
+											"typeDescriptions": {
+												"typeIdentifier": "t_uint256",
+												"typeString": "uint256"
+											}
+										},
+										"nodeType": "Mapping",
+										"src": "351:24:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Tick_$18_storage_$",
+											"typeString": "mapping(uint256 => struct LPTick.Tick)"
+										},
+										"valueName": "",
+										"valueNameLocation": "-1:-1:-1",
+										"valueType": {
+											"id": 21,
+											"nodeType": "UserDefinedTypeName",
+											"pathNode": {
+												"id": 20,
+												"name": "Tick",
+												"nameLocations": [
+													"370:4:0"
+												],
+												"nodeType": "IdentifierPath",
+												"referencedDeclaration": 18,
+												"src": "370:4:0"
+											},
+											"referencedDeclaration": 18,
+											"src": "370:4:0",
+											"typeDescriptions": {
+												"typeIdentifier": "t_struct$_Tick_$18_storage_ptr",
+												"typeString": "struct LPTick.Tick"
+											}
+										}
+									},
+									"visibility": "internal"
+								},
+								{
+									"constant": false,
+									"id": 25,
+									"mutability": "mutable",
+									"name": "numTicks",
+									"nameLocation": "404:8:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 113,
+									"src": "388:24:0",
+									"stateVariable": true,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint256",
+										"typeString": "uint256"
+									},
+									"typeName": {
+										"id": 24,
+										"name": "uint256",
+										"nodeType": "ElementaryTypeName",
+										"src": "388:7:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint256",
+											"typeString": "uint256"
+										}
+									},
+									"visibility": "private"
+								},
+								{
+									"body": {
+										"id": 32,
+										"nodeType": "Block",
+										"src": "433:29:0",
+										"statements": [
+											{
+												"expression": {
+													"id": 30,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": false,
+													"lValueRequested": false,
+													"leftHandSide": {
+														"id": 28,
+														"name": "numTicks",
+														"nodeType": "Identifier",
+														"overloadedDeclarations": [],
+														"referencedDeclaration": 25,
+														"src": "443:8:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_uint256",
+															"typeString": "uint256"
+														}
+													},
+													"nodeType": "Assignment",
+													"operator": "=",
+													"rightHandSide": {
+														"hexValue": "30",
+														"id": 29,
+														"isConstant": false,
+														"isLValue": false,
+														"isPure": true,
+														"kind": "number",
+														"lValueRequested": false,
+														"nodeType": "Literal",
+														"src": "454:1:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_rational_0_by_1",
+															"typeString": "int_const 0"
+														},
+														"value": "0"
+													},
+													"src": "443:12:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"id": 31,
+												"nodeType": "ExpressionStatement",
+												"src": "443:12:0"
+											}
+										]
+									},
+									"id": 33,
+									"implemented": true,
+									"kind": "constructor",
+									"modifiers": [],
+									"name": "",
+									"nameLocation": "-1:-1:-1",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 26,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "430:2:0"
+									},
+									"returnParameters": {
+										"id": 27,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "433:0:0"
+									},
+									"scope": 113,
+									"src": "419:43:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "internal"
+								},
+								{
+									"body": {
+										"id": 69,
+										"nodeType": "Block",
+										"src": "724:289:0",
+										"statements": [
+											{
+												"expression": {
+													"id": 64,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": false,
+													"lValueRequested": false,
+													"leftHandSide": {
+														"baseExpression": {
+															"id": 50,
+															"name": "ticks",
+															"nodeType": "Identifier",
+															"overloadedDeclarations": [],
+															"referencedDeclaration": 23,
+															"src": "734:5:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Tick_$18_storage_$",
+																"typeString": "mapping(uint256 => struct LPTick.Tick storage ref)"
+															}
+														},
+														"id": 52,
+														"indexExpression": {
+															"id": 51,
+															"name": "numTicks",
+															"nodeType": "Identifier",
+															"overloadedDeclarations": [],
+															"referencedDeclaration": 25,
+															"src": "740:8:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_uint256",
+																"typeString": "uint256"
+															}
+														},
+														"isConstant": false,
+														"isLValue": true,
+														"isPure": false,
+														"lValueRequested": true,
+														"nodeType": "IndexAccess",
+														"src": "734:15:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_struct$_Tick_$18_storage",
+															"typeString": "struct LPTick.Tick storage ref"
+														}
+													},
+													"nodeType": "Assignment",
+													"operator": "=",
+													"rightHandSide": {
+														"arguments": [
+															{
+																"id": 54,
+																"name": "_amountToken0Locked",
+																"nodeType": "Identifier",
+																"overloadedDeclarations": [],
+																"referencedDeclaration": 35,
+																"src": "770:19:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															},
+															{
+																"id": 55,
+																"name": "_amountToken1Locked",
+																"nodeType": "Identifier",
+																"overloadedDeclarations": [],
+																"referencedDeclaration": 37,
+																"src": "803:19:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															},
+															{
+																"id": 56,
+																"name": "_token0Price",
+																"nodeType": "Identifier",
+																"overloadedDeclarations": [],
+																"referencedDeclaration": 39,
+																"src": "836:12:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															},
+															{
+																"id": 57,
+																"name": "_amount0In",
+																"nodeType": "Identifier",
+																"overloadedDeclarations": [],
+																"referencedDeclaration": 41,
+																"src": "862:10:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															},
+															{
+																"id": 58,
+																"name": "_amount1In",
+																"nodeType": "Identifier",
+																"overloadedDeclarations": [],
+																"referencedDeclaration": 43,
+																"src": "886:10:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															},
+															{
+																"id": 59,
+																"name": "_amount0Out",
+																"nodeType": "Identifier",
+																"overloadedDeclarations": [],
+																"referencedDeclaration": 45,
+																"src": "910:11:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															},
+															{
+																"id": 60,
+																"name": "_amount1Out",
+																"nodeType": "Identifier",
+																"overloadedDeclarations": [],
+																"referencedDeclaration": 47,
+																"src": "935:11:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															},
+															{
+																"expression": {
+																	"id": 61,
+																	"name": "block",
+																	"nodeType": "Identifier",
+																	"overloadedDeclarations": [],
+																	"referencedDeclaration": 4294967292,
+																	"src": "960:5:0",
+																	"typeDescriptions": {
+																		"typeIdentifier": "t_magic_block",
+																		"typeString": "block"
+																	}
+																},
+																"id": 62,
+																"isConstant": false,
+																"isLValue": false,
+																"isPure": false,
+																"lValueRequested": false,
+																"memberLocation": "966:9:0",
+																"memberName": "timestamp",
+																"nodeType": "MemberAccess",
+																"src": "960:15:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															}
+														],
+														"expression": {
+															"argumentTypes": [
+																{
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																},
+																{
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																},
+																{
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																},
+																{
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																},
+																{
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																},
+																{
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																},
+																{
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																},
+																{
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															],
+															"id": 53,
+															"name": "Tick",
+															"nodeType": "Identifier",
+															"overloadedDeclarations": [],
+															"referencedDeclaration": 18,
+															"src": "752:4:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_type$_t_struct$_Tick_$18_storage_ptr_$",
+																"typeString": "type(struct LPTick.Tick storage pointer)"
+															}
+														},
+														"id": 63,
+														"isConstant": false,
+														"isLValue": false,
+														"isPure": false,
+														"kind": "structConstructorCall",
+														"lValueRequested": false,
+														"nameLocations": [],
+														"names": [],
+														"nodeType": "FunctionCall",
+														"src": "752:233:0",
+														"tryCall": false,
+														"typeDescriptions": {
+															"typeIdentifier": "t_struct$_Tick_$18_memory_ptr",
+															"typeString": "struct LPTick.Tick memory"
+														}
+													},
+													"src": "734:251:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_struct$_Tick_$18_storage",
+														"typeString": "struct LPTick.Tick storage ref"
+													}
+												},
+												"id": 65,
+												"nodeType": "ExpressionStatement",
+												"src": "734:251:0"
+											},
+											{
+												"expression": {
+													"id": 67,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": false,
+													"lValueRequested": false,
+													"nodeType": "UnaryOperation",
+													"operator": "++",
+													"prefix": false,
+													"src": "996:10:0",
+													"subExpression": {
+														"id": 66,
+														"name": "numTicks",
+														"nodeType": "Identifier",
+														"overloadedDeclarations": [],
+														"referencedDeclaration": 25,
+														"src": "996:8:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_uint256",
+															"typeString": "uint256"
+														}
+													},
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"id": 68,
+												"nodeType": "ExpressionStatement",
+												"src": "996:10:0"
+											}
+										]
+									},
+									"id": 70,
+									"implemented": true,
+									"kind": "function",
+									"modifiers": [],
+									"name": "_generateTick",
+									"nameLocation": "477:13:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 48,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 35,
+												"mutability": "mutable",
+												"name": "_amountToken0Locked",
+												"nameLocation": "508:19:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 70,
+												"src": "500:27:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 34,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "500:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 37,
+												"mutability": "mutable",
+												"name": "_amountToken1Locked",
+												"nameLocation": "545:19:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 70,
+												"src": "537:27:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 36,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "537:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 39,
+												"mutability": "mutable",
+												"name": "_token0Price",
+												"nameLocation": "582:12:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 70,
+												"src": "574:20:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 38,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "574:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 41,
+												"mutability": "mutable",
+												"name": "_amount0In",
+												"nameLocation": "612:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 70,
+												"src": "604:18:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 40,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "604:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 43,
+												"mutability": "mutable",
+												"name": "_amount1In",
+												"nameLocation": "640:10:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 70,
+												"src": "632:18:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 42,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "632:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 45,
+												"mutability": "mutable",
+												"name": "_amount0Out",
+												"nameLocation": "668:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 70,
+												"src": "660:19:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 44,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "660:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 47,
+												"mutability": "mutable",
+												"name": "_amount1Out",
+												"nameLocation": "697:11:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 70,
+												"src": "689:19:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint256",
+													"typeString": "uint256"
+												},
+												"typeName": {
+													"id": 46,
+													"name": "uint256",
+													"nodeType": "ElementaryTypeName",
+													"src": "689:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "490:224:0"
+									},
+									"returnParameters": {
+										"id": 49,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "724:0:0"
+									},
+									"scope": 113,
+									"src": "468:545:0",
+									"stateMutability": "nonpayable",
+									"virtual": false,
+									"visibility": "internal"
+								},
+								{
+									"body": {
+										"id": 111,
+										"nodeType": "Block",
+										"src": "1077:176:0",
+										"statements": [
+											{
+												"assignments": [
+													81
+												],
+												"declarations": [
+													{
+														"constant": false,
+														"id": 81,
+														"mutability": "mutable",
+														"name": "_ticks",
+														"nameLocation": "1101:6:0",
+														"nodeType": "VariableDeclaration",
+														"scope": 111,
+														"src": "1087:20:0",
+														"stateVariable": false,
+														"storageLocation": "memory",
+														"typeDescriptions": {
+															"typeIdentifier": "t_array$_t_struct$_Tick_$18_memory_ptr_$dyn_memory_ptr",
+															"typeString": "struct LPTick.Tick[]"
+														},
+														"typeName": {
+															"baseType": {
+																"id": 79,
+																"nodeType": "UserDefinedTypeName",
+																"pathNode": {
+																	"id": 78,
+																	"name": "Tick",
+																	"nameLocations": [
+																		"1087:4:0"
+																	],
+																	"nodeType": "IdentifierPath",
+																	"referencedDeclaration": 18,
+																	"src": "1087:4:0"
+																},
+																"referencedDeclaration": 18,
+																"src": "1087:4:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_struct$_Tick_$18_storage_ptr",
+																	"typeString": "struct LPTick.Tick"
+																}
+															},
+															"id": 80,
+															"nodeType": "ArrayTypeName",
+															"src": "1087:6:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_array$_t_struct$_Tick_$18_storage_$dyn_storage_ptr",
+																"typeString": "struct LPTick.Tick[]"
+															}
+														},
+														"visibility": "internal"
+													}
+												],
+												"id": 88,
+												"initialValue": {
+													"arguments": [
+														{
+															"id": 86,
+															"name": "numTicks",
+															"nodeType": "Identifier",
+															"overloadedDeclarations": [],
+															"referencedDeclaration": 25,
+															"src": "1121:8:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_uint256",
+																"typeString": "uint256"
+															}
+														}
+													],
+													"expression": {
+														"argumentTypes": [
+															{
+																"typeIdentifier": "t_uint256",
+																"typeString": "uint256"
+															}
+														],
+														"id": 85,
+														"isConstant": false,
+														"isLValue": false,
+														"isPure": true,
+														"lValueRequested": false,
+														"nodeType": "NewExpression",
+														"src": "1110:10:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_struct$_Tick_$18_memory_ptr_$dyn_memory_ptr_$",
+															"typeString": "function (uint256) pure returns (struct LPTick.Tick memory[] memory)"
+														},
+														"typeName": {
+															"baseType": {
+																"id": 83,
+																"nodeType": "UserDefinedTypeName",
+																"pathNode": {
+																	"id": 82,
+																	"name": "Tick",
+																	"nameLocations": [
+																		"1114:4:0"
+																	],
+																	"nodeType": "IdentifierPath",
+																	"referencedDeclaration": 18,
+																	"src": "1114:4:0"
+																},
+																"referencedDeclaration": 18,
+																"src": "1114:4:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_struct$_Tick_$18_storage_ptr",
+																	"typeString": "struct LPTick.Tick"
+																}
+															},
+															"id": 84,
+															"nodeType": "ArrayTypeName",
+															"src": "1114:6:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_array$_t_struct$_Tick_$18_storage_$dyn_storage_ptr",
+																"typeString": "struct LPTick.Tick[]"
+															}
+														}
+													},
+													"id": 87,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": false,
+													"kind": "functionCall",
+													"lValueRequested": false,
+													"nameLocations": [],
+													"names": [],
+													"nodeType": "FunctionCall",
+													"src": "1110:20:0",
+													"tryCall": false,
+													"typeDescriptions": {
+														"typeIdentifier": "t_array$_t_struct$_Tick_$18_memory_ptr_$dyn_memory_ptr",
+														"typeString": "struct LPTick.Tick memory[] memory"
+													}
+												},
+												"nodeType": "VariableDeclarationStatement",
+												"src": "1087:43:0"
+											},
+											{
+												"body": {
+													"id": 107,
+													"nodeType": "Block",
+													"src": "1179:45:0",
+													"statements": [
+														{
+															"expression": {
+																"id": 105,
+																"isConstant": false,
+																"isLValue": false,
+																"isPure": false,
+																"lValueRequested": false,
+																"leftHandSide": {
+																	"baseExpression": {
+																		"id": 99,
+																		"name": "_ticks",
+																		"nodeType": "Identifier",
+																		"overloadedDeclarations": [],
+																		"referencedDeclaration": 81,
+																		"src": "1193:6:0",
+																		"typeDescriptions": {
+																			"typeIdentifier": "t_array$_t_struct$_Tick_$18_memory_ptr_$dyn_memory_ptr",
+																			"typeString": "struct LPTick.Tick memory[] memory"
+																		}
+																	},
+																	"id": 101,
+																	"indexExpression": {
+																		"id": 100,
+																		"name": "i",
+																		"nodeType": "Identifier",
+																		"overloadedDeclarations": [],
+																		"referencedDeclaration": 90,
+																		"src": "1200:1:0",
+																		"typeDescriptions": {
+																			"typeIdentifier": "t_uint256",
+																			"typeString": "uint256"
+																		}
+																	},
+																	"isConstant": false,
+																	"isLValue": true,
+																	"isPure": false,
+																	"lValueRequested": true,
+																	"nodeType": "IndexAccess",
+																	"src": "1193:9:0",
+																	"typeDescriptions": {
+																		"typeIdentifier": "t_struct$_Tick_$18_memory_ptr",
+																		"typeString": "struct LPTick.Tick memory"
+																	}
+																},
+																"nodeType": "Assignment",
+																"operator": "=",
+																"rightHandSide": {
+																	"baseExpression": {
+																		"id": 102,
+																		"name": "ticks",
+																		"nodeType": "Identifier",
+																		"overloadedDeclarations": [],
+																		"referencedDeclaration": 23,
+																		"src": "1205:5:0",
+																		"typeDescriptions": {
+																			"typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_Tick_$18_storage_$",
+																			"typeString": "mapping(uint256 => struct LPTick.Tick storage ref)"
+																		}
+																	},
+																	"id": 104,
+																	"indexExpression": {
+																		"id": 103,
+																		"name": "i",
+																		"nodeType": "Identifier",
+																		"overloadedDeclarations": [],
+																		"referencedDeclaration": 90,
+																		"src": "1211:1:0",
+																		"typeDescriptions": {
+																			"typeIdentifier": "t_uint256",
+																			"typeString": "uint256"
+																		}
+																	},
+																	"isConstant": false,
+																	"isLValue": true,
+																	"isPure": false,
+																	"lValueRequested": false,
+																	"nodeType": "IndexAccess",
+																	"src": "1205:8:0",
+																	"typeDescriptions": {
+																		"typeIdentifier": "t_struct$_Tick_$18_storage",
+																		"typeString": "struct LPTick.Tick storage ref"
+																	}
+																},
+																"src": "1193:20:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_struct$_Tick_$18_memory_ptr",
+																	"typeString": "struct LPTick.Tick memory"
+																}
+															},
+															"id": 106,
+															"nodeType": "ExpressionStatement",
+															"src": "1193:20:0"
+														}
+													]
+												},
+												"condition": {
+													"commonType": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													},
+													"id": 95,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": false,
+													"lValueRequested": false,
+													"leftExpression": {
+														"id": 93,
+														"name": "i",
+														"nodeType": "Identifier",
+														"overloadedDeclarations": [],
+														"referencedDeclaration": 90,
+														"src": "1160:1:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_uint256",
+															"typeString": "uint256"
+														}
+													},
+													"nodeType": "BinaryOperation",
+													"operator": "<",
+													"rightExpression": {
+														"id": 94,
+														"name": "numTicks",
+														"nodeType": "Identifier",
+														"overloadedDeclarations": [],
+														"referencedDeclaration": 25,
+														"src": "1164:8:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_uint256",
+															"typeString": "uint256"
+														}
+													},
+													"src": "1160:12:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bool",
+														"typeString": "bool"
+													}
+												},
+												"id": 108,
+												"initializationExpression": {
+													"assignments": [
+														90
+													],
+													"declarations": [
+														{
+															"constant": false,
+															"id": 90,
+															"mutability": "mutable",
+															"name": "i",
+															"nameLocation": "1153:1:0",
+															"nodeType": "VariableDeclaration",
+															"scope": 108,
+															"src": "1145:9:0",
+															"stateVariable": false,
+															"storageLocation": "default",
+															"typeDescriptions": {
+																"typeIdentifier": "t_uint256",
+																"typeString": "uint256"
+															},
+															"typeName": {
+																"id": 89,
+																"name": "uint256",
+																"nodeType": "ElementaryTypeName",
+																"src": "1145:7:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_uint256",
+																	"typeString": "uint256"
+																}
+															},
+															"visibility": "internal"
+														}
+													],
+													"id": 92,
+													"initialValue": {
+														"hexValue": "30",
+														"id": 91,
+														"isConstant": false,
+														"isLValue": false,
+														"isPure": true,
+														"kind": "number",
+														"lValueRequested": false,
+														"nodeType": "Literal",
+														"src": "1157:1:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_rational_0_by_1",
+															"typeString": "int_const 0"
+														},
+														"value": "0"
+													},
+													"nodeType": "VariableDeclarationStatement",
+													"src": "1145:13:0"
+												},
+												"loopExpression": {
+													"expression": {
+														"id": 97,
+														"isConstant": false,
+														"isLValue": false,
+														"isPure": false,
+														"lValueRequested": false,
+														"nodeType": "UnaryOperation",
+														"operator": "++",
+														"prefix": false,
+														"src": "1174:3:0",
+														"subExpression": {
+															"id": 96,
+															"name": "i",
+															"nodeType": "Identifier",
+															"overloadedDeclarations": [],
+															"referencedDeclaration": 90,
+															"src": "1174:1:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_uint256",
+																"typeString": "uint256"
+															}
+														},
+														"typeDescriptions": {
+															"typeIdentifier": "t_uint256",
+															"typeString": "uint256"
+														}
+													},
+													"id": 98,
+													"nodeType": "ExpressionStatement",
+													"src": "1174:3:0"
+												},
+												"nodeType": "ForStatement",
+												"src": "1140:84:0"
+											},
+											{
+												"expression": {
+													"id": 109,
+													"name": "_ticks",
+													"nodeType": "Identifier",
+													"overloadedDeclarations": [],
+													"referencedDeclaration": 81,
+													"src": "1240:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_array$_t_struct$_Tick_$18_memory_ptr_$dyn_memory_ptr",
+														"typeString": "struct LPTick.Tick memory[] memory"
+													}
+												},
+												"functionReturnParameters": 76,
+												"id": 110,
+												"nodeType": "Return",
+												"src": "1233:13:0"
+											}
+										]
+									},
+									"functionSelector": "3d1c387b",
+									"id": 112,
+									"implemented": true,
+									"kind": "function",
+									"modifiers": [],
+									"name": "getTicks",
+									"nameLocation": "1028:8:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 71,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "1036:2:0"
+									},
+									"returnParameters": {
+										"id": 76,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 75,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 112,
+												"src": "1062:13:0",
+												"stateVariable": false,
+												"storageLocation": "memory",
+												"typeDescriptions": {
+													"typeIdentifier": "t_array$_t_struct$_Tick_$18_memory_ptr_$dyn_memory_ptr",
+													"typeString": "struct LPTick.Tick[]"
+												},
+												"typeName": {
+													"baseType": {
+														"id": 73,
+														"nodeType": "UserDefinedTypeName",
+														"pathNode": {
+															"id": 72,
+															"name": "Tick",
+															"nameLocations": [
+																"1062:4:0"
+															],
+															"nodeType": "IdentifierPath",
+															"referencedDeclaration": 18,
+															"src": "1062:4:0"
+														},
+														"referencedDeclaration": 18,
+														"src": "1062:4:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_struct$_Tick_$18_storage_ptr",
+															"typeString": "struct LPTick.Tick"
+														}
+													},
+													"id": 74,
+													"nodeType": "ArrayTypeName",
+													"src": "1062:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_array$_t_struct$_Tick_$18_storage_$dyn_storage_ptr",
+														"typeString": "struct LPTick.Tick[]"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1061:15:0"
+									},
+									"scope": 113,
+									"src": "1019:234:0",
+									"stateMutability": "view",
+									"virtual": false,
+									"visibility": "external"
+								}
+							],
+							"scope": 114,
+							"src": "57:1198:0",
+							"usedErrors": [],
+							"usedEvents": []
+						}
+					],
+					"src": "32:1224:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}

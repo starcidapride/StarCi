@@ -3,48 +3,51 @@ pragma solidity ^0.8.9;
 
 abstract contract LPTick {
     struct Tick {
-        uint256 token0;
-        uint256 token1;
+        uint256 amountToken0Locked;
+        uint256 amountToken1Locked;
         uint256 token0Price;
+        uint256 amount0In;
+        uint256 amount1In;
+        uint256 amount0Out;
+        uint256 amount1Out;
         uint256 timestamp;
     }
 
     mapping(uint256 => Tick) ticks;
 
-    uint256 private beginIndex;
-    uint256 private endIndex;
+    uint256 private numTicks;
 
-    uint256 public maxTicks;
-
-    constructor(uint256 _maxTicks) {
-        beginIndex = 0;
-        endIndex = 0;
-        maxTicks = _maxTicks;
+    constructor() {
+        numTicks = 0;
     }
 
     function _generateTick(
-        uint256 _token0,
-        uint256 _token1,
-        uint256 _token0Price
+        uint256 _amountToken0Locked,
+        uint256 _amountToken1Locked,
+        uint256 _token0Price,
+        uint256 _amount0In,
+        uint256 _amount1In,
+        uint256 _amount0Out,
+        uint256 _amount1Out
     ) internal {
-        if (endIndex - beginIndex == maxTicks) {
-            delete ticks[beginIndex];
-            beginIndex++;
-        }
-
-        endIndex++;
-
-        ticks[endIndex] = Tick(
-            _token0,
-            _token1, 
+        ticks[numTicks] = Tick(
+            _amountToken0Locked,
+            _amountToken1Locked,
             _token0Price,
-             block.timestamp);
+            _amount0In,
+            _amount1In,
+            _amount0Out,
+            _amount1Out,
+            block.timestamp
+        );
+
+        numTicks++;
     }
 
     function getTicks() external view returns (Tick[] memory) {
-        Tick[] memory _ticks = new Tick[](endIndex - beginIndex + 1);
-        for (uint256 i = beginIndex; i < endIndex + 1; i++) {
-            _ticks[i - beginIndex] = ticks[i];
+        Tick[] memory _ticks = new Tick[](numTicks);
+        for (uint256 i = 0; i < numTicks; i++) {
+            _ticks[i] = ticks[i];
         }
         return _ticks;
     }

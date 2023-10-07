@@ -5,12 +5,12 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./Factory.sol";
 import "./LPTick.sol";
-import "./LPTokenLog.sol";
+import "./ProfitableTokenTick.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
+contract LiquidityPool is LPTick, ProfitableTokenTick, ERC20, Ownable {
     address public factory;
     address public factoryOwner;
 
@@ -53,8 +53,10 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
         uint256 _token1DepositAmount,
         uint256 _token0BasePrice,
         uint256 _token0MaxPrice,
-        uint256 _protocolFee
-    ) LPTick(10) LPTokenLog(10) ERC20("LP Token", "LP") {
+        uint256 _protocolFee,
+        string memory _token1Name,
+        string memory _token1Symbol
+    ) LPTick() ProfitableTokenTick() ERC20(_token1Name, _token1Symbol) {
         factory = _factory;
         factoryOwner = _factoryOwner;
 
@@ -92,11 +94,14 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
             (token0DepositAmount + token0Constant) *
             (token1DepositAmount + token1Constant);
 
-        ticks[0] = Tick(
+        _generateTick(
             token0DepositAmount,
             token1DepositAmount,
             token0BasePrice,
-            block.timestamp
+            0,
+            0,
+            0,
+            0
         );
 
         emit Sync(token0DepositAmount, token1DepositAmount);
@@ -143,18 +148,17 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
         return ERC20(token0).balanceOf(address(this));
     }
 
+    function _actualToken0Balance() internal view returns (uint256) {
+        return ERC20(token0).balanceOf(address(this)) + totalSupply();
+    }
+
     function _token1Balance() internal view returns (uint256) {
         return ERC20(token1).balanceOf(address(this));
     }
 
-    function _allToken1Balance() internal view returns (uint256) {
-        return
-            ERC20(token1).balanceOf(address(this)) + balanceOf(address(this));
-    }
-
     function _updateKConstant() internal {
-        uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _allToken1Balance();
+        uint256 token0Balance = _actualToken0Balance();
+        uint256 token1Balance = _token1Balance();
         kConstant =
             (token0Balance + token0Constant) *
             (token1Balance + token1Constant);
@@ -162,15 +166,15 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
 
     // testing only
     function testKConstant() external view returns (uint256) {
-        uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _allToken1Balance();
+        uint256 token0Balance = _actualToken0Balance();
+        uint256 token1Balance = _token1Balance();
         return
             (token0Balance + token0Constant) * (token1Balance + token1Constant);
     }
 
     function token1Output(uint256 _token0Input) public view returns (uint256) {
-        uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _allToken1Balance();
+        uint256 token0Balance = _actualToken0Balance();
+        uint256 token1Balance = _token1Balance();
 
         uint256 newToken0Balance = token0Balance + _token0Input;
 
@@ -183,8 +187,8 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
     }
 
     function token0Output(uint256 _token1Input) public view returns (uint256) {
-        uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _allToken1Balance();
+        uint256 token0Balance = _actualToken0Balance();
+        uint256 token1Balance = _token1Balance();
 
         uint256 newToken1Balance = token1Balance + _token1Input;
 
@@ -252,6 +256,21 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
             address(this)
         );
 
+        uint256 token0Balance = _token0Balance();
+        uint256 token1Balance = _token1Balance();
+
+        _generateTick(
+            token0Balance,
+            token1Balance,
+            token1Output(10e17),
+            0,
+            _amountToken1In,
+            _minAmountToken0Out,
+            0
+        );
+
+        emit Sync(token0Balance, token1Balance);
+
         _addInterest(_amountToken1In);
     }
 
@@ -267,7 +286,7 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
 
         ERC20(token0).transferFrom(msg.sender, address(this), _amountToken0In);
 
-        uint256 fee = SafeMath.div(protocolFee * amountToken1Out, 10e5);
+        uint256 fee = SafeMath.div(protocolFee * amountToken1Out, 10e4);
 
         ERC20(token1).transfer(factoryOwner, fee);
 
@@ -281,6 +300,21 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
             _minAmountToken1Out,
             address(this)
         );
+
+        uint256 token0Balance = _token0Balance();
+        uint256 token1Balance = _token1Balance();
+
+        _generateTick(
+            token0Balance,
+            token1Balance,
+            token1Output(10e17),
+            _amountToken0In,
+            0,
+            0,
+            _minAmountToken1Out
+        );
+
+        emit Sync(token0Balance, token1Balance);
     }
 
     function swap(
@@ -293,16 +327,9 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
         } else {
             _sell(_amountTokenIn, _minAmountTokenOut);
         }
-
-        uint256 token0Balance = _token0Balance();
-        uint256 token1Balance = _token1Balance();
-
-        _generateTick(token0Balance, token1Balance, token1Output(10e17));
-
-        emit Sync(token0Balance, token1Balance);
     }
 
-    function register() external {
+    function startEarning() external {
         if (numProviders == 0) {
             providers[0] = msg.sender;
             numProviders++;
@@ -318,35 +345,55 @@ contract LiquidityPool is LPTick, LPTokenLog, ERC20, Ownable {
         numProviders++;
     }
 
-    function deposit(uint256 _amountToken1In) public {
-        uint256 actual = _amountToken1In * SafeMath.div(8 * 10e4, 10e5);
-        uint256 fee = _amountToken1In - actual;
-
-        ERC20(token1).transferFrom(msg.sender, address(this), actual);
-        ERC20(token1).transferFrom(msg.sender, factoryOwner, fee);
-
-        _mint(msg.sender, _amountToken1In);
-
-        _updateKConstant();
-
-        _generateDeposit(msg.sender, _amountToken1In);
+    function hasEarned() external view returns (bool) {
+        if (numProviders == 0) return false;
+        for (uint256 i = 0; i < numProviders; i++) {
+            if (providers[i] == msg.sender) return true;
+        }
+        return false;
     }
 
-    function withdraw(uint256 _amountLPTokenIn, uint256 _minAmountToken0Out)
-        public
-    {
-        uint256 amountToken0Out = token0Output(_amountLPTokenIn);
+    function depositTokens(
+        uint256 _amountToken1In,
+        uint256 _minAmountProfitableTokenOut
+    ) public {
+        uint256 amountProfitableTokenOut = token0Output(_amountToken1In);
 
         require(
-            amountToken0Out >= _minAmountToken0Out,
+            amountProfitableTokenOut >= _minAmountProfitableTokenOut,
             "Insufficient output amount"
         );
 
-        transferFrom(msg.sender, address(this), _amountLPTokenIn);
+        ERC20(token1).transferFrom(msg.sender, address(this), _amountToken1In);
 
-        ERC20(token0).transfer(msg.sender, amountToken0Out);
+        _mint(msg.sender, amountProfitableTokenOut);
 
-        _generateWithdraw(msg.sender, _amountLPTokenIn);
+        _updateKConstant();
+
+        _generateDeposit(msg.sender, _amountToken1In, amountProfitableTokenOut);
+    }
+
+    function withdrawTokens(uint256 _amountProfitableTokenIn) public {
+        uint256 fee = SafeMath.div(
+            protocolFee * _amountProfitableTokenIn,
+            10e4
+        );
+
+        transferFrom(msg.sender, address(this), _amountProfitableTokenIn);
+
+        ERC20(token0).transferFrom(
+            address(this),
+            msg.sender,
+            _amountProfitableTokenIn - fee
+        );
+
+        _mint(address(this), _amountProfitableTokenIn - fee);
+
+        _generateWithdraw(
+            msg.sender,
+            _amountProfitableTokenIn,
+            _amountProfitableTokenIn - fee
+        );
     }
 
     function _addInterest(uint256 _amountToken1In) internal {
